@@ -32,7 +32,7 @@ namespace NamespaceName
 }
 ```
 
-Defer to UE5 coding standard or project lead for questions/special cases
+Defer to the [UE5 coding standard](https://docs.unrealengine.com/4.26/en-US/ProductionPipelines/DevelopmentSetup/CodingStandard/) or project lead for questions/special cases
 
 ## Best-Practices
 
