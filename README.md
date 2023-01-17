@@ -28,6 +28,7 @@ The goal of this project is to create a library encapsulating both classical and
   - [ ] OpenGL, DirectX, Metal
 - [ ] Language Bindings
   - [ ] Python, C#, Rust, ...
+- [ ] Doxygen
 
 ## Usage
 
