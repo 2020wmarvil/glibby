@@ -22,7 +22,7 @@ namespace NamespaceName
   {};
   struct StructName
   {};
-  enum EnumName
+  enum class EnumName
   {
     ONE,
     TWO,
