@@ -2,6 +2,8 @@
 
 The goal of this project is to create a library encapsulating both classical and experimental techniques in computational geometry, with a focus on real-time performance and ease of use.
 
+[Pitch Deck](https://docs.google.com/presentation/d/1FOssrwILgcFnzoFG_aA9-h7bjptdw4Wtrp3-SIhfmjk/edit#slide=id.p)
+
 ## High-Level Todos
 - [ ] Build System (in progress)
   - [ ] Cross-platform CMake generation for Unix makefiles and MSBuild solutions
@@ -61,7 +63,8 @@ Build files will be generated under ProjectFiles/
 2. Create a feature branch (```git checkout -b feature/YourFeature```)
 3. Implement your feature (``` git commit -m "Implement feature" && git push origin feature/YourFeature```
 4. Ensure your work aligns with our [Coding Standards](https://github.com/2020wmarvil/glibby/blob/main/CodingStandard.md)
-5. Create a pull request
+5. Merge from main (```git merge upstream/main```)
+5. Create a pull request and complete code review process
 
 Commit messages should be in the imperative mood, e.g. "Implement 2D curve intersection solver". 
 
