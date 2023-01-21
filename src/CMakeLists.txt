@@ -11,6 +11,27 @@ foreach (_rendererFile ${GLIBBY_RENDERER_HEADERS})
     list(REMOVE_ITEM GLIBBY_HEADERS ${_rendererFile})
 endforeach()
 
+
+
+# adapted from https://stackoverflow.com/questions/31422680/how-to-set-visual-studio-filters-for-nested-sub-directory-using-cmake
+function(assign_source_group)
+    foreach(_source IN ITEMS ${ARGN})
+        if (IS_ABSOLUTE "${_source}")
+            file(RELATIVE_PATH _source_rel "${CMAKE_CURRENT_SOURCE_DIR}" "${_source}")
+        else()
+            set(_source_rel "${_source}")
+        endif()
+        get_filename_component(_source_path "${_source_rel}" PATH)
+
+        string(REPLACE "../include" "" _trimmed_source_path "${_source_path}") # trim away the relative path
+        string(REPLACE "/" "\\" _source_path_msvc "${_trimmed_source_path}")
+        source_group("${_source_path_msvc}" FILES "${_source}")
+    endforeach()
+endfunction(assign_source_group)
+
+assign_source_group(${GLIBBY_SOURCES})
+assign_source_group(${GLIBBY_HEADERS})
+
 add_library(${PROJECT_NAME} ${LIB_TYPE} ${GLIBBY_SOURCES} ${GLIBBY_HEADERS})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "glibby")
 
@@ -30,6 +51,9 @@ if (GLIBBY_BUILD_RENDERER)
     ELSE()
     	message(STATUS ${Vulkan_LIBRARY})
     ENDIF()
+
+    assign_source_group(${GLIBBY_RENDERER_SOURCES})
+    assign_source_group(${GLIBBY_RENDERER_HEADERS})
 
     add_library(${GLIBBY_RENDERER_NAME} ${LIB_TYPE} ${GLIBBY_RENDERER_SOURCES} ${GLIBBY_RENDERER_HEADERS})
     set_target_properties(${GLIBBY_RENDERER_NAME} PROPERTIES FOLDER "glibby")

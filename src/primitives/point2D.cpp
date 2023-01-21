@@ -1,6 +1,6 @@
-#include "glibby/glibby.h"
+#include "glibby/primitives/point2D.h"
 
-#include <math.h>
+#include <cmath>
 
 namespace glibby
 {
@@ -8,6 +8,6 @@ namespace glibby
 	{
 		float deltaX = p1.x - p2.x;
 		float deltaY = p1.y - p2.y;
-		return sqrt(deltaX * deltaX + deltaY * deltaY);
+		return std::sqrt(deltaX * deltaX + deltaY * deltaY);
 	}
 }

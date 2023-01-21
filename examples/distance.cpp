@@ -1,4 +1,4 @@
-#include "glibby/glibby.h"
+#include "glibby/primitives/point2D.h"
 
 #include <iostream>
 
