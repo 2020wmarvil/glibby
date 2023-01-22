@@ -75,22 +75,19 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DGLIBBY_BUILD_RENDERER=OFF -DGLIBBY_BUILD_EXAMPLES=OFF -DGLIBBY_BUILD_DOCS=ON 
       
-    - name: Build
+    - name: Build glibby_docs
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: cmake --build . --config $BUILD_TYPE --target glibby_docs
 
-    - name: Build Docs
+    - name: Execute Doxygen
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: |
         doxygen docs/Doxyfile
-        cp -TR docs $GITHUB_WORKSPACE
-        ls $GITHUB_WORKSPACE
-        ls $GITHUB_WORKSPACE/docs
-        ls $GITHUB_WORKSPACE/docs/html
+        cp -TR docs/html $GITHUB_WORKSPACE
 
-    - name: Delete gh-pages branch
+    - name: Create Fresh gh-pages Branch
       uses: dawidd6/action-delete-branch@v3
       with:
         github_token: ${{ secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT }}
