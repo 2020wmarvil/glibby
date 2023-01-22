@@ -58,6 +58,7 @@ jobs:
   build_docs:
     runs-on: ubuntu-latest
 
+    name: Build Docs and Deploy to Pages
     steps:    
     - uses: actions/checkout@v1
     
@@ -84,10 +85,10 @@ jobs:
       shell: bash
       run: |
         doxygen docs/Doxyfile
-        cp -TR docs ..
-        ls ..
-        ls ../docs
-        ls ../docs/html
+        cp -TR docs $GITHUB_WORKSPACE
+        ls $GITHUB_WORKSPACE
+        ls $GITHUB_WORKSPACE/docs
+        ls $GITHUB_WORKSPACE/docs/html
 
     - name: Delete gh-pages branch
       uses: dawidd6/action-delete-branch@v3
