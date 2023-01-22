@@ -53,14 +53,20 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: ctest -C $BUILD_TYPE
+  
   deploy_docs:
-    needs: build_and_test
-    runs-on: ubuntu-latest
+    runs-on: [ubuntu-latest]
 
-    - name: Deploy docs to GH Pages
-      uses: ActionwareIO/branch-push-action@action
-      with:
-        branch: gh-pages
-        files: |
-          ${{runner.workspace}}/build/docs/html
-        GITHUB_TOKEN: ${{secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT}}
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{runner.workspace}}/build
+
+##    needs: build_and_test
+##    runs-on: ubuntu-latest
+##
+##    - name: Deploy docs to GH Pages
+##      uses: ActionwareIO/branch-push-action@action
+##      with:
+##        branch: gh-pages
+##        files: |
+##          ${{runner.workspace}}/build/docs/html
+##        GITHUB_TOKEN: ${{secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT}}
