@@ -26,7 +26,7 @@ if (GLIBBY_BUILD_TESTS)
 endif()
 
 if (GLIBBY_BUILD_EXAMPLES)
-   add_subdirectory(examples)
+	add_subdirectory(examples)
 endif()
 
 if (DOXYGEN_FOUND AND GLIBBY_BUILD_DOCS)

@@ -36,9 +36,9 @@ add_library(${PROJECT_NAME} ${LIB_TYPE} ${GLIBBY_SOURCES} ${GLIBBY_HEADERS})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "glibby")
 
 if(MSVC)
-	target_compile_options(${PROJECT_NAME} PRIVATE /W4)
+    target_compile_options(${PROJECT_NAME} PRIVATE /W4)
 else()
-	target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:GLIBBY_DEBUG>)

@@ -23,5 +23,5 @@ namespace glibby
         GLFWwindow* window;
     };
 
-	uint32_t GetInstanceExtensionsCount();
+    uint32_t GetInstanceExtensionsCount();
 }
