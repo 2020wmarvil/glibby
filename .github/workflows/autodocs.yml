@@ -1,0 +1,79 @@
+name: Build and Deploy Docs
+
+on:
+  push:
+    branches: [main, actions-dev]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build_docs:
+    runs-on: ubuntu-latest
+
+    name: Build Docs and Deploy Pages
+    steps:    
+    - uses: actions/checkout@v2
+    
+    - name: Install Dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y doxygen
+        
+    - name: Create Fresh gh-pages Branch
+      uses: dawidd6/action-delete-branch@v3
+      with:
+        github_token: ${{ secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT }}
+        branches: gh-pages
+    
+    - name: Create fresh gh-pages branch
+      uses: peterjgrainger/action-create-branch@v2.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT }}
+      with:
+        branch: 'gh-pages'
+
+    - name: Checkout new gh-pages branch
+      uses: actions/checkout@v2
+      with:
+          ref: gh-pages
+          fetch-depth: 1
+
+    - name: Create build environment
+      run: cmake -E make_directory ${{runner.workspace}}/build
+
+    - name: Configure cmake
+      shell: bash
+      working-directory: ${{runner.workspace}}/build
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DGLIBBY_BUILD_RENDERER=OFF -DGLIBBY_BUILD_EXAMPLES=OFF -DGLIBBY_BUILD_DOCS=ON 
+      
+    - name: Build glibby_docs
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: cmake --build . --config $BUILD_TYPE --target glibby_docs
+
+    - name: Execute doxygen
+      shell: bash
+      run: |
+        doxygen ${{runner.workspace}}/build/docs/Doxyfile
+        cp -R ${{runner.workspace}}/build/docs/html $GITHUB_WORKSPACE/html
+
+    - name: Delete folders
+      run:   |
+        shopt -s extglob
+        rm -rf !(html)
+        mv html/ docs/
+      shell: bash
+      
+    - name: Add and commit changes to gh-pages branch
+      run: |
+        git config --local user.email 'action@github.com'
+        git config --local user.name 'GitHub Action'
+        git add .
+        git commit -m 'Compile website'
+
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT }}
+        branch: gh-pages
