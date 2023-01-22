@@ -66,6 +66,25 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y doxygen
+        
+    - name: Create Fresh gh-pages Branch
+      uses: dawidd6/action-delete-branch@v3
+      with:
+        github_token: ${{ secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT }}
+        branches: gh-pages
+    
+    - name: Create fresh gh-pages branch
+      uses: peterjgrainger/action-create-branch@v2.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT }}
+      with:
+        branch: 'gh-pages'
+
+    - name: Checkout new gh-pages branch
+      uses: actions/checkout@v2
+      with:
+          ref: gh-pages
+          fetch-depth: 1
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build
@@ -86,34 +105,26 @@ jobs:
         doxygen ${{runner.workspace}}/build/docs/Doxyfile
         cp -R ${{runner.workspace}}/build/docs/html $GITHUB_WORKSPACE/html
 
-    - name: Create Fresh gh-pages Branch
-      uses: dawidd6/action-delete-branch@v3
-      with:
-        github_token: ${{ secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT }}
-        branches: gh-pages
-    
-    - name: Create fresh gh-pages branch
-      uses: peterjgrainger/action-create-branch@v2.0.1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT }}
-      with:
-        branch: 'gh-pages'
-
-    - name: Checkout new gh-pages branch
-      uses: actions/checkout@v2
-      with:
-          ref: gh-pages
-          fetch-depth: 1
-
     - name: Delete folders
       run:   |
-        echo "look!"
-        ls
         shopt -s extglob
         rm -rf !(html)
         echo "look!"
         ls
       shell: bash
+      
+    - name: Add and commit changes to gh-pages branch
+      run: |
+        git config --local user.email 'action@github.com'
+        git config --local user.name 'GitHub Action'
+        git add .
+        git commit -m 'Compile website'
+
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT }}
+        branch: gh-pages
 
       ## run doxygen
       ## copy dox files to docs/html
