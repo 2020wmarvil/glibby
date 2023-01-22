@@ -61,7 +61,9 @@ jobs:
 
     name: Deploy docs to GH Pages
     steps:
-      run: cmake -E make_directory ${{runner.workspace}}/build
+
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{runner.workspace}}/test
 
 ##    - name: Deploy docs to GH Pages
 ##      uses: ActionwareIO/branch-push-action@action
