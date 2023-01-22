@@ -83,8 +83,8 @@ jobs:
     - name: Execute Doxygen
       shell: bash
       run: |
-        doxygen build/docs/Doxyfile
-        cp -TR build/docs/html $GITHUB_WORKSPACE
+        doxygen ${{runner.workspace}}/build/docs/Doxyfile
+        cp -TR ${{runner.workspace}}/build/docs/html $GITHUB_WORKSPACE
         echo "look!"
         ls
         echo "look!"
