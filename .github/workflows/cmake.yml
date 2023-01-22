@@ -1,15 +1,16 @@
-name: CMake
+name: CMake build, test, and generate docs
 
-on: [push, fork]
+on:
+  pull_request:
+  push:
+    branches: main
 
 env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
 
 jobs:
-  build:
-
-    runs-on: ${{ matrix.os }}
+  build_and_test:
+    runs-on: ${{matrix.os}}
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest] #, macOS-latest]
@@ -26,7 +27,7 @@ jobs:
       run:   |
          if [ "$RUNNER_OS" == "Linux" ]; then
               sudo apt update
-              sudo apt install -y libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev
+              sudo apt install -y doxygen libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev
          #elif [ "$RUNNER_OS" == "Windows" ]; then
          #     choco install important_windows_software
          #else
@@ -36,26 +37,31 @@ jobs:
       shell: bash
    
     - name: Create Build Environment
-      # Some projects don't allow in-source building, so create a separate build directory
-      # We'll use this as our working directory for all subsequent commands
       run: cmake -E make_directory ${{runner.workspace}}/build
 
     - name: Configure CMake
-      # Use a bash shell so we can use the same syntax for environment variable
-      # access regardless of the host operating system
       shell: bash
       working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE   
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DGLIBBY_BUILD_RENDERER=ON -DGLIBBY_BUILD_EXAMPLES=ON -DGLIBBY_BUILD_DOCS=ON 
       
     - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      # Execute the build. You can specify a specific target with "--target <NAME>"
       run: cmake --build . --config $BUILD_TYPE
 
     - name: Test
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      # Execute tests defined by the CMake configuration.  
-      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest -C $BUILD_TYPE
+
+  deploy_docs:
+    needs: build_and_test
+    runs-on: ubuntu-latest
+
+    - name: Deploy docs to GH Pages
+      uses: ActionwareIO/branch-push-action@action
+      with:
+        branch: gh-pages
+        files: |
+          ${{runner.workspace}}/build/docs/html
+        GITHUB_TOKEN: ${{secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT}}
