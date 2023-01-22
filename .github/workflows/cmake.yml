@@ -48,9 +48,7 @@ jobs:
     - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: |
-        cmake --build . --config $BUILD_TYPE
-        ls
+      run: cmake --build . --config $BUILD_TYPE
 
     - name: Test
       working-directory: ${{runner.workspace}}/build
@@ -62,6 +60,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Build Docs
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: |
+        doxygen docs/Doxyfile
+        cp -TR docs ..
+        ls ..
+        ls ../docs
+        ls ../docs/html
+
     - name: Delete gh-pages branch
       uses: dawidd6/action-delete-branch@v3
       with:
