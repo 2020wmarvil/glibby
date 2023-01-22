@@ -109,8 +109,7 @@ jobs:
       run:   |
         shopt -s extglob
         rm -rf !(html)
-        echo "look!"
-        ls
+        mv html/ docs/
       shell: bash
       
     - name: Add and commit changes to gh-pages branch
