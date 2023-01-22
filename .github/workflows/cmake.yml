@@ -11,8 +11,13 @@ env:
 jobs:
   build_and_test:
     name: My first job
+    steps:
+    - uses: actions/checkout@v1
+
   build_and_test2:
     name: My second job
+    steps:
+    - uses: actions/checkout@v1
 
 ##    runs-on: ${{matrix.os}}
 ##    strategy:
