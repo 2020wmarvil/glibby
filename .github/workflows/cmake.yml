@@ -3,7 +3,7 @@ name: CMake build, test, and generate docs
 on:
   pull_request:
   push:
-    branches: main
+    branches: [main, actions-dev]
 
 env:
   BUILD_TYPE: Release
@@ -53,7 +53,6 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: ctest -C $BUILD_TYPE
-
   deploy_docs:
     needs: build_and_test
     runs-on: ubuntu-latest
