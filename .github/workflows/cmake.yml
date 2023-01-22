@@ -15,9 +15,47 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest] #, macOS-latest]
 
-    name: My first job
     steps:
+    - name: Checkout repo
     - uses: actions/checkout@v1
+
+    - name: Setup Vulkan SDK
+    - uses: humbletim/setup-vulkan-sdk@v1.2.0
+      with:
+        vulkan-query-version: 1.3.204.0
+        vulkan-components: Vulkan-Headers, Vulkan-Loader
+        vulkan-use-cache: true 
+    
+    - name: Install Dependencies
+      run:   |
+         if [ "$RUNNER_OS" == "Linux" ]; then
+              sudo apt update
+              sudo apt install -y doxygen libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev
+         #elif [ "$RUNNER_OS" == "Windows" ]; then
+         #     choco install important_windows_software
+         #else
+         #     echo "$RUNNER_OS not supported"
+         #     exit 1
+         fi
+      shell: bash
+   
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{runner.workspace}}/build
+
+    - name: Configure CMake
+      shell: bash
+      working-directory: ${{runner.workspace}}/build
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DGLIBBY_BUILD_RENDERER=ON -DGLIBBY_BUILD_EXAMPLES=ON -DGLIBBY_BUILD_DOCS=ON 
+      
+    - name: Build
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: cmake --build . --config $BUILD_TYPE
+
+    - name: Test
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: ctest -C $BUILD_TYPE
 
   build_and_test2:
     needs: build_and_test
@@ -27,59 +65,6 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-##
-##    steps:
-##    - uses: actions/checkout@v1
-##    - uses: humbletim/setup-vulkan-sdk@v1.2.0
-##      with:
-##        vulkan-query-version: 1.3.204.0
-##        vulkan-components: Vulkan-Headers, Vulkan-Loader
-##        vulkan-use-cache: true 
-##    
-##    - name:  Install dependencies
-##      run:   |
-##         if [ "$RUNNER_OS" == "Linux" ]; then
-##              sudo apt update
-##              sudo apt install -y doxygen libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev
-##         #elif [ "$RUNNER_OS" == "Windows" ]; then
-##         #     choco install important_windows_software
-##         #else
-##         #     echo "$RUNNER_OS not supported"
-##         #     exit 1
-##         fi
-##      shell: bash
-##   
-##    - name: Create Build Environment
-##      run: cmake -E make_directory ${{runner.workspace}}/build
-##
-##    - name: Configure CMake
-##      shell: bash
-##      working-directory: ${{runner.workspace}}/build
-##      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DGLIBBY_BUILD_RENDERER=ON -DGLIBBY_BUILD_EXAMPLES=ON -DGLIBBY_BUILD_DOCS=ON 
-##      
-##    - name: Build
-##      working-directory: ${{runner.workspace}}/build
-##      shell: bash
-##      run: cmake --build . --config $BUILD_TYPE
-##
-##    - name: Test
-##      working-directory: ${{runner.workspace}}/build
-##      shell: bash
-##      run: ctest -C $BUILD_TYPE
-##  
-####  build_and_test:
-####    runs-on: ${{matrix.os}}
-####    strategy:
-####      matrix:
-####        os: [windows-latest, ubuntu-latest] #, macOS-latest]
-####
-####    - name: Create Build Environment
-####      run: cmake -E make_directory ${{runner.workspace}}/build
-##
-##
-####    needs: build_and_test
-####    runs-on: ubuntu-latest
-####
 ####    - name: Deploy docs to GH Pages
 ####      uses: ActionwareIO/branch-push-action@action
 ####      with:
