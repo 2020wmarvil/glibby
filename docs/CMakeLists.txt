@@ -39,5 +39,5 @@ add_custom_command(OUTPUT "html/index.html"
                    COMMENT "Generating HTML documentation"
                    VERBATIM)
 
-add_custom_target(docs ALL SOURCES "html/index.html")
-set_target_properties(docs PROPERTIES FOLDER "glibby")
+add_custom_target(glibby_docs ALL SOURCES "html/index.html")
+set_target_properties(glibby_docs PROPERTIES FOLDER "glibby")

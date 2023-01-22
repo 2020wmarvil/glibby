@@ -26,15 +26,15 @@ jobs:
     
     - name: Install Dependencies
       run:   |
-         if [ "$RUNNER_OS" == "Linux" ]; then
-              sudo apt update
-              sudo apt install -y doxygen libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev
-         #elif [ "$RUNNER_OS" == "Windows" ]; then
-         #     choco install important_windows_software
-         #else
-         #     echo "$RUNNER_OS not supported"
-         #     exit 1
-         fi
+        if [ "$RUNNER_OS" == "Linux" ]; then
+             sudo apt update
+             sudo apt install -y libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev
+        #elif [ "$RUNNER_OS" == "Windows" ]; then
+        #     choco install important_windows_software
+        #else
+        #     echo "$RUNNER_OS not supported"
+        #     exit 1
+        fi
       shell: bash
    
     - name: Create Build Environment
@@ -43,7 +43,7 @@ jobs:
     - name: Configure CMake
       shell: bash
       working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DGLIBBY_BUILD_RENDERER=ON -DGLIBBY_BUILD_EXAMPLES=ON -DGLIBBY_BUILD_DOCS=ON 
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DGLIBBY_BUILD_RENDERER=ON -DGLIBBY_BUILD_EXAMPLES=ON -DGLIBBY_BUILD_DOCS=OFF 
       
     - name: Build
       working-directory: ${{runner.workspace}}/build
@@ -58,6 +58,24 @@ jobs:
   build_and_test2:
     needs: build_and_test
     runs-on: ubuntu-latest
+
+    - name: Install Dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y doxygen
+
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{runner.workspace}}/build
+
+    - name: Configure CMake
+      shell: bash
+      working-directory: ${{runner.workspace}}/build
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DGLIBBY_BUILD_RENDERER=OFF -DGLIBBY_BUILD_EXAMPLES=OFF -DGLIBBY_BUILD_DOCS=ON 
+      
+    - name: Build
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: cmake --build . --config $BUILD_TYPE --target glibby_docs
 
     steps:
     - name: Build Docs
@@ -89,10 +107,11 @@ jobs:
           ref: gh-pages
           fetch-depth: 1
 
-    - name: Install Dependencies
+    - name: Delete folders
       run:   |
          ls
          find . ! -./docs u ! -./docs p -maxdepth 1 -type f -delete
+         ls
       shell: bash
 
       ## run doxygen
