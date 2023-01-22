@@ -84,10 +84,11 @@ jobs:
       shell: bash
       run: |
         doxygen ${{runner.workspace}}/build/docs/Doxyfile
-        cp -TR ${{runner.workspace}}/build/docs/html $GITHUB_WORKSPACE
+        cp -R ${{runner.workspace}}/build/docs/html $GITHUB_WORKSPACE/html
         echo "look!"
         ls
         echo "look!"
+        ls ${{runner.workspace}}/html
 
     - name: Create Fresh gh-pages Branch
       uses: dawidd6/action-delete-branch@v3
@@ -110,9 +111,12 @@ jobs:
 
     - name: Delete folders
       run:   |
-         ls docs
-         find . ! -./docs u ! -./docs p -maxdepth 1 -type f -delete
-         ls
+        echo "look!"
+        ls
+        shopt -s extglob
+        rm -rf !(html)
+        echo "look!"
+        ls
       shell: bash
 
       ## run doxygen
