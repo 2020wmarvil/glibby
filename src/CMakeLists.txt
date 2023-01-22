@@ -11,8 +11,6 @@ foreach (_rendererFile ${GLIBBY_RENDERER_HEADERS})
     list(REMOVE_ITEM GLIBBY_HEADERS ${_rendererFile})
 endforeach()
 
-
-
 # adapted from https://stackoverflow.com/questions/31422680/how-to-set-visual-studio-filters-for-nested-sub-directory-using-cmake
 function(assign_source_group)
     foreach(_source IN ITEMS ${ARGN})

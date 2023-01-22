@@ -17,6 +17,11 @@ set(GLIBBY_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
 set(GLIBBY_RENDERER_NAME "glibby_renderer")
 set(GLIBBY_RENDERER_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include/glibby/renderer)
 
+if (GLIBBY_BUILD_DOCS)
+    set(DOXYGEN_SKIP_DOT TRUE)
+    find_package(Doxygen)
+endif()
+
 add_subdirectory(deps)
 add_subdirectory(src)
 
