@@ -20,7 +20,8 @@ jobs:
     - name:  Install dependencies
       run:   |
          if [ "$RUNNER_OS" == "Linux" ]; then
-              sudo apt install -y libxrandr-dev libxi-dev
+              sudo apt update
+              sudo apt install -y libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
          #elif [ "$RUNNER_OS" == "Windows" ]; then
          #     choco install important_windows_software
          #else
