@@ -17,8 +17,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-
-    - name: Setup Vulkan SDK
     - uses: humbletim/setup-vulkan-sdk@v1.2.0
       with:
         vulkan-query-version: 1.3.204.0
@@ -56,18 +54,18 @@ jobs:
       shell: bash
       run: ctest -C $BUILD_TYPE
 
-  build_and_test2:
+  deploy_docs:
     needs: build_and_test
     runs-on: ubuntu-latest
 
-    name: My second job
-    steps:
-    - uses: actions/checkout@v1
+##    name: Deploy Docs to GH Pages
+##    steps:
+##    - uses: actions/checkout@v1
 
-####    - name: Deploy docs to GH Pages
-####      uses: ActionwareIO/branch-push-action@action
-####      with:
-####        branch: gh-pages
-####        files: |
-####          ${{runner.workspace}}/build/docs/html
-####        GITHUB_TOKEN: ${{secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT}}
+    - name: Deploy Docs to GH Pages
+      uses: ActionwareIO/branch-push-action@action
+      with:
+        branch: gh-pages
+        files: |
+          ${{runner.workspace}}/build/docs/html
+        GITHUB_TOKEN: ${{secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT}}
