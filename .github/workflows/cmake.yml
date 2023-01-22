@@ -15,6 +15,7 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest] #, macOS-latest]
 
+    name: Build and Test
     steps:
     - uses: actions/checkout@v1
     - uses: humbletim/setup-vulkan-sdk@v1.2.0
@@ -58,10 +59,14 @@ jobs:
     needs: build_and_test
     runs-on: ubuntu-latest
 
-    - name: Deploy docs to GH Pages
-      uses: ActionwareIO/branch-push-action@action
-      with:
-        branch: gh-pages
-        files: |
-          ${{runner.workspace}}/build/docs/html
-        GITHUB_TOKEN: ${{secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT}}
+    name: Deploy docs to GH Pages
+    steps:
+      run: cmake -E make_directory ${{runner.workspace}}/build
+
+##    - name: Deploy docs to GH Pages
+##      uses: ActionwareIO/branch-push-action@action
+##      with:
+##        branch: gh-pages
+##        files: |
+##          ${{runner.workspace}}/build/docs/html
+##        GITHUB_TOKEN: ${{secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT}}
