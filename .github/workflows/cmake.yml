@@ -1,4 +1,4 @@
-name: CMake build, test, and generate docs
+name: Build and Test with CMake
 
 on:
   pull_request:
@@ -10,10 +10,10 @@ env:
 
 jobs:
   build_and_test:
-    runs-on: [ubuntu-latest] ##${{matrix.os}}
-    ##strategy:
-    ##  matrix:
-    ##    os: [windows-latest, ubuntu-latest] #, macOS-latest]
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest] #, macOS-latest]
 
     name: Build and Test
     steps:
@@ -24,7 +24,8 @@ jobs:
         vulkan-components: Vulkan-Headers, Vulkan-Loader
         vulkan-use-cache: true 
     
-    - name: Install Dependencies
+    - name: Install dependencies
+      shell: bash
       run:   |
         if [ "$RUNNER_OS" == "Linux" ]; then
              sudo apt update
@@ -35,12 +36,11 @@ jobs:
         #     echo "$RUNNER_OS not supported"
         #     exit 1
         fi
-      shell: bash
    
-    - name: Create Build Environment
+    - name: Create build environment
       run: cmake -E make_directory ${{runner.workspace}}/build
 
-    - name: Configure CMake
+    - name: Configure cmake
       shell: bash
       working-directory: ${{runner.workspace}}/build
       run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DGLIBBY_BUILD_RENDERER=ON -DGLIBBY_BUILD_EXAMPLES=ON -DGLIBBY_BUILD_DOCS=OFF 
@@ -50,81 +50,7 @@ jobs:
       shell: bash
       run: cmake --build . --config $BUILD_TYPE
 
-    - name: Test
+    - name: Execute test suite
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: ctest -C $BUILD_TYPE
-
-  build_docs:
-    runs-on: ubuntu-latest
-
-    name: Build Docs and Deploy to Pages
-    steps:    
-    - uses: actions/checkout@v2
-    
-    - name: Install Dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y doxygen
-        
-    - name: Create Fresh gh-pages Branch
-      uses: dawidd6/action-delete-branch@v3
-      with:
-        github_token: ${{ secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT }}
-        branches: gh-pages
-    
-    - name: Create fresh gh-pages branch
-      uses: peterjgrainger/action-create-branch@v2.0.1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT }}
-      with:
-        branch: 'gh-pages'
-
-    - name: Checkout new gh-pages branch
-      uses: actions/checkout@v2
-      with:
-          ref: gh-pages
-          fetch-depth: 1
-
-    - name: Create Build Environment
-      run: cmake -E make_directory ${{runner.workspace}}/build
-
-    - name: Configure CMake
-      shell: bash
-      working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DGLIBBY_BUILD_RENDERER=OFF -DGLIBBY_BUILD_EXAMPLES=OFF -DGLIBBY_BUILD_DOCS=ON 
-      
-    - name: Build glibby_docs
-      working-directory: ${{runner.workspace}}/build
-      shell: bash
-      run: cmake --build . --config $BUILD_TYPE --target glibby_docs
-
-    - name: Execute Doxygen
-      shell: bash
-      run: |
-        doxygen ${{runner.workspace}}/build/docs/Doxyfile
-        cp -R ${{runner.workspace}}/build/docs/html $GITHUB_WORKSPACE/html
-
-    - name: Delete folders
-      run:   |
-        shopt -s extglob
-        rm -rf !(html)
-        mv html/ docs/
-      shell: bash
-      
-    - name: Add and commit changes to gh-pages branch
-      run: |
-        git config --local user.email 'action@github.com'
-        git config --local user.name 'GitHub Action'
-        git add .
-        git commit -m 'Compile website'
-
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT }}
-        branch: gh-pages
-
-      ## run doxygen
-      ## copy dox files to docs/html
-      ## delete everything except docs
