@@ -30,7 +30,7 @@ The goal of this project is to create a library encapsulating both classical and
   - [ ] Python, C#, Rust, ...
 - [ ] Doxygen
 
-## Usage
+## Usage (this is out of date)
 
 For now, you will need the Vulkan SDK installed in order to build the demos/tests.
 
@@ -56,9 +56,9 @@ chmod +x ./setup_unix.sh ./build_unix.sh
 
 Build files will be generated under ProjectFiles/
 
-## Demos (todo)
+## Examples (todo)
 
-## Contributing
+## Contributing (this is out of date)
 
 1. Fork the project
 2. Create a feature branch (```git checkout -b feature/YourFeature```)
