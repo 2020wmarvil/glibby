@@ -9,13 +9,16 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-  deploy_docs:
-    runs-on: [ubuntu-latest]
+  build_and_test:
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest] #, macOS-latest]
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build
 
-  build_and_test:
+  build_and_test2:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
