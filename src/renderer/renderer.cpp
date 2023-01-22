@@ -5,11 +5,11 @@
 
 namespace glibby
 {
-    static void KeyCallback(GLFWwindow* Window, int Key, int Scancode, int Action, int Mods)
+    static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
     {
-        if (Key == GLFW_KEY_ESCAPE && Action == GLFW_PRESS)
+        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         {
-            glfwSetWindowShouldClose(Window, GLFW_TRUE);
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
         }
     }
 
