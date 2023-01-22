@@ -81,11 +81,13 @@ jobs:
       run: cmake --build . --config $BUILD_TYPE --target glibby_docs
 
     - name: Execute Doxygen
-      working-directory: ${{runner.workspace}}/build
       shell: bash
       run: |
-        doxygen docs/Doxyfile
-        cp -TR docs/html $GITHUB_WORKSPACE
+        doxygen build/docs/Doxyfile
+        cp -TR build/docs/html $GITHUB_WORKSPACE
+        echo "look!"
+        ls
+        echo "look!"
 
     - name: Create Fresh gh-pages Branch
       uses: dawidd6/action-delete-branch@v3
@@ -108,7 +110,7 @@ jobs:
 
     - name: Delete folders
       run:   |
-         ls
+         ls docs
          find . ! -./docs u ! -./docs p -maxdepth 1 -type f -delete
          ls
       shell: bash
