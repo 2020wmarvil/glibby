@@ -54,18 +54,18 @@ jobs:
       shell: bash
       run: ctest -C $BUILD_TYPE
 
-  deploy_docs:
+  build_and_test2:
     needs: build_and_test
     runs-on: ubuntu-latest
 
-##    name: Deploy Docs to GH Pages
-##    steps:
-##    - uses: actions/checkout@v1
+    name: My second job
+    steps:
+    - uses: actions/checkout@v1
 
-    - name: Deploy Docs to GH Pages
-      uses: ActionwareIO/branch-push-action@action
-      with:
-        branch: gh-pages
-        files: |
-          ${{runner.workspace}}/build/docs/html
-        GITHUB_TOKEN: ${{secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT}}
+##    - name: Deploy docs to GH Pages
+##      uses: ActionwareIO/branch-push-action@action
+##      with:
+##        branch: gh-pages
+##        files: |
+##          ${{runner.workspace}}/build/docs/html
+##        GITHUB_TOKEN: ${{secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT}}
