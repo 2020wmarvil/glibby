@@ -85,10 +85,6 @@ jobs:
       run: |
         doxygen ${{runner.workspace}}/build/docs/Doxyfile
         cp -R ${{runner.workspace}}/build/docs/html $GITHUB_WORKSPACE/html
-        echo "look!"
-        ls
-        echo "look!"
-        ls ${{runner.workspace}}/html
 
     - name: Create Fresh gh-pages Branch
       uses: dawidd6/action-delete-branch@v3
