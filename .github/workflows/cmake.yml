@@ -15,9 +15,20 @@ jobs:
         os: [windows-latest, ubuntu-latest] #, macOS-latest]
 
     steps:
-    - uses: actions/checkout@v1     
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v1
     
+    - name:  Install dependencies
+      run:   |
+         if [ "$RUNNER_OS" == "Linux" ]; then
+              apt install libxrandr-dev libxi-dev
+         #elif [ "$RUNNER_OS" == "Windows" ]; then
+         #     choco install important_windows_software
+         #else
+         #     echo "$RUNNER_OS not supported"
+         #     exit 1
+         fi
+      shell: bash
+   
     - name: Create Build Environment
       # Some projects don't allow in-source building, so create a separate build directory
       # We'll use this as our working directory for all subsequent commands
