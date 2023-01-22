@@ -10,10 +10,10 @@ env:
 
 jobs:
   build_and_test:
-    runs-on: ${{matrix.os}}
-    strategy:
-      matrix:
-        os: [windows-latest, ubuntu-latest] #, macOS-latest]
+    runs-on: [ubuntu-latest] ##${{matrix.os}}
+    ##strategy:
+    ##  matrix:
+    ##    os: [windows-latest, ubuntu-latest] #, macOS-latest]
 
     name: Build and Test
     steps:
