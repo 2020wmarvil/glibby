@@ -12,32 +12,36 @@ jobs:
     runs-on: ubuntu-latest
 
     name: Build Docs and Deploy Pages
-    steps:    
+    steps:
     - uses: actions/checkout@v2
     
-    - name: Install Dependencies
+    - name: Install dependencies
       run: |
         sudo apt update
         sudo apt install -y doxygen
         
-    - name: Create Fresh gh-pages Branch
+    - name: Delete existing gh-pages branch
       uses: dawidd6/action-delete-branch@v3
       with:
         github_token: ${{ secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT }}
         branches: gh-pages
-    
+        
     - name: Create fresh gh-pages branch
-      uses: peterjgrainger/action-create-branch@v2.0.1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT }}
-      with:
-        branch: 'gh-pages'
+      run: |
+        git checkout -b gh-pages
+    
+    #- name: Create fresh gh-pages branch
+    #  uses: peterjgrainger/action-create-branch@v2.0.1
+    #  env:
+    #    GITHUB_TOKEN: ${{ secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT }}
+    #  with:
+    #    branch: 'gh-pages'
 
-    - name: Checkout new gh-pages branch
-      uses: actions/checkout@v2
-      with:
-          ref: gh-pages
-          fetch-depth: 1
+    #- name: Checkout new gh-pages branch
+    #  uses: actions/checkout@v2
+    #  with:
+    #      ref: gh-pages
+    #      fetch-depth: 1
 
     - name: Create build environment
       run: cmake -E make_directory ${{runner.workspace}}/build
