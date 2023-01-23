@@ -20,14 +20,14 @@ jobs:
         sudo apt update
         sudo apt install -y doxygen
         
-    - name: Delete existing gh-pages branch
-      uses: dawidd6/action-delete-branch@v3
-      with:
-        github_token: ${{ secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT }}
-        branches: gh-pages
+    ##- name: Delete existing gh-pages branch
+    ##  uses: dawidd6/action-delete-branch@v3
+    ##  with:
+    ##    github_token: ${{ secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT }}
+    ##    branches: gh-pages
         
-    - name: Create fresh gh-pages branch
-      run: git checkout -b gh-pages
+    ##- name: Create fresh gh-pages branch
+    ##  run: git checkout -b gh-pages
 
     - name: Create build environment
       run: cmake -E make_directory ${{runner.workspace}}/build
