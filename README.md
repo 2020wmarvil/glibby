@@ -8,7 +8,7 @@
 
 The goal of this project is to create a C++ library encapsulating both classical and experimental techniques in computational geometry, with a focus on real-time performance and ease of use.
 
-Visit our [documentation pages](https://2020wmarvil.github.io/glibby/docs) for more information on how to build and use glibby in your projects. 
+Visit our [documentation pages](https://2020wmarvil.github.io/glibby) for more information on how to build and use glibby in your projects. 
 
 [Spring 2023 Pitch Deck.](https://docs.google.com/presentation/d/1FOssrwILgcFnzoFG_aA9-h7bjptdw4Wtrp3-SIhfmjk/edit#slide=id.p)
 
