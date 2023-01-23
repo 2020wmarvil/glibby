@@ -82,7 +82,8 @@ Our project generates several build targets, which you can choose from here:
 
 If you would like to build from Visual Studio instead, you can select the build target by right-clicking on the desired target and selecting 'Set as Startup Project'.
 
-images go here!
+<img src="https://github.com/2020wmarvil/glibby/blob/main/docs/images/VS_SetAsStartupProj1.png?raw=true" width="250">
+<img src="https://github.com/2020wmarvil/glibby/blob/main/docs/images/VS_SetAsStartupProj2.png?raw=true" width="250">
 
 ## Adding New Files
 
