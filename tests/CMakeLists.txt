@@ -1,16 +1,17 @@
-Include(FetchContent)
+include(FetchContent)
 
 FetchContent_Declare(
   Catch2
   GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG        v3.0.1 # or a later release
+  GIT_TAG v3.0.1 # or a later release
 )
 
 FetchContent_MakeAvailable(Catch2)
 
 set_target_properties(Catch2;Catch2WithMain PROPERTIES FOLDER "Catch2")
 
-file (GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS
+     ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
 add_executable(glibby_test_suite ${TEST_SOURCES})
 set_target_properties(glibby_test_suite PROPERTIES FOLDER "glibby/tests")
