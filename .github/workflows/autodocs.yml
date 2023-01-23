@@ -55,18 +55,18 @@ jobs:
         rm -rf !(html)
         mv html/ docs/
       
-    - name: Add and commit changes to gh-pages branch
-      run: |
-        git config --local user.email 'action@github.com'
-        git config --local user.name 'GitHub Action'
-        git add .
-        git commit -m 'Compile website'
+    ##- name: Add and commit changes to gh-pages branch
+    ##  run: |
+    ##    git config --local user.email 'action@github.com'
+    ##    git config --local user.name 'GitHub Action'
+    ##    git add .
+    ##    git commit -m 'Compile website'
 
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT }}
-        branch: gh-pages
+    ##- name: Push changes
+    ##  uses: ad-m/github-push-action@master
+    ##  with:
+    ##    github_token: ${{ secrets.GLIBBY_ACCESS_TOKEN_PAGES_DEPLOYMENT }}
+    ##    branch: gh-pages
 
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
