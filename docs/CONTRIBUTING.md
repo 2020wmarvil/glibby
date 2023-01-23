@@ -24,15 +24,19 @@ Install the [Vulkan SDK](https://www.lunarg.com/vulkan-sdk/), cmake, and doxygen
 #### Windows (using [Chocolatey](https://chocolatey.org/))
 
 ```
-choco install cmake
-choco install doxygen
+> choco install cmake doxygen
 ```
 
 #### Unix
 
 ```
-sudo apt install cmake
-sudo apt install doxygen
+$ sudo apt install cmake doxygen
+```
+
+Check that you have at least cmake version 3.20. If not, follow [this process](https://askubuntu.com/questions/610291/how-to-install-cmake-3-2-on-ubuntu) to install it.
+
+```
+$ cmake --version
 ```
 
 ### Creating a Feature
@@ -50,9 +54,9 @@ Commit messages should be in the imperative mood, e.g. "Implement 2D curve inter
 ### Generating the Project
 
 ```
-cmake -E make_directory build
-cd build
-cmake .. -G <generator> -DCMAKE_BUILD_TYPE=Debug -DGLIBBY_BUILD_RENDERER=ON -DGLIBBY_BUILD_EXAMPLES=ON -DGLIBBY_BUILD_DOCS=ON
+$ cmake -E make_directory build
+$ cd build
+$ cmake .. -G <generator> -DCMAKE_BUILD_TYPE=Debug -DGLIBBY_BUILD_RENDERER=ON -DGLIBBY_BUILD_EXAMPLES=ON -DGLIBBY_BUILD_DOCS=ON
 ```
 
 Common generators are ```unix makefiles``` for Unix or ```"Visual Studio 16 2019```/```Visual Studio 17 2022``` for Windows. If you're using Windows, this will generate an MSBuild solution that you can open in an IDE of your choice (Visual Studio, Rider, CLion, etc.).
@@ -66,9 +70,9 @@ Building the project on its own will not do much for you, since it exports as a 
 #### From the Terminal/Powershell
 
 ```
-cd build
-cmake --build . --config Debug --target <target>
-./<path_to_target>/target
+$ cd build
+$ cmake --build . --config Debug --target <target>
+$ ./<path_to_target>/target
 ```
 
 Our project generates several build targets, which you can choose from here:
@@ -143,12 +147,12 @@ TEST_CASE("Point2D distance", "[!benchmark][primitive][point2D]") {
 
 To execute all tests:
 ```
-./glibby_test_suite --order rand --warn NoAssertions
+$ ./glibby_test_suite --order rand --warn NoAssertions
 ```
 
 To execute by name or tag with options:
 ```
-./glibby_test_suite <test_name> <[tag1][tag2][...]> <options>
+$ ./glibby_test_suite <test_name> <[tag1][tag2][...]> <options>
 ```
 
 Helpful options are:
@@ -158,12 +162,12 @@ Helpful options are:
 
 Runs the test named Point2D distance:
 ```
-./glibby_test_suite "Point2D distance" --skip-benchmarks
+$ ./glibby_test_suite "Point2D distance" --skip-benchmarks
 ```
 
 Runs all tests tagged primitive and point2D:
 ```
-./glibby_test_suite [primitive][point2D] --skip-benchmarks
+$ ./glibby_test_suite [primitive][point2D] --skip-benchmarks
 ```
 
 Don't forget to re-run the CMake generator step.
