@@ -11,7 +11,7 @@
 - Documentation files go in ```docs/```
 - Scripts go in ```scripts/```
 
-File hierarchy in ```src/``` and ```include/glibby``` should be mirrored. 
+File hierarchy in ```src/``` and ```include/glibby/``` should be mirrored. 
 
 ## Pull Request Process
 
