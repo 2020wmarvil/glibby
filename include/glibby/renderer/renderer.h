@@ -1,27 +1,23 @@
 #pragma once
 
+#include "window.h"
+
+#include <memory>
 #include <stdint.h>
 
-struct GLFWwindow;
-
-namespace glibby
-{
-    class Window 
+namespace glibby {
+    class Renderer
     {
     public:
-        Window(int width, int height, const char* name);
-        virtual ~Window();
+        Renderer();
+        virtual ~Renderer();
     
-        Window(Window const&) = delete;
-        Window& operator=(Window other) = delete;
-    
-        void Run();
-    
-        static void Init();
-        static void Terminate();
-    private:
-        GLFWwindow* window;
-    };
+        Renderer(Renderer const&) = delete;
+        Renderer& operator=(Renderer other) = delete;
 
-    uint32_t GetInstanceExtensionsCount();
+        void Run();
+
+    private:
+        std::unique_ptr<Window> window;
+    };
 }
