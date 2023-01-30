@@ -1,371 +1,297 @@
 #pragma once
 
+#include "glibby/primitives/point2D.h"
+
 #include <iostream>
 
 namespace glibby
 {
-	/* TODO:
-	 * vec2, vec3, vec4
-	 * vec2d, vec3d, vec4d
-	 * vector swizzling
-	 * mat2x2, mat3x3, mat4x4, matMxN
-	 * quaternion
-	 * complex number
-	 * simd/intrinsics
-	 * 
-	 */
-
 	#define FLT_NEAR_ZERO 0.0001f
 
-	struct Vec2
+	template <typename T, size_t n>
+	struct Vec
 	{
-		union
-		{
-			struct
-			{
-				float x;
-				float y;
-			};
+		T data[n];
 
-			struct
-			{
-				float r;
-				float g;
-			};
+		Vec() { memset(&data, 0, n * sizeof(T)); }
+		explicit Vec(T all) { for (size_t i = 0; i < n; i++) data[i] = all; }
+		explicit Vec(T arr[n]) { for (size_t i = 0; i < n; i++) data[i] = arr[i]; }
 
-			struct
-			{
-				float u;
-				float v;
-			};
-		};
-
-		Vec2() : x(0.0f), y(0.0f) {}
-		Vec2(float xy) : x(xy), y(xy) {}
-		Vec2(float x, float y) : x(x), y(y) {}
-
-		Vec2 operator-()
-		{
-			return Vec2(-x, -y);
-		}
-
-		Vec2& operator+=(const Vec2& rhs)
-		{
-			this->x += rhs.x;
-			this->y += rhs.y;
-			return *this;
-		}
-
-		Vec2& operator-=(const Vec2& rhs)
-		{
-			this->x -= rhs.x;
-			this->y -= rhs.y;
-			return *this;
-		}
-
-		Vec2& operator*=(float rhs)
-		{
-			this->x *= rhs;
-			this->y *= rhs;
-			return *this;
-		}
-
-		Vec2& operator/=(float rhs)
-		{
-			this->x /= rhs;
-			this->y /= rhs;
-			return *this;
-		}
-
-		float Magnitude()
-		{
-			return std::sqrt(this->Dot(*this));
-		}
-
-		float SquareMagnitude()
-		{
-			return this->Dot(*this);
-		}
-
-		Vec2 Normalized()
-		{
-			float magnitude = this->Magnitude();
-
-			if (magnitude == 0)
-			{
-				// TODO: error/warning
-				return Vec2(0.0f);
-			}
-
-			return *this / magnitude;
-		}
-
-		void Normalize()
-		{
-			float magnitude = this->Magnitude();
-
-			if (magnitude == 0)
-			{
-				// TODO: error/warning
-				*this = Vec2(0.0f);
-			}
-			else
-			{
-				*this /= magnitude;
-			}
-		}
-
-		float Dot(const Vec2& rhs)
-		{
-			return this->x * rhs.x + this->y * rhs.y;
-		}
-
-		Vec3 Cross(const Vec2& rhs)
-		{
-			return Vec3(0.0f, 0.0f, this->x * rhs.y - this->y * rhs.x);
-		}
+		T& operator[](size_t idx) { return data[idx]; }
+		T  operator[](size_t idx) const { return data[idx]; }
 	};
 
-	inline Vec2 operator+(Vec2 lhs, const Vec2& rhs)
+	typedef Vec<float, 2> Vec2;
+	typedef Vec<float, 3> Vec3;
+	typedef Vec<float, 4> Vec4;
+	typedef Vec<double, 2> Vec2d;
+	typedef Vec<double, 3> Vec3d;
+	typedef Vec<double, 4> Vec4d;
+	typedef Vec<uint32_t, 2> Vec2i;
+	typedef Vec<uint32_t, 3> Vec3i;
+	typedef Vec<uint32_t, 4> Vec4i;
+
+	template <typename T>
+	struct Vec<T, 2> {
+		union {
+			T data[2];
+			struct { T x, y; };
+			struct { T r, g; };
+		};
+
+		Vec() : x(0), y(0) {}
+		explicit Vec(T all) : x(all), y(all) {}
+		Vec(T x, T y) : x(x), y(y) {}
+		Vec(const Vec3& other) : x(other.x), y(other.y) {}
+		Vec(const Vec4& other) : x(other.x), y(other.y) {}
+		Vec(const Point2D& other) : x(other.x), y(other.y) {}
+		Vec(const Point3D& other) : x(other.x), y(other.y) {}
+	};
+
+	template <typename T>
+	struct Vec<T, 3> {
+		union {
+			T data[3];
+			struct { T x, y, z; };
+			struct { T r, g, b; };
+			Vec<T, 2> xy;
+			Vec<T, 2> rg;
+		};
+
+		Vec() : x(0), y(0), z(0) {}
+		explicit Vec(T all) : x(all), y(all), z(all) {}
+		Vec(T x, T y, T z) : x(x), y(y), z(z) {}
+		Vec(const Vec2& other) : x(other.x), y(other.y), z(0.0f) {}
+		Vec(const Vec4& other) : x(other.x), y(other.y), z(other.z) {}
+		Vec(const Point2D& other) : x(other.x), y(other.y), z(0.0f) {}
+		Vec(const Point3D& other) : x(other.x), y(other.y), z(other.z) {}
+	};
+
+	template <typename T>
+	struct Vec<T, 4> {
+		union {
+			T data[4];
+			struct { T x, y, z, w; };
+			struct { T r, g, b, a; };
+			Vec<T, 2> xy;
+			Vec<T, 2> rg;
+			Vec<T, 3> xyz;
+			Vec<T, 3> rgb;
+		};
+
+		Vec() : x(0), y(0), z(0), w(0) {}
+		explicit Vec(T all) : x(all), y(all), z(all), w(all) {}
+		Vec(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {}
+		Vec(const Vec2& other) : x(other.x), y(other.y), z(0.0f), w(0.0f) {}
+		Vec(const Vec3& other) : x(other.x), y(other.y), z(other.z), w(0.0f) {}
+		Vec(const Point2D& other) : x(other.x), y(other.y), z(0.0f), w(0.0f) {}
+		Vec(const Point3D& other) : x(other.x), y(other.y), z(other.z), w(0.0f) {}
+	};
+
+	template<typename T, size_t n>
+	Vec<T, n> operator-(Vec<T, n> vec)
 	{
-		lhs += rhs;
+		for (size_t i = 0; i < n; i++)
+		{
+			vec.data[i] = -vec.data[i];
+		}
+		return vec;
+	}
+
+	template<typename T, size_t n>
+	Vec<T, n>& operator+=(Vec<T, n>& lhs, const Vec<T, n>& rhs)
+	{
+		for (size_t i = 0; i < n; i++)
+		{
+			lhs.data[i] += rhs.data[i];
+		}
 		return lhs;
 	}
 
-	inline Vec2 operator-(Vec2 lhs, const Vec2& rhs)
+	template<typename T, size_t n>
+	Vec<T, n>& operator-=(Vec<T, n>& lhs, const Vec<T, n>& rhs)
 	{
-		lhs -= rhs;
+		for (size_t i = 0; i < n; i++)
+		{
+			lhs.data[i] -= rhs.data[i];
+		}
 		return lhs;
 	}
 
-	// TODO: should this be const&?
-	inline Vec2 operator*(Vec2 lhs, float rhs)
+	template<typename T, size_t n>
+	Vec<T, n>& operator*=(Vec<T, n>& lhs, T rhs)
 	{
-		lhs *= rhs;
+		for (size_t i = 0; i < n; i++)
+		{
+			lhs.data[i] *= rhs;
+		}
 		return lhs;
 	}
 
-	inline Vec2 operator*(float lhs, const Vec2& rhs)
+	template<typename T, size_t n>
+	Vec<T, n>& operator/=(Vec<T, n>& lhs, T rhs)
+	{
+		if (rhs == 0)
+		{
+			// TODO: LogError
+			std::cerr << "Error: Attempted to normalize zero magnitude vector.\n";
+			return lhs;
+		}
+
+		for (size_t i = 0; i < n; i++)
+		{
+			lhs.data[i] /= rhs;
+		}
+		return lhs;
+	}
+
+	template<typename T, size_t n>
+	inline Vec<T, n> operator+(Vec<T, n> lhs, const Vec<T, n>& rhs)
+	{
+		for (size_t i = 0; i < n; i++)
+		{
+			lhs.data[i] += rhs.data[i];
+		}
+		return lhs;
+	}
+
+	template<typename T, size_t n>
+	inline Vec<T, n> operator-(Vec<T, n> lhs, const Vec<T, n>& rhs)
+	{
+		for (size_t i = 0; i < n; i++)
+		{
+			lhs.data[i] -= rhs.data[i];
+		}
+		return lhs;
+	}
+
+	template<typename T, size_t n>
+	inline Vec<T, n> operator*(Vec<T, n> lhs, float rhs)
+	{
+		for (size_t i = 0; i < n; i++)
+		{
+			lhs.data[i] *= rhs;
+		}
+		return lhs;
+	}
+
+	template<typename T, size_t n>
+	inline Vec<T, n> operator*(float lhs, Vec<T, n> rhs)
 	{
 		return rhs * lhs;
 	}
 
-	inline Vec2 operator/(Vec2 lhs, float rhs)
+	template<typename T, size_t n>
+	inline Vec<T, n> operator/(Vec<T, n> lhs, float rhs)
 	{
-		lhs /= rhs;
+		for (size_t i = 0; i < n; i++)
+		{
+			lhs.data[i] /= rhs;
+		}
 		return lhs;
 	}
 
-	inline bool operator==(const Vec2& lhs, const Vec2& rhs)
+	template<typename T, size_t n>
+	inline T Dot(const Vec<T, n>& lhs, const Vec<T, n>& rhs)
+	{
+		T sum = 0;
+		for (size_t i = 0; i < n; i++)
+		{
+			sum += lhs.data[i] * rhs.data[i];
+		}
+		return sum;
+	}
+
+	template<typename T, size_t n>
+	inline T SquareMagnitude(const Vec<T, n>& vec)
+	{
+		return Dot(vec, vec);
+	}
+
+	template<typename T, size_t n>
+	inline T Magnitude(const Vec<T, n>& vec)
+	{
+		return sqrt(SquareMagnitude(vec));
+	}
+
+	template<typename T, size_t n>
+	inline Vec<T, n> Normalize(const Vec<T, n>& vec)
+	{
+		float magnitude = Magnitude(vec);
+		if (magnitude == 0)
+		{
+			// TODO: LogError
+			std::cerr << "Error: Attempted to normalize zero magnitude vector.\n";
+			return Vec<T, n>((T)0);
+		}
+		return vec / magnitude;
+	}
+
+	template<typename T, size_t n>
+	inline bool operator==(const Vec<T, n>& lhs, const Vec<T, n>& rhs)
 	{
 		// TODO: account for floating point imprecision
-		return lhs.x == rhs.x && lhs.y == rhs.y;
+		for (size_t i = 0; i < n; i++)
+		{
+			if (lhs.data[i] != rhs.data[i])
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 
-	inline bool operator!=(const Vec2& lhs, const Vec2& rhs)
+	template<typename T, size_t n>
+	inline bool operator!=(const Vec<T, n>& lhs, const Vec<T, n>& rhs)
 	{
-		return !operator==(lhs,rhs);
+		return !operator==(lhs, rhs);
 	}
 
-	std::ostream& operator<<(std::ostream& os, const Vec2& obj)
+	template<typename T, size_t n>
+	std::ostream& operator<<(std::ostream& os, const Vec<T, n>& vec)
 	{
-		os << "(" << obj.x << ", " << obj.y << ")";
+		os << "(" << vec.data[0];
+		for (size_t i = 1; i < n; i++)
+		{
+			os << ", " << vec.data[i];
+		}
+		os << ")";
 		return os;
 	}
 	
-	std::istream& operator>>(std::istream& is, Vec2& obj)
+	template<typename T, size_t n>
+	std::istream& operator>>(std::istream& is, Vec<T, n>& vec)
 	{
 		// TODO: set failbit
-		//if ( /* no valid object of T found in stream */)
+		//if (no valid object of T found in stream)
 		//{
 		//	is.setstate(std::ios::failbit);
 		//}
 
-		is >> obj.x >> obj.y;
+		for (size_t i = 0; i < n; i++)
+		{
+			is >> vec.data[i];
+		}
 		return is;
 	}
 
-	struct Vec3
+	template<typename T>
+	Vec<T, 3> Cross(const Vec<T, 3>& lhs, const Vec<T, 3>& rhs)
 	{
-		union
-		{
-			struct
-			{
-				float x;
-				float y;
-				float z;
-			};
+		// | i  j  k  |
+		// | x1 y1 z1 |
+		// | x2 y2 z2 |
 
-			struct
-			{
-				float r;
-				float g;
-				float b;
-			};
+		T x = lhs.y * rhs.z - lhs.z * rhs.y;
+		T y = lhs.x * rhs.z - lhs.z * rhs.x;
+		T z = lhs.x * rhs.y - lhs.y * rhs.x;
 
-			struct
-			{
-				float u;
-				float v;
-				float s;
-			};
-		};
+		return Vec<T, 3>(x, -y, z);
+	}
 
-		Vec3() : x(0.0f), y(0.0f), z(0.0f) {}
-		Vec3(float xyz) : x(xyz), y(xyz), z(xyz) {}
-		Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
-		Vec3(const Vec2& other) : x(other.x), y(other.y), z(0.0f) {}
-
-		Vec3 operator-()
-		{
-			return Vec3(-x, -y, -z);
-		}
-
-		Vec3& operator+=(const Vec3& rhs)
-		{
-			this->x += rhs.x;
-			this->y += rhs.y;
-			this->z += rhs.z;
-			return *this;
-		}
-
-		Vec3& operator-=(const Vec3& rhs)
-		{
-			this->x -= rhs.x;
-			this->y -= rhs.y;
-			this->z -= rhs.z;
-			return *this;
-		}
-
-		Vec3& operator*=(float rhs)
-		{
-			this->x *= rhs;
-			this->y *= rhs;
-			this->z *= rhs;
-			return *this;
-		}
-
-		Vec3& operator/=(float rhs)
-		{
-			this->x /= rhs;
-			this->y /= rhs;
-			this->z /= rhs;
-			return *this;
-		}
-
-		float Magnitude()
-		{
-			return std::sqrt(this->Dot(*this));
-		}
-
-		float SquareMagnitude()
-		{
-			return this->Dot(*this);
-		}
-
-		Vec3 Normalized()
-		{
-			float magnitude = this->Magnitude();
-
-			if (magnitude == 0)
-			{
-				// TODO: error/warning
-				return Vec3(0.0f);
-			}
-
-			return *this / magnitude;
-		}
-
-		void Normalize()
-		{
-			float magnitude = this->Magnitude();
-
-			if (magnitude == 0)
-			{
-				// TODO: error/warning
-				*this = Vec3(0.0f);
-			}
-			else
-			{
-				*this /= magnitude;
-			}
-		}
-
-		float Dot(const Vec3& rhs)
-		{
-			return this->x * rhs.x + this->y * rhs.y + this->z * rhs.z;
-		}
-
-		Vec3 Cross(const Vec3& rhs)
-		{
-			// | i  j  k  |
-			// | x1 y1 z1 |
-			// | x2 y2 z2 |
-
-			float x = this->y * rhs.z - this->z * rhs.y;
-			float y = this->x * rhs.z - this->z * rhs.x;
-			float z = this->x * rhs.y - this->y * rhs.x;
-
-			return Vec3(x, y, z);
-		}
+	template<size_t rows, size_t cols>
+	struct Mat 
+	{
+		float data[rows][cols];
 	};
-
-	inline Vec3 operator+(Vec3 lhs, const Vec3& rhs)
-	{
-		lhs += rhs;
-		return lhs;
-	}
-
-	inline Vec3 operator-(Vec3 lhs, const Vec3& rhs)
-	{
-		lhs -= rhs;
-		return lhs;
-	}
-
-	// TODO: should this be const&?
-	inline Vec3 operator*(Vec3 lhs, float rhs)
-	{
-		lhs *= rhs;
-		return lhs;
-	}
-
-	inline Vec3 operator*(float lhs, const Vec3& rhs)
-	{
-		return rhs * lhs;
-	}
-
-	inline Vec3 operator/(Vec3 lhs, float rhs)
-	{
-		lhs /= rhs;
-		return lhs;
-	}
-
-	inline bool operator==(const Vec3& lhs, const Vec3& rhs)
-	{
-		// TODO: account for floating point imprecision
-		return lhs.x == rhs.x && lhs.y == rhs.y;
-	}
-
-	inline bool operator!=(const Vec3& lhs, const Vec3& rhs)
-	{
-		return !operator==(lhs,rhs);
-	}
-
-	std::ostream& operator<<(std::ostream& os, const Vec3& obj)
-	{
-		os << "(" << obj.x << ", " << obj.y << ", " << obj.z << ")";
-		return os;
-	}
-	
-	std::istream& operator>>(std::istream& is, Vec3& obj)
-	{
-		// TODO: set failbit
-		//if ( /* no valid object of T found in stream */)
-		//{
-		//	is.setstate(std::ios::failbit);
-		//}
-
-		is >> obj.x >> obj.y >> obj.z;
-		return is;
-	}
 }

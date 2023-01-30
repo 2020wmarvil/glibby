@@ -9,4 +9,11 @@ namespace glibby
 	};
 
 	float Distance(const Point2D& p1, const Point2D& p2);
+
+	struct Point3D
+	{
+		float x;
+		float y;
+		float z;
+	};
 }
