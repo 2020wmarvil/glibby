@@ -134,7 +134,7 @@ namespace glibby
 		if (rhs == 0)
 		{
 			// TODO: LogError
-			std::cerr << "Error: Attempted to normalize zero magnitude vector.\n";
+			std::cerr << "Error: Attempted to divide vector by zero.\n";
 			return lhs;
 		}
 
