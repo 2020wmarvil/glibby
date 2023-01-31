@@ -15,7 +15,19 @@ File hierarchy in ```src/``` and ```include/glibby/``` should be mirrored.
 
 ## Pull Request Process
 
+1. Fork the project
+2. Create a feature branch (```git checkout -b your-feature```)
+3. Implement your feature (```git commit -m "Implement feature" && git push origin your-feature```)
+4. Ensure your work aligns with our [Coding Standards](https://github.com/2020wmarvil/glibby/blob/main/docs/CodingStandard.md)
+5. Ensure all tests are still passing (```./glibby_test_suite --order rand --warn NoAssertions```)
+6. Merge from main (```git merge upstream/main```)
+7. Create a pull request and complete code review process
+
+Commit messages should be in the imperative mood, e.g. "Implement 2D curve intersection solver" as opposed to "2D curve intersection solver".
+
 If any steps are missing from this process, notify a maintainer, make an issue, or create a PR!
+
+## Project Setup
 
 ### Prerequisites
 
@@ -24,8 +36,12 @@ Install the [Vulkan SDK](https://www.lunarg.com/vulkan-sdk/), cmake, and doxygen
 #### Windows (using [Chocolatey](https://chocolatey.org/))
 
 ```
-> choco install cmake doxygen
+> choco install cmake
 ```
+
+To get doxygen, just download the setup executable under the binaries section of their [website](https://www.doxygen.nl/download.html).
+
+Note, you will not be able to build the rendering engine if you are on Windows Subsystem for Linux, as it does not provide a window compositor.
 
 #### Unix
 
@@ -39,27 +55,16 @@ Check that you have at least cmake version 3.20. If not, follow [this process](h
 $ cmake --version
 ```
 
-### Creating a Feature
-
-1. Fork the project
-2. Create a feature branch (```git checkout -b your-feature```)
-3. Implement your feature (```git commit -m "Implement feature" && git push origin your-feature```)
-4. Ensure your work aligns with our [Coding Standards](https://github.com/2020wmarvil/glibby/blob/main/CodingStandard.md)
-5. Ensure all tests are still passing (```./glibby_test_suite --order rand --warn NoAssertions```)
-6. Merge from main (```git merge upstream/main```)
-7. Create a pull request and complete code review process
-
-Commit messages should be in the imperative mood, e.g. "Implement 2D curve intersection solver" as opposed to "2D curve intersection solver".
-
 ### Generating the Project
 
 ```
+$ git clone <your_fork>
 $ cmake -E make_directory build
 $ cd build
 $ cmake .. -G <generator> -DCMAKE_BUILD_TYPE=Debug -DGLIBBY_BUILD_RENDERER=ON -DGLIBBY_BUILD_EXAMPLES=ON -DGLIBBY_BUILD_DOCS=ON
 ```
 
-Common generators are ```unix makefiles``` for Unix or ```"Visual Studio 16 2019```/```Visual Studio 17 2022``` for Windows. If you're using Windows, this will generate an MSBuild solution that you can open in an IDE of your choice (Visual Studio, Rider, CLion, etc.).
+Common generators are ```"unix makefiles"``` for Unix or ```"Visual Studio 16 2019"```/```"Visual Studio 17 2022"``` for Windows. If you're using Windows, this will generate an MSBuild solution that you can open in an IDE of your choice (Visual Studio, Rider, CLion, etc.).
 
 Here is a list of built-in [CMake Generators](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html).
 
@@ -67,7 +72,14 @@ Here is a list of built-in [CMake Generators](https://cmake.org/cmake/help/lates
 
 Building the project on its own will not do much for you, since it exports as a ```.lib``` file. In order to develop our project, we will build against examples and tests. This serves a dual purpose, as now our code will have higher test coverage and examples/templates will exist for our users.
 
-#### From the Terminal/Powershell
+#### Option 1: Building from Visual Studio
+
+To select your build target in Visual Studio, you can right-click on the desired target and select 'Set as Startup Project'.
+
+<img src="https://github.com/2020wmarvil/glibby/blob/main/docs/images/VS_SetAsStartupProj1.png?raw=true" width="250">
+<img src="https://github.com/2020wmarvil/glibby/blob/main/docs/images/VS_SetAsStartupProj2.png?raw=true" width="250">
+
+#### Option 2: Building from the Terminal/Powershell
 
 ```
 $ cd build
@@ -76,18 +88,13 @@ $ ./<path_to_target>/target
 ```
 
 Our project generates several build targets, which you can choose from here:
-- ```ALL_BUILD```
+- ```ALL_BUILD``` to build all targets (you can also exclude the target tag)
 - ```<example_name>```
 - ```<test_name>```
 - ```glibby_test_suite``` or ```RUN_TESTS```
 - ```glibby_docs```
 
-#### From Visual Studio
-
-If you would like to build from Visual Studio instead, you can select the build target by right-clicking on the desired target and selecting 'Set as Startup Project'.
-
-<img src="https://github.com/2020wmarvil/glibby/blob/main/docs/images/VS_SetAsStartupProj1.png?raw=true" width="250">
-<img src="https://github.com/2020wmarvil/glibby/blob/main/docs/images/VS_SetAsStartupProj2.png?raw=true" width="250">
+If you would prefer to build all targets, you can exclude ```--target <target>```. 
 
 ## Adding New Files
 
@@ -147,7 +154,7 @@ TEST_CASE("Point2D distance", "[!benchmark][primitive][point2D]") {
 
 To execute all tests:
 ```
-$ ./glibby_test_suite --order rand --warn NoAssertions
+$ glibby_test_suite --order rand --warn NoAssertions
 ```
 
 To execute by name or tag with options:
