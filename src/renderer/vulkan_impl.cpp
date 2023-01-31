@@ -2,8 +2,11 @@
 
 #include "window.h"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 #include <algorithm>
 #include <array>
@@ -20,11 +23,13 @@
 	#define LOG_INFO(msg)    std::cerr << "\033[36m" << "INFO: "   << msg << "\033[0m" << std::endl;
 	#define LOG_WARNING(msg) std::cerr << "\033[33m" << "WARNING: " << msg << "\033[0m" << std::endl;
 	#define LOG_ERROR(msg)   std::cerr << "\033[31m" << "ERROR: "    << msg << "\033[0m" << std::endl;
+	#define ASSERT(eval, msg) if (!(eval)) LOG_ERROR(msg)
 	#define VK_CHECK(func, msg) if (func != VK_SUCCESS) LOG_ERROR(msg)
 #else
 	#define LOG_INFO(msg)
 	#define LOG_WARNING(msg)
 	#define LOG_ERROR(msg)
+	#define ASSERT(eval, msg)
 	#define VK_CHECK(func, msg)
 #endif
 
@@ -138,6 +143,8 @@ namespace glibby
 	std::vector<VkBuffer> uniformBuffers;
 	std::vector<VkDeviceMemory> uniformBuffersMemory;
 	std::vector<void*> uniformBuffersMapped;
+	VkImage textureImage;
+	VkDeviceMemory textureImageMemory;
 	std::vector<VkCommandBuffer> graphicsCommandBuffers;
 	std::vector<VkCommandBuffer> computeCommandBuffers;
 	std::vector<VkSemaphore> imageAvailableSemaphores;
@@ -192,8 +199,8 @@ namespace glibby
 	static void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
 		createInfo = { VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT };
 		createInfo.messageSeverity =
-			VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
-			VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
+			//VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+			//VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
 			VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
 			VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
 		createInfo.messageType = 
@@ -221,7 +228,7 @@ namespace glibby
 	}
 #endif
 
-	// TODO: potentially cleaner solution can be found at: https://vulkan-tutorial.com/en/Drawing_a_triangle/Swap_chain_recreation 
+	// TODO: potentially cleaner solution to callbacks can be found at: https://vulkan-tutorial.com/en/Drawing_a_triangle/Swap_chain_recreation 
 	static void WindowFramebufferResizeCallback(int width, int height)
 	{
 		framebufferResized = true;
@@ -483,10 +490,8 @@ namespace glibby
 
 			physicalDevice = devices[0];
 		}
-			
-		if (physicalDevice == VK_NULL_HANDLE) {
-			LOG_ERROR("Failed to find a suitable physical device.");
-		}
+
+		ASSERT(physicalDevice != VK_NULL_HANDLE, "Failed to find a suitable physical device.");
 
 		queueFamilyIndices = FindQueueFamilies(physicalDevice);
 	}
@@ -909,6 +914,54 @@ namespace glibby
 		VK_CHECK(vkCreateCommandPool(device, &computePoolInfo, nullptr, &computeCommandPool), "Failed to create compute command pool.");
 	}
 
+	static void CreateTextureImage()
+	{
+		int texWidth, texHeight, texChannels;
+		stbi_uc* pixels = stbi_load("../../shaders/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+
+		VkDeviceSize imageSize = texWidth * texHeight * 4;
+
+		ASSERT(pixels != nullptr, "Failed to load image.");
+
+		VkBuffer stagingBuffer;
+		VkDeviceMemory stagingBufferMemory;
+		CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+		void* data;
+		vkMapMemory(device, stagingBufferMemory, 0, imageSize, 0, &data);
+		memcpy(data, pixels, static_cast<size_t>(imageSize));
+		vkUnmapMemory(device, stagingBufferMemory);
+
+		stbi_image_free(pixels);
+
+		VkImageCreateInfo imageInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO };
+		imageInfo.imageType = VK_IMAGE_TYPE_2D;
+		imageInfo.extent.width = static_cast<uint32_t>(texWidth);
+		imageInfo.extent.height = static_cast<uint32_t>(texHeight);
+		imageInfo.extent.depth = 1;
+		imageInfo.mipLevels = 1;
+		imageInfo.arrayLayers = 1;
+		imageInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
+		imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+		imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+		imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+		imageInfo.flags = 0;
+
+		VK_CHECK(vkCreateImage(device, &imageInfo, nullptr, &textureImage), "Failed to create texture image.");
+
+		VkMemoryRequirements memRequirements;
+		vkGetImageMemoryRequirements(device, textureImage, &memRequirements);
+
+		VkMemoryAllocateInfo allocInfo = { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO };
+		allocInfo.allocationSize = memRequirements.size;
+		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+		VK_CHECK(vkAllocateMemory(device, &allocInfo, nullptr, &textureImageMemory), "Failed to allocate texture image memory.");
+		VK_CHECK(vkBindImageMemory(device, textureImage, textureImageMemory, 0), "Failed to bind texture image memory");
+	}
+
 	static uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
 	{
 		VkPhysicalDeviceMemoryProperties memProperties;
@@ -1236,6 +1289,7 @@ namespace glibby
 		CreateGraphicsPipeline();
 		CreateFramebuffers();
 		CreateCommandPools();
+		CreateTextureImage();
 		CreateVertexBuffer();
 		CreateIndexBuffer();
 		CreateUniformBuffers();
