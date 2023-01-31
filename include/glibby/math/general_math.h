@@ -2,6 +2,8 @@
 
 #include "glibby/primitives/point2D.h"
 
+#include <cmath>
+#include <cstring>
 #include <iostream>
 
 namespace glibby
@@ -21,16 +23,6 @@ namespace glibby
 		T  operator[](size_t idx) const { return data[idx]; }
 	};
 
-	typedef Vec<float, 2> Vec2;
-	typedef Vec<float, 3> Vec3;
-	typedef Vec<float, 4> Vec4;
-	typedef Vec<double, 2> Vec2d;
-	typedef Vec<double, 3> Vec3d;
-	typedef Vec<double, 4> Vec4d;
-	typedef Vec<uint32_t, 2> Vec2i;
-	typedef Vec<uint32_t, 3> Vec3i;
-	typedef Vec<uint32_t, 4> Vec4i;
-
 	template <typename T>
 	struct Vec<T, 2> {
 		union {
@@ -42,8 +34,8 @@ namespace glibby
 		Vec() : x(0), y(0) {}
 		explicit Vec(T all) : x(all), y(all) {}
 		Vec(T x, T y) : x(x), y(y) {}
-		Vec(const Vec3& other) : x(other.x), y(other.y) {}
-		Vec(const Vec4& other) : x(other.x), y(other.y) {}
+		Vec(const Vec<T, 3>& other) : x(other.x), y(other.y) {}
+		Vec(const Vec<T, 4>& other) : x(other.x), y(other.y) {}
 		Vec(const Point2D& other) : x(other.x), y(other.y) {}
 		Vec(const Point3D& other) : x(other.x), y(other.y) {}
 	};
@@ -61,8 +53,8 @@ namespace glibby
 		Vec() : x(0), y(0), z(0) {}
 		explicit Vec(T all) : x(all), y(all), z(all) {}
 		Vec(T x, T y, T z) : x(x), y(y), z(z) {}
-		Vec(const Vec2& other) : x(other.x), y(other.y), z(0.0f) {}
-		Vec(const Vec4& other) : x(other.x), y(other.y), z(other.z) {}
+		Vec(const Vec<T, 2>& other) : x(other.x), y(other.y), z(0.0f) {}
+		Vec(const Vec<T, 4>& other) : x(other.x), y(other.y), z(other.z) {}
 		Vec(const Point2D& other) : x(other.x), y(other.y), z(0.0f) {}
 		Vec(const Point3D& other) : x(other.x), y(other.y), z(other.z) {}
 	};
@@ -82,11 +74,21 @@ namespace glibby
 		Vec() : x(0), y(0), z(0), w(0) {}
 		explicit Vec(T all) : x(all), y(all), z(all), w(all) {}
 		Vec(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {}
-		Vec(const Vec2& other) : x(other.x), y(other.y), z(0.0f), w(0.0f) {}
-		Vec(const Vec3& other) : x(other.x), y(other.y), z(other.z), w(0.0f) {}
+		Vec(const Vec<T, 2>& other) : x(other.x), y(other.y), z(0.0f), w(0.0f) {}
+		Vec(const Vec<T, 3>& other) : x(other.x), y(other.y), z(other.z), w(0.0f) {}
 		Vec(const Point2D& other) : x(other.x), y(other.y), z(0.0f), w(0.0f) {}
 		Vec(const Point3D& other) : x(other.x), y(other.y), z(other.z), w(0.0f) {}
 	};
+
+	typedef Vec<float, 2> Vec2;
+	typedef Vec<float, 3> Vec3;
+	typedef Vec<float, 4> Vec4;
+	typedef Vec<double, 2> Vec2d;
+	typedef Vec<double, 3> Vec3d;
+	typedef Vec<double, 4> Vec4d;
+	typedef Vec<uint32_t, 2> Vec2i;
+	typedef Vec<uint32_t, 3> Vec3i;
+	typedef Vec<uint32_t, 4> Vec4i;
 
 	template<typename T, size_t n>
 	Vec<T, n> operator-(Vec<T, n> vec)

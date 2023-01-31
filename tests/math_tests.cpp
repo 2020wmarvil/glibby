@@ -20,7 +20,7 @@ TEST_CASE("Vec2 Operations", "[math][vec2]")
     CHECK(simpleVec + negativeSimpleVec == zeroVec);
     CHECK(Dot(simpleVec, negativeSimpleVec) == -5.0f);
     CHECK(SquareMagnitude(simpleVec) == 5.0f);
-    CHECK(Magnitude(simpleVec) == sqrt(5.0f));
+    CHECK_THAT(Magnitude(simpleVec), Catch::Matchers::WithinAbs(sqrt(5.0f), FLT_NEAR_ZERO));
     CHECK_THAT(Magnitude(Normalize(simpleVec)), Catch::Matchers::WithinAbs(1.0f, FLT_NEAR_ZERO));
 
     Vec2 copyConstructedVec(simpleVec);
@@ -54,7 +54,7 @@ TEST_CASE("Vec3 Operations", "[math][vec3]")
     CHECK(simpleVec + negativeSimpleVec == zeroVec);
     CHECK(Dot(simpleVec, negativeSimpleVec) == -14.0f);
     CHECK(SquareMagnitude(simpleVec) == 14.0f);
-    CHECK(Magnitude(simpleVec) == sqrt(14.0f));
+    CHECK_THAT(Magnitude(simpleVec), Catch::Matchers::WithinAbs(sqrt(14.0f), FLT_NEAR_ZERO));
     CHECK_THAT(Magnitude(Normalize(simpleVec)), Catch::Matchers::WithinAbs(1.0f, FLT_NEAR_ZERO));
     CHECK(Cross(simpleVec, negativeSimpleVec) == zeroVec);
     CHECK(Cross(simpleVec, oneVec) == Vec3(-1.0f, 2.0f, -1.0f));
@@ -91,7 +91,7 @@ TEST_CASE("Vec4 Operations", "[math][vec4]")
     CHECK(simpleVec + negativeSimpleVec == zeroVec);
     CHECK(Dot(simpleVec, negativeSimpleVec) == -30.0f);
     CHECK(SquareMagnitude(simpleVec) == 30.0f);
-    CHECK(Magnitude(simpleVec) == sqrt(30.0f));
+    CHECK_THAT(Magnitude(simpleVec), Catch::Matchers::WithinAbs(sqrt(30.0f), FLT_NEAR_ZERO));
     CHECK_THAT(Magnitude(Normalize(simpleVec)), Catch::Matchers::WithinAbs(1.0f, FLT_NEAR_ZERO));
 
     Vec4 copyConstructedVec(simpleVec);
@@ -131,7 +131,7 @@ TEST_CASE("VecN Operations", "[math][vecN]")
     CHECK(simpleVec + negativeSimpleVec == zeroVec);
     CHECK(Dot(simpleVec, negativeSimpleVec) == -385.0f);
     CHECK(SquareMagnitude(simpleVec) == 385.0f);
-    CHECK(Magnitude(simpleVec) == sqrt(385.0f));
+    CHECK_THAT(Magnitude(simpleVec), Catch::Matchers::WithinAbs(sqrt(385.0f), FLT_NEAR_ZERO));
     CHECK_THAT(Magnitude(Normalize(simpleVec)), Catch::Matchers::WithinAbs(1.0f, FLT_NEAR_ZERO));
 
     Vec<float, 10> copyConstructedVec(simpleVec);
