@@ -75,6 +75,6 @@ if(GLIBBY_BUILD_RENDERER)
   target_include_directories(
     ${GLIBBY_RENDERER_NAME}
     PRIVATE ${GLIBBY_RENDERER_INCLUDE_DIR} ${Vulkan_INCLUDE_DIRS}
-            ${CMAKE_SOURCE_DIR}/deps/glfw/include)
-  target_link_libraries(${PROJECT_NAME} ${Vulkan_LIBRARY} glfw)
+            ${CMAKE_SOURCE_DIR}/deps/glfw/include ${CMAKE_SOURCE_DIR}/deps/glm)
+  target_link_libraries(${PROJECT_NAME} ${Vulkan_LIBRARY} glfw glm)
 endif()
