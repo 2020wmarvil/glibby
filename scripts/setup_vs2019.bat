@@ -1,8 +1,8 @@
 @echo off
 
 cd ..
-mkdir ProjectFiles
-cd ProjectFiles
+mkdir build
+cd build
 cmake -G "Visual Studio 16 2019" ..
 
 echo.

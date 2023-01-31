@@ -1,6 +1,6 @@
 cd ..
-mkdir ProjectFiles
-cd ProjectFiles
+mkdir build
+cd build
 cmake -G "Unix Makefiles" ..
 
 echo

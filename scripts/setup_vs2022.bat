@@ -1,8 +1,8 @@
 @echo off
 
 cd ..
-mkdir ProjectFiles
-cd ProjectFiles
+mkdir build
+cd build
 cmake -G "Visual Studio 17 2022" ..
 
 echo.
