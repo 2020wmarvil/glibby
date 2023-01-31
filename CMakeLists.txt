@@ -9,7 +9,7 @@ option(GLIBBY_BUILD_TESTS "Builds test suite" ON)
 option(GLIBBY_BUILD_EXAMPLES "Builds example applications" ON)
 option(GLIBBY_BUILD_DOCS "Builds documentation" ON)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(LIB_TYPE STATIC)
