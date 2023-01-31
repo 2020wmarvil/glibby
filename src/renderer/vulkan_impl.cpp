@@ -12,10 +12,17 @@
 #include <unordered_set>
 #include <vector>
 
-#define LOG_INFO(msg)    std::cerr << "\033[36m" << "INFO: "   << msg << "\033[0m" << std::endl;
-#define LOG_WARNING(msg) std::cerr << "\033[33m" << "WARNING: " << msg << "\033[0m" << std::endl;
-#define LOG_ERROR(msg)   std::cerr << "\033[31m" << "ERROR: "    << msg << "\033[0m" << std::endl;
-#define VK_CHECK(func, msg) if (func != VK_SUCCESS) LOG_ERROR(msg)
+#ifdef GLIBBY_DEBUG
+	#define LOG_INFO(msg)    std::cerr << "\033[36m" << "INFO: "   << msg << "\033[0m" << std::endl;
+	#define LOG_WARNING(msg) std::cerr << "\033[33m" << "WARNING: " << msg << "\033[0m" << std::endl;
+	#define LOG_ERROR(msg)   std::cerr << "\033[31m" << "ERROR: "    << msg << "\033[0m" << std::endl;
+	#define VK_CHECK(func, msg) if (func != VK_SUCCESS) LOG_ERROR(msg)
+#else
+	#define LOG_INFO(msg)
+	#define LOG_WARNING(msg)
+	#define LOG_ERROR(msg)
+	#define VK_CHECK(func, msg)
+#endif
 
 namespace glibby // Helper structs
 {
@@ -23,9 +30,12 @@ namespace glibby // Helper structs
 	{
 		std::optional<uint32_t> graphicsFamily;
 		std::optional<uint32_t> presentFamily;
+		std::optional<uint32_t> computeFamily;
+		std::optional<uint32_t> transferFamily;
 
-		bool IsComplete() {
-			return graphicsFamily.has_value() && presentFamily.has_value();
+		bool IsComplete()
+		{
+			return graphicsFamily.has_value() && presentFamily.has_value() && computeFamily.has_value() && transferFamily.has_value();
 		}
 	};
 
@@ -70,10 +80,14 @@ namespace glibby // Helper structs
 
 	const std::vector<Vertex> vertices =
 	{
-		{  0.0f, -0.5f, 1.0f, 0.0f, 0.0f},
-		{  0.5f,  0.5f, 0.0f, 1.0f, 0.0f},
-		{ -0.5f,  0.5f, 0.0f, 0.0f, 1.0f},
+		{ -0.5f, -0.5f, 1.0f, 0.0f, 0.0f },
+		{  0.5f, -0.5f, 0.0f, 1.0f, 0.0f },
+		{  0.5f,  0.5f, 0.0f, 0.0f, 1.0f },
+		{ -0.5f,  0.5f, 1.0f, 1.0f, 1.0f }
 	};
+
+	// Note, you can use 16bit int if you have <65k verts
+	const std::vector<uint16_t> indices = { 0, 1, 2, 2, 3, 0 };
 }
 
 namespace glibby
@@ -84,9 +98,12 @@ namespace glibby
 	const Window* window;
 	VkDebugUtilsMessengerEXT debugMessenger;
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+	QueueFamilyIndices queueFamilyIndices;
 	VkDevice device;
 	VkQueue graphicsQueue;
 	VkQueue presentQueue;
+	VkQueue transferQueue;
+	VkQueue computeQueue;
 	VkSurfaceKHR surface;
 	VkSwapchainKHR swapchain;
 	std::vector<VkImage> swapchainImages;
@@ -97,10 +114,15 @@ namespace glibby
 	VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
 	std::vector<VkFramebuffer> swapchainFramebuffers;
-	VkCommandPool commandPool;
+	VkCommandPool graphicsCommandPool;
+	VkCommandPool transferCommandPool;
+	VkCommandPool computeCommandPool;
 	VkBuffer vertexBuffer;
 	VkDeviceMemory vertexBufferMemory;
-	std::vector<VkCommandBuffer> commandBuffers;
+	VkBuffer indexBuffer;
+	VkDeviceMemory indexBufferMemory;
+	std::vector<VkCommandBuffer> graphicsCommandBuffers;
+	std::vector<VkCommandBuffer> computeCommandBuffers;
 	std::vector<VkSemaphore> imageAvailableSemaphores;
 	std::vector<VkSemaphore> renderFinishedSemaphores;
 	std::vector<VkFence> inFlightFences;
@@ -284,6 +306,7 @@ namespace glibby
 		std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
 		vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
 
+		// Grab first valid graphics and present families
 		for (int i = 0; i < queueFamilyCount; i++)
 		{
 			if (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
@@ -298,9 +321,39 @@ namespace glibby
 				indices.presentFamily = i;
 			}
 
-			if (indices.IsComplete())
+			if (indices.graphicsFamily.has_value() && indices.presentFamily.has_value())
 			{
 				break;
+			}
+		}
+
+		// Try to grab a compute family that is distinct from graphics family
+		for (int i = 0; i < queueFamilyCount; i++)
+		{
+			if (queueFamilies[i].queueFlags & VK_QUEUE_COMPUTE_BIT)
+			{
+				indices.computeFamily = i;
+
+				if (indices.graphicsFamily.has_value() && indices.graphicsFamily.value() != i)
+				{
+					break;
+				}
+			}
+		}
+
+		// Try to grab a transfer family that is distinct from graphics and compute
+		for (int i = 0; i < queueFamilyCount; i++)
+		{
+			if (queueFamilies[i].queueFlags & VK_QUEUE_TRANSFER_BIT)
+			{
+				indices.transferFamily = i;
+
+				// Stop searching if we find a transfer family that is distinct from graphics and compute
+				if (indices.graphicsFamily.has_value() && indices.graphicsFamily.value() != i
+					&& indices.computeFamily.has_value() && indices.computeFamily.value() != i)
+				{
+					break;
+				}
 			}
 		}
 
@@ -417,17 +470,19 @@ namespace glibby
 		if (physicalDevice == VK_NULL_HANDLE) {
 			LOG_ERROR("Failed to find a suitable physical device.");
 		}
+
+		queueFamilyIndices = FindQueueFamilies(physicalDevice);
 	}
 
 	static void CreateLogicalDevice()
 	{
-		QueueFamilyIndices indices = FindQueueFamilies(physicalDevice);
-
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-		std::set<uint32_t> uniqueQueueFamilies = 
-		{ 
-			indices.graphicsFamily.value(), 
-			indices.presentFamily.value()
+		std::set<uint32_t> uniqueQueueFamilies =
+		{
+			queueFamilyIndices.graphicsFamily.value(),
+			queueFamilyIndices.presentFamily.value(),
+			queueFamilyIndices.transferFamily.value(),
+			queueFamilyIndices.computeFamily.value()
 		};
 		
 		float queuePriority = 1.0f;
@@ -461,8 +516,10 @@ namespace glibby
 
 		VK_CHECK(vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &device), "Failed to create logical device.");
 
-		vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &graphicsQueue);
-		vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &presentQueue);
+		vkGetDeviceQueue(device, queueFamilyIndices.graphicsFamily.value(), 0, &graphicsQueue);
+		vkGetDeviceQueue(device, queueFamilyIndices.presentFamily.value(), 0, &presentQueue);
+		vkGetDeviceQueue(device, queueFamilyIndices.transferFamily.value(), 0, &transferQueue);
+		vkGetDeviceQueue(device, queueFamilyIndices.computeFamily.value(), 0, &computeQueue);
 	}
 
 	static VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
@@ -528,18 +585,17 @@ namespace glibby
 		createInfo.imageArrayLayers = 1;
 		createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-		QueueFamilyIndices indices = FindQueueFamilies(physicalDevice);
-		uint32_t queueFamilyIndices[] = 
+		uint32_t queueFamilyIndexArray[] = 
 		{
-			indices.graphicsFamily.value(), 
-			indices.presentFamily.value()
+			queueFamilyIndices.graphicsFamily.value(), 
+			queueFamilyIndices.presentFamily.value()
 		};
 
-		if (indices.graphicsFamily != indices.presentFamily)
+		if (queueFamilyIndices.graphicsFamily != queueFamilyIndices.presentFamily)
 		{
 			createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
 			createInfo.queueFamilyIndexCount = 2;
-			createInfo.pQueueFamilyIndices = queueFamilyIndices;
+			createInfo.pQueueFamilyIndices = queueFamilyIndexArray;
 		}
 		else
 		{
@@ -799,15 +855,25 @@ namespace glibby
 		}
 	}
 
-	static void CreateCommandPool()
+	static void CreateCommandPools()
 	{
 		QueueFamilyIndices queueFamilyIndices = FindQueueFamilies(physicalDevice);
 		
-		VkCommandPoolCreateInfo poolInfo = { VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO };
-		poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-		poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
+		VkCommandPoolCreateInfo graphicsPoolInfo = { VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO };
+		graphicsPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+		graphicsPoolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
 
-		VK_CHECK(vkCreateCommandPool(device, &poolInfo, nullptr, &commandPool), "Failed to create command pool.");
+		VkCommandPoolCreateInfo transferPoolInfo = { VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO };
+		transferPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+		transferPoolInfo.queueFamilyIndex = queueFamilyIndices.transferFamily.value();
+
+		VkCommandPoolCreateInfo computePoolInfo = { VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO };
+		computePoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+		computePoolInfo.queueFamilyIndex = queueFamilyIndices.computeFamily.value();
+
+		VK_CHECK(vkCreateCommandPool(device, &graphicsPoolInfo, nullptr, &graphicsCommandPool), "Failed to create grpahics command pool.");
+		VK_CHECK(vkCreateCommandPool(device, &transferPoolInfo, nullptr, &transferCommandPool), "Failed to create transfer command pool.");
+		VK_CHECK(vkCreateCommandPool(device, &computePoolInfo, nullptr, &computeCommandPool), "Failed to create compute command pool.");
 	}
 
 	static uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
@@ -826,45 +892,123 @@ namespace glibby
 		LOG_ERROR("Failed to find suitable memory type.");
 	}
 
-	static void CreateVertexBuffer()
+	static void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory& bufferMemory)
 	{
 		VkBufferCreateInfo bufferInfo = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
-		bufferInfo.size = sizeof(vertices[0]) * vertices.size();
-		bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		bufferInfo.size = size;
+		bufferInfo.usage = usage;
 
-		VK_CHECK(vkCreateBuffer(device, &bufferInfo, nullptr, &vertexBuffer), "Failed to create vertex buffer.");
+		std::vector<uint32_t> sharedIndices = { queueFamilyIndices.graphicsFamily.value(), queueFamilyIndices.transferFamily.value() };
+		bufferInfo.sharingMode = VK_SHARING_MODE_CONCURRENT; // TODO: a memory barrier is more efficient than concurrent sharing mode
+		bufferInfo.queueFamilyIndexCount = static_cast<uint32_t>(sharedIndices.size());
+		bufferInfo.pQueueFamilyIndices = sharedIndices.data();
+
+		VK_CHECK(vkCreateBuffer(device, &bufferInfo, nullptr, &buffer), "Failed to create buffer.");
 
 		VkMemoryRequirements memRequirements;
-		vkGetBufferMemoryRequirements(device, vertexBuffer, &memRequirements);
+		vkGetBufferMemoryRequirements(device, buffer, &memRequirements);
 
 		VkMemoryAllocateInfo allocInfo = { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO };
 		allocInfo.allocationSize = memRequirements.size;
-		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, properties);
 
-		VK_CHECK(vkAllocateMemory(device, &allocInfo, nullptr, &vertexBufferMemory), "Failed to allocate vertex buffer memory.");
+		VK_CHECK(vkAllocateMemory(device, &allocInfo, nullptr, &bufferMemory), "Failed to allocate buffer memory.");
+		vkBindBufferMemory(device, buffer, bufferMemory, 0);
+	}
 
-		vkBindBufferMemory(device, vertexBuffer, vertexBufferMemory, 0);
+	static void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
+	{
+		VkCommandBufferAllocateInfo allocInfo = { VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO };
+		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+		allocInfo.commandPool = transferCommandPool;
+		allocInfo.commandBufferCount = 1;
+
+		VkCommandBuffer transferCommandBuffer;
+		VK_CHECK(vkAllocateCommandBuffers(device, &allocInfo, &transferCommandBuffer), "Failed to allocate transfer command buffer.");
+
+		VkCommandBufferBeginInfo beginInfo = { VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO };
+		beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+		VK_CHECK(vkBeginCommandBuffer(transferCommandBuffer, &beginInfo), "Failed to begin recording transfer command buffer.");
+
+		VkBufferCopy copyRegion{};
+		copyRegion.srcOffset = 0;
+		copyRegion.dstOffset = 0;
+		copyRegion.size = size;
+		vkCmdCopyBuffer(transferCommandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+
+		VK_CHECK(vkEndCommandBuffer(transferCommandBuffer), "Failed to record transfer command buffer.");
+
+		VkSubmitInfo submitInfo = { VK_STRUCTURE_TYPE_SUBMIT_INFO };
+		submitInfo.commandBufferCount = 1;
+		submitInfo.pCommandBuffers = &transferCommandBuffer;
+
+		vkQueueSubmit(transferQueue, 1, &submitInfo, VK_NULL_HANDLE);
+		vkQueueWaitIdle(transferQueue);
+
+		vkFreeCommandBuffers(device, transferCommandPool, 1, &transferCommandBuffer);
+	}
+
+	static void CreateVertexBuffer()
+	{
+		VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+
+		VkBuffer stagingBuffer;
+		VkDeviceMemory stagingBufferMemory;
+		CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
 		void* data;
-		vkMapMemory(device, vertexBufferMemory, 0, bufferInfo.size, 0, &data);
-		memcpy(data, vertices.data(), (size_t)bufferInfo.size);
-		vkUnmapMemory(device, vertexBufferMemory);
+		vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+		memcpy(data, vertices.data(), bufferSize);
+		vkUnmapMemory(device, stagingBufferMemory);
+
+		CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
+		CopyBuffer(stagingBuffer, vertexBuffer, bufferSize);
+
+		vkDestroyBuffer(device, stagingBuffer, nullptr);
+		vkFreeMemory(device, stagingBufferMemory, nullptr);
+	}
+
+	static void CreateIndexBuffer()
+	{
+		VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+
+		VkBuffer stagingBuffer;
+		VkDeviceMemory stagingBufferMemory;
+		CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+		void* data;
+		vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+		memcpy(data, indices.data(), bufferSize);
+		vkUnmapMemory(device, stagingBufferMemory);
+
+		CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
+		CopyBuffer(stagingBuffer, indexBuffer, bufferSize);
+
+		vkDestroyBuffer(device, stagingBuffer, nullptr);
+		vkFreeMemory(device, stagingBufferMemory, nullptr);
 	}
 
 	static void CreateCommandBuffers()
 	{
-		commandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+		graphicsCommandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+		computeCommandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
 
-		VkCommandBufferAllocateInfo allocInfo = { VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO };
-		allocInfo.commandPool = commandPool;
-		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-		allocInfo.commandBufferCount = (uint32_t)commandBuffers.size();
+		VkCommandBufferAllocateInfo graphicsAllocInfo = { VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO };
+		graphicsAllocInfo.commandPool = graphicsCommandPool;
+		graphicsAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+		graphicsAllocInfo.commandBufferCount = (uint32_t)graphicsCommandBuffers.size();
 
-		VK_CHECK(vkAllocateCommandBuffers(device, &allocInfo, commandBuffers.data()), "Failed to allocate command buffers.");
+		VkCommandBufferAllocateInfo computeAllocInfo = { VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO };
+		computeAllocInfo.commandPool = computeCommandPool;
+		computeAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+		computeAllocInfo.commandBufferCount = (uint32_t)computeCommandBuffers.size();
+
+		VK_CHECK(vkAllocateCommandBuffers(device, &graphicsAllocInfo, graphicsCommandBuffers.data()), "Failed to allocate graphics command buffers.");
+		VK_CHECK(vkAllocateCommandBuffers(device, &computeAllocInfo, computeCommandBuffers.data()), "Failed to allocate compute command buffers.");
 	}
 
-	static void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex)
+	static void RecordGraphicsCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex)
 	{
 		VkCommandBufferBeginInfo beginInfo = { VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO };
 		beginInfo.flags = 0; // Optional
@@ -886,8 +1030,9 @@ namespace glibby
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
 		VkBuffer vertexBuffers[] = { vertexBuffer };
-		VkDeviceSize offsets[] = { 0 };
-		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+		VkDeviceSize vertexBufferOffsets[] = { 0 };
+		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, vertexBufferOffsets);
+		vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16); // This must be UINT32 if >65k verts
 
 		VkViewport viewport{};
 		viewport.x = 0.0f;
@@ -903,7 +1048,7 @@ namespace glibby
 		scissor.extent = swapchainExtent;
 		vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-		vkCmdDraw(commandBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
+		vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 		vkCmdEndRenderPass(commandBuffer);
 
 		VK_CHECK(vkEndCommandBuffer(commandBuffer), "Failed to record command buffer.");
@@ -978,8 +1123,9 @@ namespace glibby
 		CreateRenderPass();
 		CreateGraphicsPipeline();
 		CreateFramebuffers();
-		CreateCommandPool();
+		CreateCommandPools();
 		CreateVertexBuffer();
+		CreateIndexBuffer();
 		CreateCommandBuffers();
 		CreateSyncObjects();
 	}
@@ -993,10 +1139,17 @@ namespace glibby
 			vkDestroyFence(device, inFlightFences[i], nullptr);
 		}
 
-		vkDestroyCommandPool(device, commandPool, nullptr);
+		vkDestroyCommandPool(device, graphicsCommandPool, nullptr);
+		vkDestroyCommandPool(device, transferCommandPool, nullptr);
+		vkDestroyCommandPool(device, computeCommandPool, nullptr);
+
 		vkDestroyBuffer(device, vertexBuffer, nullptr);
 		vkFreeMemory(device, vertexBufferMemory, nullptr);
+		vkDestroyBuffer(device, indexBuffer, nullptr);
+		vkFreeMemory(device, indexBufferMemory, nullptr);
+
 		CleanupSwapchain();
+
 		vkDestroyPipeline(device, graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
 		vkDestroyRenderPass(device, renderPass, nullptr);
@@ -1036,8 +1189,8 @@ namespace glibby
 		// Delay fence reset until we are sure we are submitting work, to avoid deadlock from early exit
 		vkResetFences(device, 1, &inFlightFences[currentFrame]);
 
-		vkResetCommandBuffer(commandBuffers[currentFrame], 0);
-		RecordCommandBuffer(commandBuffers[currentFrame], imageIndex);
+		vkResetCommandBuffer(graphicsCommandBuffers[currentFrame], 0);
+		RecordGraphicsCommandBuffer(graphicsCommandBuffers[currentFrame], imageIndex);
 
 		VkSubmitInfo submitInfo = { VK_STRUCTURE_TYPE_SUBMIT_INFO };
 
@@ -1047,7 +1200,7 @@ namespace glibby
 		submitInfo.pWaitSemaphores = waitSemaphores;
 		submitInfo.pWaitDstStageMask = waitStages;
 		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &commandBuffers[currentFrame];
+		submitInfo.pCommandBuffers = &graphicsCommandBuffers[currentFrame];
 
 		VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };
 		submitInfo.signalSemaphoreCount = 1;
