@@ -11,3 +11,9 @@ namespace glibby
 	void Vulkan_DrawFrame();
 	void Vulkan_WaitForIdle();
 }
+
+// Vulkan_Shader
+// Vulkan_VertexBuffer
+// Vulkan_IndexBuffer
+// Vulkan_UniformBuffer
+// Vulkan_Texture
