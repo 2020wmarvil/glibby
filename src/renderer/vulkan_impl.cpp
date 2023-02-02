@@ -5,9 +5,14 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/hash.hpp>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+
+#define TINYOBJLOADER_IMPLEMENTATION
+#include <tiny_obj_loader.h>
 
 #include <algorithm>
 #include <array>
@@ -17,12 +22,13 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 #ifdef GLIBBY_DEBUG
-	#define LOG_INFO(msg)    std::cerr << "\033[36m" << "INFO: "   << msg << "\033[0m" << std::endl;
-	#define LOG_WARNING(msg) std::cerr << "\033[33m" << "WARNING: " << msg << "\033[0m" << std::endl;
+	#define LOG_INFO(msg)    std::cerr << "\033[36m" << "INFO: "     << msg << "\033[0m" << std::endl;
+	#define LOG_WARNING(msg) std::cerr << "\033[33m" << "WARNING: "  << msg << "\033[0m" << std::endl;
 	#define LOG_ERROR(msg)   std::cerr << "\033[31m" << "ERROR: "    << msg << "\033[0m" << std::endl;
 	#define ASSERT(eval, msg) if (!(eval)) LOG_ERROR(msg)
 	#define VK_CHECK(func, msg) if (func != VK_SUCCESS) LOG_ERROR(msg)
@@ -58,14 +64,14 @@ namespace glibby // Helper structs
 
 	static struct Vertex
 	{
-		float posX;
-		float posY;
-		float posZ;
-		float colR;
-		float colG;
-		float colB;
-		float texCoordU;
-		float texCoordV;
+		glm::vec3 pos;
+		glm::vec3 color;
+		glm::vec2 texCoord;
+
+		bool operator==(const Vertex& other) const
+		{
+			return pos == other.pos && color == other.color && texCoord == other.texCoord;
+		}
 
 		static VkVertexInputBindingDescription GetBindingDescription()
 		{
@@ -83,40 +89,20 @@ namespace glibby // Helper structs
 			attributeDescriptions[0].binding = 0;
 			attributeDescriptions[0].location = 0;
 			attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-			attributeDescriptions[0].offset = offsetof(Vertex, posX);
+			attributeDescriptions[0].offset = offsetof(Vertex, pos);
 
 			attributeDescriptions[1].binding = 0;
 			attributeDescriptions[1].location = 1;
 			attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-			attributeDescriptions[1].offset = offsetof(Vertex, colR);
+			attributeDescriptions[1].offset = offsetof(Vertex, color);
 
 			attributeDescriptions[2].binding = 0;
 			attributeDescriptions[2].location = 2;
 			attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
-			attributeDescriptions[2].offset = offsetof(Vertex, texCoordU);
+			attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
 
 			return attributeDescriptions;
 		}
-	};
-
-	const std::vector<Vertex> vertices =
-	{
-		{ -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f },
-		{  0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f },
-		{  0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f },
-		{ -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f },
-
-		{ -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f },
-		{  0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f },
-		{  0.5f,  0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f },
-		{ -0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f },
-	};
-
-	// Note, you can use 16bit int if you have <65k verts
-	const std::vector<uint16_t> indices =
-	{
-		0, 1, 2, 2, 3, 0,
-		4, 5, 6, 6, 7, 4
 	};
 
 	struct UniformBufferObject
@@ -124,6 +110,19 @@ namespace glibby // Helper structs
 		glm::mat4 model;
 		glm::mat4 view;
 		glm::mat4 proj;
+	};
+}
+
+namespace std
+{
+	template<> struct hash<glibby::Vertex>
+	{
+		size_t operator()(glibby::Vertex const& vertex) const
+		{
+			return ((hash<glm::vec3>()(vertex.pos) ^
+					(hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^
+					(hash<glm::vec2>()(vertex.texCoord) << 1);
+		}
 	};
 }
 
@@ -180,6 +179,9 @@ namespace glibby
 	std::vector<VkFence> inFlightFences;
 	uint32_t currentFrame = 0;
 	bool framebufferResized = false;
+
+	std::vector<Vertex> vertices;
+	std::vector<uint32_t> indices;
 
 	static const std::vector<const char*> requiredBaseExtensions =
 	{
@@ -820,8 +822,8 @@ namespace glibby
 
 	static void CreateGraphicsPipeline()
 	{
-		const std::vector<char> vertShaderCode = ReadFile("../../shaders/vert.spv");
-		const std::vector<char> fragShaderCode = ReadFile("../../shaders/frag.spv");
+		const std::vector<char> vertShaderCode = ReadFile("../../resources/shaders/vert.spv");
+		const std::vector<char> fragShaderCode = ReadFile("../../resources/shaders/frag.spv");
 
 		if (vertShaderCode.size() == 0 || fragShaderCode.size() == 0)
 		{
@@ -1230,7 +1232,7 @@ namespace glibby
 	static void CreateTextureImage()
 	{
 		int texWidth, texHeight, texChannels;
-		stbi_uc* pixels = stbi_load("../../shaders/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+		stbi_uc* pixels = stbi_load("../../resources/textures/viking_room.png", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 
 		VkDeviceSize imageSize = texWidth * texHeight * 4;
 
@@ -1300,6 +1302,55 @@ namespace glibby
 
 		// This is not necessary, it is done automatically by the render pass:
 		// TransitionImageLayout(depthImage, depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL); 
+	}
+
+	static void LoadModel()
+	{
+		tinyobj::attrib_t attrib;
+		std::vector<tinyobj::shape_t> shapes;
+		std::vector<tinyobj::material_t> materials;
+		std::string warn, err;
+
+		bool bSuccess = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, "../../resources/models/viking_room.obj");
+
+		if (!bSuccess)
+		{
+			LOG_ERROR(warn + err);
+			return;
+		}
+
+		std::unordered_map<Vertex, uint32_t> uniqueVertices{};
+
+		for (const tinyobj::shape_t& shape : shapes)
+		{
+		    for (const tinyobj::index_t& index : shape.mesh.indices)
+			{
+				Vertex vertex{};
+
+				vertex.pos =
+				{
+					attrib.vertices[3 * index.vertex_index + 0],
+					attrib.vertices[3 * index.vertex_index + 1],
+					attrib.vertices[3 * index.vertex_index + 2]
+				};
+
+				vertex.texCoord =
+				{
+					attrib.texcoords[2 * index.texcoord_index + 0],
+					1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
+				};
+				
+				vertex.color = { 1.0f, 1.0f, 1.0f };
+
+				if (uniqueVertices.count(vertex) == 0)
+				{
+					uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
+					vertices.push_back(vertex);
+				}
+
+				indices.push_back(uniqueVertices[vertex]);
+			}
+		}
 	}
 
 	static void CreateVertexBuffer()
@@ -1462,7 +1513,7 @@ namespace glibby
 		VkBuffer vertexBuffers[] = { vertexBuffer };
 		VkDeviceSize vertexBufferOffsets[] = { 0 };
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, vertexBufferOffsets);
-		vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16); // This must be UINT32 if >65k verts
+		vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
 
@@ -1551,7 +1602,7 @@ namespace glibby
 		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
 		UniformBufferObject ubo{};
-		ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		ubo.model = glm::rotate(glm::mat4(1.0f), 0.25f * time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		ubo.proj = glm::perspective(glm::radians(45.0f), swapchainExtent.width / (float) swapchainExtent.height, 0.1f, 10.0f);
 		ubo.proj[1][1] *= -1;
@@ -1582,6 +1633,7 @@ namespace glibby
 		CreateTextureImage();
 		CreateTextureImageView();
 		CreateTextureSampler();
+		LoadModel();
 		CreateVertexBuffer();
 		CreateIndexBuffer();
 		CreateUniformBuffers();

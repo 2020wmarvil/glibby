@@ -38,8 +38,4 @@ endif(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
 if (NOT TARGET uninstall)
 configure_file(cmake/cmake_uninstall.cmake.in
                cmake_uninstall.cmake IMMEDIATE @ONLY)
-
-add_custom_target(uninstall
-                  "${CMAKE_COMMAND}" -P
-                  "${CMAKE_BINARY_DIR}/cmake_uninstall.cmake")
 endif()
