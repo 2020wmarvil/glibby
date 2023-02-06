@@ -1,14 +1,14 @@
 #include "glibby/renderer/renderer.h"
-
-#include <iostream> 
+#include "glibby/renderer/window.h"
+#include "glibby/renderer/model.h"
 
 int main()
 {
-	//uint32_t extensionsCount = glibby::GetInstanceExtensionsCount();
-	//std::cout << "Available VK Instance Extensions: " << extensionsCount << std::endl;
-
 	glibby::Window::Init();
 	glibby::Renderer renderer;
+	
+	renderer.AddModelByFile("../../resources/models/viking_room.obj");
 	renderer.Run();
+
 	glibby::Window::Terminate();
 }
