@@ -4,10 +4,20 @@
 
 namespace glibby
 {
-	float Distance(const Point2D& p1, const Point2D& p2)
-	{
-		float deltaX = p1.x - p2.x;
-		float deltaY = p1.y - p2.y;
+	//Constructors
+	Point2D::Point2D(){
+		x = -1;
+		y = -1;
+	}
+
+	Point2D::Point2D(float _x, float _y) {
+		x = _x;
+		y = _y;
+	}
+
+	float Point2D::distance(const Point2D& p) const {
+		float deltaX = x - p.x;
+		float deltaY = y - p.y;
 		return std::sqrt(deltaX * deltaX + deltaY * deltaY);
 	}
 }
