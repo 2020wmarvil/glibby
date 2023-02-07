@@ -45,6 +45,15 @@ namespace glibby
 		CreateIndexBuffer();
 	}
 
+	VulkanModel::VulkanModel(VulkanDevice* device, const std::vector<ModelVertex>& vertices, const std::vector<uint32_t>& indices)
+		: Model(vertices, indices)
+	{
+		this->device = device;
+
+		CreateVertexBuffer();
+		CreateIndexBuffer();
+	}
+
 	VulkanModel::~VulkanModel()
 	{
 		vkDestroyBuffer(device->GetHandle(), vertexBuffer, nullptr);

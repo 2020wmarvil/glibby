@@ -5,6 +5,7 @@
 #include "vulkan/vulkan_pipeline.h"
 #include "vulkan/vulkan_texture.h"
 #include "vulkan/vulkan_image.h"
+#include "camera.h"
 
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include "glm/glm.hpp"
@@ -50,7 +51,7 @@ namespace glibby
 		}
 	}
 
-	void VulkanMaterial::UpdateUniformBuffer(uint32_t currentImage, uint32_t width, uint32_t height)
+	void VulkanMaterial::UpdateUniformBuffer(uint32_t currentImage, uint32_t width, uint32_t height, Camera* camera)
 	{
 		static auto startTime = std::chrono::high_resolution_clock::now();
 
@@ -58,9 +59,9 @@ namespace glibby
 		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
 		UniformBufferObject ubo{};
-		ubo.model = glm::rotate(glm::mat4(1.0f), 0.25f * time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		ubo.proj = glm::perspective(glm::radians(45.0f), width / (float) height, 0.1f, 10.0f);
+		ubo.model = glm::mat4(1.0f);
+		ubo.view = camera->GetView();
+		ubo.proj = camera->GetPerspective(width, height);
 		ubo.proj[1][1] *= -1;
 
 		memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));

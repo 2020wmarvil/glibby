@@ -1,17 +1,18 @@
 #include "vulkan/vulkan_renderer.h"
 
-#include "renderer_core.h"
-#include "window.h"
+#include "camera.h"
 #include "model.h"
-#include "vulkan/vulkan_material.h"
+#include "renderer_core.h"
 #include "vulkan/vulkan_device.h"
-#include "vulkan/vulkan_physical_device.h"
 #include "vulkan/vulkan_instance.h"
-#include "vulkan/vulkan_render_pass.h"
-#include "vulkan/vulkan_swapchain.h"
-#include "vulkan/vulkan_surface.h"
-#include "vulkan/vulkan_pipeline.h"
+#include "vulkan/vulkan_material.h"
 #include "vulkan/vulkan_model.h"
+#include "vulkan/vulkan_physical_device.h"
+#include "vulkan/vulkan_pipeline.h"
+#include "vulkan/vulkan_render_pass.h"
+#include "vulkan/vulkan_surface.h"
+#include "vulkan/vulkan_swapchain.h"
+#include "window.h"
 
 #include <algorithm>
 #include <array>
@@ -33,8 +34,8 @@ namespace glibby
 		framebufferResized = true;
 	}
 
-	VulkanRenderer::VulkanRenderer(Window* window)
-		: window(window)
+	VulkanRenderer::VulkanRenderer(Window* window, Camera* camera)
+		: window(window), camera(camera)
 	{
 		Initialize();
 		defaultMaterial = std::make_unique<VulkanMaterial>(device.get(), renderPass.get());
@@ -48,16 +49,24 @@ namespace glibby
 		return new VulkanModel(device.get(), filepath);
 	}
 
+	Model* VulkanRenderer::CreateModel(const std::vector<ModelVertex>& vertices, const std::vector<uint32_t>& indices)
+	{
+		return new VulkanModel(device.get(), vertices, indices);
+	}
+
 	Material* VulkanRenderer::GetDefaultMaterial()
 	{
 		return defaultMaterial.get();
 	}
 	
-	void VulkanRenderer::DrawFrame(const std::unordered_set<Model*>& models, Material* material)
+	void VulkanRenderer::DrawFrame(const std::unordered_map<Material*, std::unordered_set<Model*>>& materialToModels)
 	{
-		for (Model* model : models)
+		for (auto& [material, models] : materialToModels)
 		{
-			device->DrawFrame(dynamic_cast<VulkanModel*>(model), dynamic_cast<VulkanMaterial*>(material), framebufferResized);
+			for (Model* model : models)
+			{
+				device->DrawFrame(dynamic_cast<VulkanModel*>(model), dynamic_cast<VulkanMaterial*>(material), framebufferResized);
+			}
 		}
 	}
 
@@ -108,7 +117,7 @@ namespace glibby
 		VulkanDeviceRequirements deviceRequirements{};
 		deviceRequirements.requiredDeviceExtensions = requiredDeviceExtensions;
 		deviceRequirements.requiredDeviceLayers = requiredLayers;
-		device = std::make_unique<VulkanDevice>(physicalDevice.get(), deviceRequirements);
+		device = std::make_unique<VulkanDevice>(this, physicalDevice.get(), deviceRequirements);
 
 		SwapchainSupportDetails swapchainSupport = QuerySwapchainSupport(physicalDevice->GetHandle(), surface.get());
 		VkSurfaceFormatKHR surfaceFormat = physicalDevice->ChooseSwapSurfaceFormat(swapchainSupport.formats);

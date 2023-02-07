@@ -17,6 +17,7 @@ namespace glibby
 	{
 	public:
 		VulkanModel(VulkanDevice* device, const char* filepath);
+		VulkanModel(VulkanDevice* device, const std::vector<ModelVertex>& vertices, const std::vector<uint32_t>& indices);
 		~VulkanModel();
 
 		void CreateVertexBuffer();

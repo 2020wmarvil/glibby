@@ -14,6 +14,7 @@ namespace glibby
 	class VulkanSwapchain;
 	class VulkanModel;
 	class VulkanMaterial;
+	class VulkanRenderer;
 
 	struct VulkanDeviceRequirements
 	{
@@ -24,7 +25,7 @@ namespace glibby
 	class VulkanDevice
 	{
 	public:
-		VulkanDevice(VulkanPhysicalDevice* physicalDevice, const VulkanDeviceRequirements& deviceRequirements);
+		VulkanDevice(VulkanRenderer* renderer, VulkanPhysicalDevice* physicalDevice, const VulkanDeviceRequirements& deviceRequirements);
 		~VulkanDevice();
 
 		void DrawFrame(VulkanModel* model, VulkanMaterial* material, bool framebufferResized);
@@ -68,10 +69,12 @@ namespace glibby
 		VkCommandPool transferCommandPool;
 		VkCommandPool computeCommandPool;
 		VkDescriptorPool descriptorPool;
+
 	private:
 		VkDevice handle;
 		VulkanInstance* instance;
 		VulkanSwapchain* swapchain;
+		VulkanRenderer* renderer;
 
 		std::vector<VkCommandBuffer> graphicsCommandBuffers;
 		std::vector<VkCommandBuffer> computeCommandBuffers;

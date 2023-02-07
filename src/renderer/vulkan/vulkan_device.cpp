@@ -7,6 +7,7 @@
 #include "vulkan/vulkan_model.h"
 #include "vulkan/vulkan_material.h"
 #include "vulkan/vulkan_render_pass.h"
+#include "vulkan/vulkan_renderer.h"
 
 #include <vector>
 #include <set>
@@ -14,8 +15,8 @@
 
 namespace glibby
 {
-	VulkanDevice::VulkanDevice(VulkanPhysicalDevice* physicalDevice, const VulkanDeviceRequirements& deviceRequirements)
-		: physicalDevice(physicalDevice)
+	VulkanDevice::VulkanDevice(VulkanRenderer* renderer, VulkanPhysicalDevice* physicalDevice, const VulkanDeviceRequirements& deviceRequirements)
+		: physicalDevice(physicalDevice), renderer(renderer)
 	{
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 		std::set<uint32_t> uniqueQueueFamilies =
@@ -113,7 +114,7 @@ namespace glibby
 
 		uint32_t width, height;
 		swapchain->GetSize(&width, &height);
-		material->UpdateUniformBuffer(currentFrame, width, height);
+		material->UpdateUniformBuffer(currentFrame, width, height, renderer->GetCamera());
 
 		VkSubmitInfo submitInfo = { VK_STRUCTURE_TYPE_SUBMIT_INFO };
 

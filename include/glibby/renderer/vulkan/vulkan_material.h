@@ -11,6 +11,7 @@ namespace glibby
 	class VulkanRenderPass;
 	class VulkanPipeline;
 	class VulkanTexture;
+	class Camera;
 
 	class VulkanMaterial : public Material
 	{
@@ -18,7 +19,7 @@ namespace glibby
 		VulkanMaterial(VulkanDevice* device, VulkanRenderPass* renderPass);
 		~VulkanMaterial();
 
-		void UpdateUniformBuffer(uint32_t currentImage, uint32_t width, uint32_t height);
+		void UpdateUniformBuffer(uint32_t currentImage, uint32_t width, uint32_t height, Camera* camera);
 
 		VkPipelineLayout GetPipelineLayout();
 		VkPipeline GetPipeline();

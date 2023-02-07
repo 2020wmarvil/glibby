@@ -20,6 +20,7 @@ namespace glibby
 	{
 	public:
 		Model(const char* filepath);
+		Model(std::vector<ModelVertex> vertices, std::vector<uint32_t> indices);
 		virtual ~Model();
 	public:
 		std::vector<ModelVertex> vertices;

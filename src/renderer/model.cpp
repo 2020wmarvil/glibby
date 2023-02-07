@@ -78,6 +78,12 @@ namespace glibby
 		}
 	}
 
+	Model::Model(std::vector<ModelVertex> vertices, std::vector<uint32_t> indices)
+	{
+		this->vertices = vertices;
+		this->indices = indices;
+	}
+
 	Model::~Model()
 	{}
 }
