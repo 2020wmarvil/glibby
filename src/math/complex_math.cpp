@@ -10,6 +10,7 @@ namespace glibby
 		float con_b = -num.b;
 		return { con_a, con_b };
 	}
+
 	ComplexNumber complex_pow(const ComplexNumber& base, const ComplexNumber& power)
 	{
 		float c = pow(base.a * base.a + base.b * base.b, power.a *0.5) * exp(-power.b * arg(base));
@@ -20,10 +21,12 @@ namespace glibby
 		result.b = c * b;
 		return result;
 	}
+
 	float arg(const ComplexNumber& num)
 	{
 		return std::atan(num.b / num.a);
 	}
+
 	float absolute(const ComplexNumber& num)
 	{
 		return std::sqrt(num.a * num.a + num.b * num.b);
@@ -41,4 +44,5 @@ namespace glibby
 		is >> num.b;
 		return is;
 	}
+
 }
