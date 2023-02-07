@@ -6,17 +6,23 @@ namespace glibby
 {
     struct Circle2D
     {
-        //Constructors
-        Circle2D(float x, float y, float _r);
-        Circle2D(Point2D c, float r);
+        public:
+            //Constructors
+            Circle2D();
+            Circle2D(float _x, float _y, float _r);
+            Circle2D(const Point2D& _c, float _r);
 
-        //Accessors
-        float area() const;
-        float perimeter() const;
+            //Accessors
+            const Point2D& get_center() const {return c;}
+            float get_radius() const {return r;}
 
-        //Member Variables
-        Point2D c;
-        float r;
+            float area() const;
+            float perimeter() const;
+
+        private:
+            //Member Variables
+            Point2D c;
+            float r;
     };
 
 }

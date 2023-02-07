@@ -6,11 +6,20 @@
 
 namespace glibby
 {
-    Circle2D::Circle2D(float x, float y, float _r){
-        Point2D p(x, y);
-        c = p;
+    Circle2D::Circle2D(){
+        c = Point2D();
+        r = -1;
+    }
+    Circle2D::Circle2D(float _x, float _y, float _r){
+        c = Point2D(_x,_y);
         r = _r;
     }
+
+    Circle2D::Circle2D(const Point2D& _c, float _r){
+        c = _c;
+        r = _r;
+    }
+
 
     float Circle2D::area() const {
         return M_PI * r * r;
