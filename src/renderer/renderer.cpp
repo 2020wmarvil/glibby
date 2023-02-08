@@ -1,8 +1,6 @@
 #include "renderer.h"
 
 #include "camera.h"
-#include "model.h"
-#include "material.h"
 #include "vulkan/vulkan_renderer.h"
 #include "window.h"
 
@@ -96,5 +94,10 @@ namespace glibby
 		{
 			materialToModels[defaultMaterial].erase(model);
 		}
+	}
+
+	Material* Renderer::CreateMaterial(const PipelineInfo& pipelineInfo)
+	{
+		return renderer->CreateMaterial(pipelineInfo);
 	}
 }

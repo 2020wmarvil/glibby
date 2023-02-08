@@ -2,6 +2,7 @@
 
 #include "renderer_core.h"
 #include "model.h"
+#include "material.h"
 
 #include <unordered_set>
 #include <unordered_map>
@@ -19,8 +20,6 @@ namespace glibby
     class VulkanRenderPass;
     class VulkanSwapchain;
 
-    class Material;
-
     class VulkanRenderer
     {
     public:
@@ -32,6 +31,7 @@ namespace glibby
 
         Model* LoadModelFromFile(const char* filepath);
         Model* CreateModel(const std::vector<ModelVertex>& vertices, const std::vector<uint32_t>& indices);
+        Material* CreateMaterial(const PipelineInfo& pipelineInfo);
         Camera* GetCamera() { return camera; }
         Material* GetDefaultMaterial();
 

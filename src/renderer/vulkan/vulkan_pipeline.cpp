@@ -29,9 +29,10 @@ static std::vector<char> ReadFile(const std::string& filename)
 
 namespace glibby
 {
-	VulkanPipeline::VulkanPipeline(VulkanDevice* device, VulkanRenderPass* renderPass, VkDescriptorSetLayout descriptorSetLayout)
+	VulkanPipeline::VulkanPipeline(VulkanDevice* device, VulkanRenderPass* renderPass, const PipelineInfo& pipelineInfo, VkDescriptorSetLayout descriptorSetLayout)
 	{
 		this->device = device;
+		this->pipelineInfo = pipelineInfo;
 		CreateGraphicsPipeline(renderPass, descriptorSetLayout);
 	}
 
@@ -43,8 +44,8 @@ namespace glibby
 
 	void VulkanPipeline::CreateGraphicsPipeline(VulkanRenderPass* renderPass, VkDescriptorSetLayout descriptorSetLayout)
 	{
-		const std::vector<char> vertShaderCode = ReadFile("../../resources/shaders/vert.spv");
-		const std::vector<char> fragShaderCode = ReadFile("../../resources/shaders/frag.spv");
+		const std::vector<char> vertShaderCode = ReadFile(pipelineInfo.vertShaderPath);
+		const std::vector<char> fragShaderCode = ReadFile(pipelineInfo.fragShaderPath);
 
 		if (vertShaderCode.size() == 0 || fragShaderCode.size() == 0)
 		{
@@ -152,24 +153,24 @@ namespace glibby
 
 		VK_CHECK(vkCreatePipelineLayout(device->GetHandle(), &pipelineLayoutInfo, nullptr, &pipelineLayout), "Failed to create pipeline layout.");
 
-		VkGraphicsPipelineCreateInfo pipelineInfo = { VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO };
-		pipelineInfo.stageCount = 2;
-		pipelineInfo.pStages = shaderStages;
-		pipelineInfo.pVertexInputState = &vertexInputInfo;
-		pipelineInfo.pInputAssemblyState = &inputAssembly;
-		pipelineInfo.pViewportState = &viewportState;
-		pipelineInfo.pRasterizationState = &rasterizer;
-		pipelineInfo.pMultisampleState = &multisampling;
-		pipelineInfo.pDepthStencilState = &depthStencil;
-		pipelineInfo.pColorBlendState = &colorBlending;
-		pipelineInfo.pDynamicState = &dynamicState;
-		pipelineInfo.layout = pipelineLayout;
-		pipelineInfo.renderPass = renderPass->GetHandle();
-		pipelineInfo.subpass = 0;
-		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
-		pipelineInfo.basePipelineIndex = -1; // Optional
+		VkGraphicsPipelineCreateInfo pipelineCreateInfo = { VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO };
+		pipelineCreateInfo.stageCount = 2;
+		pipelineCreateInfo.pStages = shaderStages;
+		pipelineCreateInfo.pVertexInputState = &vertexInputInfo;
+		pipelineCreateInfo.pInputAssemblyState = &inputAssembly;
+		pipelineCreateInfo.pViewportState = &viewportState;
+		pipelineCreateInfo.pRasterizationState = &rasterizer;
+		pipelineCreateInfo.pMultisampleState = &multisampling;
+		pipelineCreateInfo.pDepthStencilState = &depthStencil;
+		pipelineCreateInfo.pColorBlendState = &colorBlending;
+		pipelineCreateInfo.pDynamicState = &dynamicState;
+		pipelineCreateInfo.layout = pipelineLayout;
+		pipelineCreateInfo.renderPass = renderPass->GetHandle();
+		pipelineCreateInfo.subpass = 0;
+		pipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
+		pipelineCreateInfo.basePipelineIndex = -1; // Optional
 
-		VK_CHECK(vkCreateGraphicsPipelines(device->GetHandle(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline), "Failed to create graphics pipeline.");
+		VK_CHECK(vkCreateGraphicsPipelines(device->GetHandle(), VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, &graphicsPipeline), "Failed to create graphics pipeline.");
 
 		vkDestroyShaderModule(device->GetHandle(), fragShaderModule, nullptr);
 		vkDestroyShaderModule(device->GetHandle(), vertShaderModule, nullptr);

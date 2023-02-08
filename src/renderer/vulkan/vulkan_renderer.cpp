@@ -38,7 +38,9 @@ namespace glibby
 		: window(window), camera(camera)
 	{
 		Initialize();
-		defaultMaterial = std::make_unique<VulkanMaterial>(device.get(), renderPass.get());
+
+		PipelineInfo defaultPipelineInfo = { "../../resources/shaders/defaultVert.spv", "../../resources/shaders/defaultFrag.spv" };
+		defaultMaterial = std::make_unique<VulkanMaterial>(device.get(), renderPass.get(), defaultPipelineInfo);
 	}
 
 	VulkanRenderer::~VulkanRenderer()
@@ -52,6 +54,11 @@ namespace glibby
 	Model* VulkanRenderer::CreateModel(const std::vector<ModelVertex>& vertices, const std::vector<uint32_t>& indices)
 	{
 		return new VulkanModel(device.get(), vertices, indices);
+	}
+
+	Material* VulkanRenderer::CreateMaterial(const PipelineInfo& pipelineInfo)
+	{
+		return new VulkanMaterial(device.get(), renderPass.get(), pipelineInfo);
 	}
 
 	Material* VulkanRenderer::GetDefaultMaterial()

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "model.h"
+#include "material.h"
 #include "input.h"
 
 #include <memory>
@@ -13,7 +14,6 @@ namespace glibby
     class VulkanRenderer;
     class Window;
     class Camera;
-    class Material;
 
     class Renderer
     {
@@ -28,6 +28,8 @@ namespace glibby
         Model* AddModelByFile(const char* filepath, Material* material=nullptr);
         Model* AddModelByVertices(const std::vector<ModelVertex>& vertices, const std::vector<uint32_t>& indices, Material* material=nullptr);
         void RemoveModel(Model* model, Material* material=nullptr);
+
+        Material* CreateMaterial(const PipelineInfo& pipelineInfo);
     private:
         std::unique_ptr<Window> window;
         std::unique_ptr<Camera> camera;

@@ -16,7 +16,7 @@ namespace glibby
 	class VulkanMaterial : public Material
 	{
 	public:
-		VulkanMaterial(VulkanDevice* device, VulkanRenderPass* renderPass);
+		VulkanMaterial(VulkanDevice* device, VulkanRenderPass* renderPass, const PipelineInfo& pipelineInfo);
 		~VulkanMaterial();
 
 		void UpdateUniformBuffer(uint32_t currentImage, uint32_t width, uint32_t height, Camera* camera);

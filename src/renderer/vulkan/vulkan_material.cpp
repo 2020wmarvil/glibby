@@ -23,7 +23,7 @@ namespace glibby
 		glm::mat4 proj;
 	};
 
-	VulkanMaterial::VulkanMaterial(VulkanDevice* device, VulkanRenderPass* renderPass)
+	VulkanMaterial::VulkanMaterial(VulkanDevice* device, VulkanRenderPass* renderPass, const PipelineInfo& pipelineInfo)
 	{
 		this->device = device;
 
@@ -37,7 +37,7 @@ namespace glibby
 		CreateDescriptorSetLayout();
 		CreateDescriptorSets();
 
-		pipeline = std::make_unique<VulkanPipeline>(device, renderPass, descriptorSetLayout);
+		pipeline = std::make_unique<VulkanPipeline>(device, renderPass, pipelineInfo, descriptorSetLayout);
 	}
 
 	VulkanMaterial::~VulkanMaterial()

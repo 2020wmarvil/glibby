@@ -78,7 +78,8 @@ int main()
 	glibby::Window::Init();
 	glibby::Renderer renderer;
 
-	//Material* material = renderer->AddMaterial();
+	PipelineInfo pipelineInfo = { "../../resources/shaders/pointVert.spv", "../../resources/shaders/pointFrag.spv" };
+	Material* material = renderer.CreateMaterial(pipelineInfo);
 	renderer.AddModelByVertices(vertices, indices);
 	//renderer.AddModelByFile("../../resources/models/viking_room.obj");
 	renderer.Run();

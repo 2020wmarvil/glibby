@@ -1,6 +1,7 @@
 #pragma once
 
 #include "renderer_core.h"
+#include "vulkan/vulkan_material.h"
 
 #include <vector>
 
@@ -12,7 +13,7 @@ namespace glibby
 	class VulkanPipeline
 	{
 	public:
-		VulkanPipeline(VulkanDevice* device, VulkanRenderPass* renderPass, VkDescriptorSetLayout descriptorSetLayout);
+		VulkanPipeline(VulkanDevice* device, VulkanRenderPass* renderPass, const PipelineInfo& pipelineInfo, VkDescriptorSetLayout descriptorSetLayout);
 		~VulkanPipeline();
 
 		VkPipelineLayout GetPipelineLayout() { return pipelineLayout; }
@@ -25,6 +26,8 @@ namespace glibby
 	private:
 		VulkanDevice* device;
 		VkPipeline handle;
+
+		PipelineInfo pipelineInfo;
 
 		VkPipelineLayout pipelineLayout;
 		VkPipeline graphicsPipeline;

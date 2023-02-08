@@ -1,7 +1,5 @@
 #include "camera.h"
 
-#include <iostream>
-
 namespace glibby
 {
 	Camera::Camera()
@@ -39,8 +37,6 @@ namespace glibby
         front.y = sin(glm::radians(pitch));
         front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
         cameraFront = glm::normalize(front);
-
-        std::cout << pitch << " " << yaw << std::endl;
     }
 
 	glm::mat4 Camera::GetPerspective(uint32_t screenWidth, uint32_t screenHeight) const
