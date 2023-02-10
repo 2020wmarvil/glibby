@@ -80,15 +80,6 @@ namespace glibby
 		Vec(const Point3D& other) : x(other.x), y(other.y), z(other.z), w(0.0f) {}
 	};
 
-	typedef Vec<float, 2> Vec2;
-	typedef Vec<float, 3> Vec3;
-	typedef Vec<float, 4> Vec4;
-	typedef Vec<double, 2> Vec2d;
-	typedef Vec<double, 3> Vec3d;
-	typedef Vec<double, 4> Vec4d;
-	typedef Vec<uint32_t, 2> Vec2i;
-	typedef Vec<uint32_t, 3> Vec3i;
-	typedef Vec<uint32_t, 4> Vec4i;
 
 	template<typename T, size_t n>
 	Vec<T, n> operator-(Vec<T, n> vec)
@@ -291,9 +282,36 @@ namespace glibby
 		return Vec<T, 3>(x, -y, z);
 	}
 
-	template<size_t rows, size_t cols>
-	struct Mat 
+
+	template<typename T,size_t n>
+	struct MAT
 	{
-		float data[rows][cols];
+		T data[n][n];
+
 	};
+
+	template<typename T>
+	struct MAT<T, 2>
+	{
+
+	};
+	template<typename T>
+	struct MAT<T, 3>
+	{
+
+	};
+	template<typename T>
+	struct MAT<T, 4>
+	{
+
+	};
+
+	template <typename T>
+	using MAT2x2 = MAT<T, 2>;
+	template <typename T>
+	using MAT3x3 = MAT<T, 3>;
+	template <typename T>
+	using MAT4x4 = MAT<T, 4>;
+
+
 }

@@ -11,4 +11,4 @@ int main()
 	glibby::Window window(800, 600, "Demo Window");
 	window.Run();
 	glibby::Window::Terminate();
-}
+} 
