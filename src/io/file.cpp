@@ -10,7 +10,7 @@
 
 namespace glibby
 {
-    TriMesh glibby::LoadFromObjFile(const std::string &path) {
+    TriMesh LoadFromObjFile(const std::string &path) {
         // Load file at path
         std::ifstream file { path };
 
