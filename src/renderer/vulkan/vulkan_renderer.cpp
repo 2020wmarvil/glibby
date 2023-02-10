@@ -12,6 +12,7 @@
 #include "vulkan/vulkan_render_pass.h"
 #include "vulkan/vulkan_surface.h"
 #include "vulkan/vulkan_swapchain.h"
+#include "vulkan/vulkan_texture.h"
 #include "window.h"
 
 #include <algorithm>
@@ -59,6 +60,11 @@ namespace glibby
 	Material* VulkanRenderer::CreateMaterial(const PipelineInfo& pipelineInfo)
 	{
 		return new VulkanMaterial(device.get(), renderPass.get(), pipelineInfo);
+	}
+
+	Texture* VulkanRenderer::CreateTexture(void* data, uint32_t texWidth, uint32_t texHeight, uint32_t mipLevels)
+	{
+		return new VulkanTexture(device.get(), data, texWidth, texHeight, mipLevels);
 	}
 
 	Material* VulkanRenderer::GetDefaultMaterial()

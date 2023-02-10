@@ -100,4 +100,9 @@ namespace glibby
 	{
 		return renderer->CreateMaterial(pipelineInfo);
 	}
+
+	Texture* Renderer::CreateTexture(void* data, uint32_t texWidth, uint32_t texHeight, uint32_t mipLevels)
+	{
+		return renderer->CreateTexture(data, texWidth, texHeight, mipLevels);
+	}
 }

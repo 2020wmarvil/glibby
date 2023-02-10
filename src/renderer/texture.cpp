@@ -24,4 +24,10 @@ namespace glibby
 	{
 		stbi_image_free(pixels);
 	}
+
+	Texture::Texture()
+	{}
+
+	Texture::~Texture()
+	{}
 }

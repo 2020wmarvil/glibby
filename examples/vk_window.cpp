@@ -61,6 +61,43 @@ void PackPoints(const std::vector<Point2D>& inPoints, std::vector<ModelVertex>& 
 	}
 }
 
+void CreateTexture(unsigned char*& data, uint32_t texWidth, uint32_t texHeight, uint32_t numChannels)
+{
+	data = (unsigned char*)malloc(sizeof(unsigned char*) * texWidth * texHeight * numChannels);
+
+	for (size_t x = 0; x < texWidth; x++)
+	{
+		for (size_t y = 0; y < texHeight; y++)
+		{
+			size_t index = (y * texWidth + x) * numChannels;
+
+			float centerX = texWidth / 2;
+			float centerY = texHeight / 2;
+
+			float delX = centerX - x;
+			float delY = centerY - y;
+
+			float distanceSquared = delX * delX - delY * delY;
+			float radiusSquared = centerX * centerX;
+
+			if (distanceSquared < radiusSquared)
+			{
+				data[index+0] = 1.0f;
+				data[index+1] = 1.0f;
+				data[index+2] = 1.0f;
+				data[index+3] = 1.0f;
+			}
+			else
+			{
+				data[index+0] = 0.0f;
+				data[index+1] = 0.0f;
+				data[index+2] = 0.0f;
+				data[index+3] = 0.0f;
+			}
+		}
+	}
+}
+
 int main()
 {
 	std::vector<Point2D> points =
@@ -78,8 +115,13 @@ int main()
 	glibby::Window::Init();
 	glibby::Renderer renderer;
 
-	PipelineInfo pipelineInfo = { "../../resources/shaders/pointVert.spv", "../../resources/shaders/pointFrag.spv" };
-	Material* material = renderer.CreateMaterial(pipelineInfo);
+	unsigned char* data = nullptr;
+	uint32_t texWidth = 100, texHeight = 100;
+	CreateTexture(data, texWidth, texHeight, 4);
+	Texture* texture = renderer.CreateTexture(data, texWidth, texHeight, 1);
+
+	//PipelineInfo pipelineInfo = { "../../resources/shaders/pointVert.spv", "../../resources/shaders/pointFrag.spv" };
+	//Material* material = renderer.CreateMaterial(pipelineInfo); // TODO descriptor sets??
 	renderer.AddModelByVertices(vertices, indices);
 	//renderer.AddModelByFile("../../resources/models/viking_room.obj");
 	renderer.Run();

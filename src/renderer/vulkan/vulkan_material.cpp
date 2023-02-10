@@ -27,11 +27,10 @@ namespace glibby
 	{
 		this->device = device;
 
-		int texWidth, texHeight, mipLevels;
-		void* data = LoadTextureData("../../resources/textures/viking_room.png", &texWidth, &texHeight, &mipLevels);
-		texture = std::make_unique<VulkanTexture>(device, data, texWidth, texHeight, mipLevels);
-
-		FreeTextureData(data);
+		//int texWidth, texHeight, mipLevels;
+		//void* data = LoadTextureData("../../resources/textures/viking_room.png", &texWidth, &texHeight, &mipLevels);
+		//texture = std::make_unique<VulkanTexture>(device, data, texWidth, texHeight, mipLevels);
+		//FreeTextureData(data);
 
 		CreateUniformBuffers();
 		CreateDescriptorSetLayout();

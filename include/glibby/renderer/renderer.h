@@ -2,6 +2,7 @@
 
 #include "model.h"
 #include "material.h"
+#include "texture.h"
 #include "input.h"
 
 #include <memory>
@@ -30,6 +31,7 @@ namespace glibby
         void RemoveModel(Model* model, Material* material=nullptr);
 
         Material* CreateMaterial(const PipelineInfo& pipelineInfo);
+        Texture* CreateTexture(void* data, uint32_t texWidth, uint32_t texHeight, uint32_t mipLevels);
     private:
         std::unique_ptr<Window> window;
         std::unique_ptr<Camera> camera;
