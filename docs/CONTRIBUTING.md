@@ -18,7 +18,7 @@ File hierarchy in ```src/``` and ```include/glibby/``` should be mirrored.
 1. Fork the project
 2. Create a feature branch (```git checkout -b your-feature```)
 3. Implement your feature (```git commit -m "Implement feature" && git push origin your-feature```)
-4. Ensure your work aligns with our [Coding Standards](https://github.com/2020wmarvil/glibby/blob/main/CodingStandard.md)
+4. Ensure your work aligns with our [Coding Standards](https://github.com/2020wmarvil/glibby/blob/main/docs/CodingStandard.md)
 5. Ensure all tests are still passing (```./glibby_test_suite --order rand --warn NoAssertions```)
 6. Merge from main (```git merge upstream/main```)
 7. Create a pull request and complete code review process
@@ -154,7 +154,7 @@ TEST_CASE("Point2D distance", "[!benchmark][primitive][point2D]") {
 
 To execute all tests:
 ```
-$ ./glibby_test_suite --order rand --warn NoAssertions
+$ glibby_test_suite --order rand --warn NoAssertions
 ```
 
 To execute by name or tag with options:
