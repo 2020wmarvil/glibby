@@ -296,7 +296,27 @@ namespace glibby
 	struct MAT
 	{
 		T data[n][n];
-
+		MAT(T all)
+		{
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n; j++)
+				{
+					data[i][i] = all;
+				}
+			}
+		}
+		MAT(T mat[n][n])
+		{
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n; j++)
+				{
+					data[i][i] = mat[i][i];
+				}
+			}
+		}
+		const T& getValue(int row, int col)
 	};
 
 	template<typename T>
