@@ -2,7 +2,7 @@
 // Created by Matthew McCall on 1/27/23.
 //
 
-#include "glibby/io/tri_mesh.h"
+#include "glibby/mesh/tri_mesh.h"
 #include "glibby/primitives/triangle3D.h"
 #include "glibby/io/file.h"
 
@@ -14,7 +14,7 @@ namespace glibby
         // Load file at path
         std::ifstream file { path };
 
-        std::vector<Point3D> vertices;
+        std::vector<Point3> vertices;
         std::vector<Triangle3D> triangles;
 
         std::string keyword;
@@ -32,7 +32,7 @@ namespace glibby
                 float x, y, z;
                 file >> x >> y >> z;
 
-                vertices.push_back({x, y, z});
+                vertices.emplace_back(std::vector<float> {x, y, z});
             }
             else if (keyword == "vt")
             {

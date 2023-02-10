@@ -5,15 +5,15 @@
 #ifndef GLIBBY_TRIANGLE3D_H
 #define GLIBBY_TRIANGLE3D_H
 
-#include "point3D.h"
+#include "point.h"
 
 namespace glibby
 {
     struct Triangle3D
     {
-        Point3D a;
-        Point3D b;
-        Point3D c;
+        Point3 a;
+        Point3 b;
+        Point3 c;
     };
 }
 

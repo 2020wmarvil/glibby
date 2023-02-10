@@ -3,7 +3,7 @@
 //
 
 #include "glibby/primitives/triangle3D.h"
-#include "glibby/io/tri_mesh.h"
+#include "glibby/mesh/tri_mesh.h"
 
 namespace glibby
 {
