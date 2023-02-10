@@ -1,6 +1,5 @@
 #include "glibby/math/general_math.h"
-#include "glibby/primitives/pointND.h"
-#include "glibby/primitives/point2D.h"
+#include "glibby/primitives/point.h"
 
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -14,30 +13,60 @@
 // --break (enters the debugger when a test fails)
 // e.g. ./glibby_test_suite [primitive][point2D] --skip-benchmarks
 
-TEST_CASE("Point2D distance", "[primitive][point2D]") {
-    glibby::Point2D p1 = { 0.0f, 0.0f };
-    glibby::Point2D p2 = { 5.0f, 15.0f };
+TEST_CASE("Point1D distance", "[primitive][point]") {
+    glibby::Point1 p1;
+    glibby::Point1 p2({ 5.0f });
 
-    CHECK(glibby::Distance(p1, p1) == 0);
-    CHECK_FALSE(glibby::Distance(p1, p2) == 0);
-    CHECK_THAT(glibby::Distance(p1, p2), Catch::Matchers::WithinAbs(15.81139f, FLT_NEAR_ZERO));
+    CHECK(glibby::EuclideanDistance(p1, p1) == 0);
+    CHECK_FALSE(glibby::EuclideanDistance(p1, p2) == 0);
+    CHECK_THAT(glibby::EuclideanDistance(p1, p2), Catch::Matchers::WithinAbs(5.0f, FLT_NEAR_ZERO));
+
+    CHECK(glibby::ManhattanDistance(p1, p1) == 0);
+    CHECK_FALSE(glibby::ManhattanDistance(p1, p2) == 0);
+    CHECK_THAT(glibby::ManhattanDistance(p1, p2), Catch::Matchers::WithinAbs(5.0f, FLT_NEAR_ZERO));
 }
 
-TEST_CASE("PointND distance", "[primitive][pointND]") {
-    glibby::PointND<float, 2> p1;
-    p1.points[0] = 0.0f;
-    p1.points[1] = 0.0f;
-    glibby::PointND<float, 2> p2;
-    p2.points[0] = 5.0f;
-    p2.points[1] = 15.0f;
+TEST_CASE("Point2D distance", "[primitive][point]") {
+    glibby::Point2 p1;
+    glibby::Point2 p2({5.0f, 15.0f});
 
     CHECK(glibby::EuclideanDistance(p1, p1) == 0);
     CHECK_FALSE(glibby::EuclideanDistance(p1, p2) == 0);
     CHECK_THAT(glibby::EuclideanDistance(p1, p2), Catch::Matchers::WithinAbs(15.81139f, FLT_NEAR_ZERO));
+
+    CHECK(glibby::ManhattanDistance(p1, p1) == 0);
+    CHECK_FALSE(glibby::ManhattanDistance(p1, p2) == 0);
+    CHECK_THAT(glibby::ManhattanDistance(p1, p2), Catch::Matchers::WithinAbs(20.0f, FLT_NEAR_ZERO));
 }
 
-TEST_CASE("Point2D distance", "[!benchmark][primitive][point2D]") {
+TEST_CASE("Point3D distance", "[primitive][point]") {
+    glibby::Point3 p1;
+    glibby::Point3 p2({ 5.0f, 15.0f, 10.0f });
+
+    CHECK(glibby::EuclideanDistance(p1, p1) == 0);
+    CHECK_FALSE(glibby::EuclideanDistance(p1, p2) == 0);
+    CHECK_THAT(glibby::EuclideanDistance(p1, p2), Catch::Matchers::WithinAbs(18.7082869339f, FLT_NEAR_ZERO));
+
+    CHECK(glibby::ManhattanDistance(p1, p1) == 0);
+    CHECK_FALSE(glibby::ManhattanDistance(p1, p2) == 0);
+    CHECK_THAT(glibby::ManhattanDistance(p1, p2), Catch::Matchers::WithinAbs(30.0f, FLT_NEAR_ZERO));
+}
+
+TEST_CASE("PointND distance", "[primitive][point]") {
+    glibby::Point<float, 5> p1;
+    glibby::Point<float, 5> p2({5.0f, 15.0f, 3.0f, 7.0f, 6.0f});
+
+    CHECK(glibby::EuclideanDistance(p1, p1) == 0);
+    CHECK_FALSE(glibby::EuclideanDistance(p1, p2) == 0);
+    CHECK_THAT(glibby::EuclideanDistance(p1, p2), Catch::Matchers::WithinAbs(18.547236991f, FLT_NEAR_ZERO));
+
+    CHECK(glibby::ManhattanDistance(p1, p1) == 0);
+    CHECK_FALSE(glibby::ManhattanDistance(p1, p2) == 0);
+    CHECK_THAT(glibby::ManhattanDistance(p1, p2), Catch::Matchers::WithinAbs(36.0f, FLT_NEAR_ZERO));
+}
+
+/*TEST_CASE("Point2D distance", "[!benchmark][primitive][point2D]") {
     BENCHMARK("Point2D distance") {
         return glibby::Distance({ 0.0f, 0.0f }, { 5.0f, 8.0f });
     };
-}
+}*/
