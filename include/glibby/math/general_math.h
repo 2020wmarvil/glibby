@@ -292,17 +292,28 @@ namespace glibby
 	}
 
 
-	template<typename T,size_t n>
+	template<typename T, size_t n>
 	struct MAT
 	{
 		T data[n][n];
+		size_t size = n;
+		MAT()
+		{
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n; j++)
+				{
+					data[i][j] = 0;
+				}
+			}
+		}
 		MAT(T all)
 		{
 			for (int i = 0; i < n; i++)
 			{
 				for (int j = 0; j < n; j++)
 				{
-					data[i][i] = all;
+					data[i][j] = all;
 				}
 			}
 		}
@@ -312,29 +323,32 @@ namespace glibby
 			{
 				for (int j = 0; j < n; j++)
 				{
-					data[i][i] = mat[i][i];
+					data[i][j] = mat[i][j];
 				}
 			}
 		}
-		const T& getValue(int row, int col)
+		MAT(const MAT<T, n>& copy)
+		{
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n; j++)
+				{
+					data[i][j] = copy.data[i][j];
+				}
+			}
+		}
+		MAT<T, n>& operator =(const MAT<T, n>& rhs)
+		{
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n; j++)
+				{
+					data[i][j] = rhs.data[i][j];
+				}
+			}
+			return *this;
+		}
 	};
-
-	template<typename T>
-	struct MAT<T, 2>
-	{
-
-	};
-	template<typename T>
-	struct MAT<T, 3>
-	{
-
-	};
-	template<typename T>
-	struct MAT<T, 4>
-	{
-
-	};
-
 	template <typename T>
 	using MAT2x2 = MAT<T, 2>;
 	template <typename T>
@@ -342,5 +356,110 @@ namespace glibby
 	template <typename T>
 	using MAT4x4 = MAT<T, 4>;
 
+	template<typename T, size_t n>
+	void print_matrix(const MAT<T, n>& mat)
+	{
+
+		for (int i = 0; i < n; i++)
+		{
+			if (i == 0)std::cout << "[";
+			else std::cout << " ";
+			for (int j = 0; j < n; j++)
+			{
+				std::cout << mat.data[i][j];
+				if (j != n - 1)std::cout << " ";
+			}
+			if (i == n - 1)std::cout << "]";
+			else std::cout << " ";
+			std::cout << std::endl;
+		}
+
+	}
+	template<typename T, size_t n>
+	MAT<T, n> scalar_multiplication(float coefficient, const MAT<T, n>& mat)
+	{
+		MAT<T, n> result(mat);
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				result.data[i][j] *= coefficient;
+			}
+		}
+		return result;
+	}
+	template<typename T, size_t n>
+	MAT<T, n> scalar_division(float divisor, const MAT<T, n>& mat)
+	{
+		MAT<T, n> result(mat);
+		if (divisor == 0)
+		{
+			std::cout << "Cannot divide by 0." << std::endl;
+			exit(1);
+		}
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				result.data[i][j] /= divisor;
+			}
+		}
+		return result;
+	}
+	template <typename T, size_t n>
+	MAT<T, n> matrix_addition(const MAT<T, n>& mat1, const MAT<T, n>& mat2)
+	{
+		MAT<T, n> result;
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				result.data[i][j] = mat1.data[i][j] + mat2.data[i][j];
+			}
+		}
+		return result;
+	}
+	template <typename T, size_t n>
+	MAT<T, n> matrix_subtraction(const MAT<T, n>& mat1, const MAT<T, n>& mat2)
+	{
+		MAT<T, n> result;
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				result.data[i][j] = mat1.data[i][j] - mat2.data[i][j];
+			}
+		}
+		return result;
+	}
+	template <typename T, size_t n>
+	MAT<T, n> matrix_multiplication(const MAT<T, n>& mat1, const MAT<T, n>& mat2)
+	{
+		MAT<T, n> result;
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				for (int k = 0; k < n; k++)
+				{
+					result.data[i][j] += mat1.data[i][k] * mat2.data[k][j];
+				}
+			}
+		}
+		return result;
+	}
+	template <typename T, size_t n>
+	MAT<T, n> matrix_transposition(const MAT<T, n>& mat1)
+	{
+		MAT<T, n> result;
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				result.data[i][j] = mat1.data[j][i];
+			}
+		}
+		return result;
+	}
 
 }
