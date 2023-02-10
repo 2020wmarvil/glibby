@@ -9,15 +9,17 @@
 
 namespace glibby {
 
-    struct Point3D;
+    struct Triangle3D;
 
     class TriMesh
     {
     public:
-        TriMesh(const std::vector<Point3D>& vertices);
+        TriMesh(const std::vector<Triangle3D>& vertices);
+
+        const std::vector<Triangle3D> &getTriangles() const;
 
     private:
-        std::vector<Point3D> vertices;
+        std::vector<Triangle3D> triangles;
     };
 }
 

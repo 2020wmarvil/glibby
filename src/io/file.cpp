@@ -3,7 +3,7 @@
 //
 
 #include "glibby/io/tri_mesh.h"
-#include "glibby/primitives/point3D.h"
+#include "glibby/primitives/triangle3D.h"
 #include "glibby/io/file.h"
 
 #include <fstream>
@@ -15,6 +15,7 @@ namespace glibby
         std::ifstream file { path };
 
         std::vector<Point3D> vertices;
+        std::vector<Triangle3D> triangles;
 
         std::string keyword;
         while (file >> keyword)
@@ -48,11 +49,12 @@ namespace glibby
             else if (keyword == "f")
             {
                 // Face
-                std::string vertex1, vertex2, vertex3;
-                file >> vertex1 >> vertex2 >> vertex3;
+                int a, b, c;
+                file >> a >> b >> c;
+                triangles.push_back({vertices[a], vertices[b], vertices[c]});
             }
         }
 
-        return { vertices };
+        return { triangles };
     }
 }
