@@ -1,6 +1,6 @@
 #pragma once
 
-#include "glibby/primitives/point2D.h"
+#include "glibby/primitives/point.h"
 
 #include <cmath>
 #include <cstring>
@@ -36,8 +36,8 @@ namespace glibby
 		Vec(T x, T y) : x(x), y(y) {}
 		Vec(const Vec<T, 3>& other) : x(other.x), y(other.y) {}
 		Vec(const Vec<T, 4>& other) : x(other.x), y(other.y) {}
-		Vec(const Point2D& other) : x(other.x), y(other.y) {}
-		Vec(const Point3D& other) : x(other.x), y(other.y) {}
+		Vec(const Point2& other) : x(other.points[0]), y(other.points[1]) {}
+		Vec(const Point3& other) : x(other.points[0]), y(other.points[1]) {}
 	};
 
 	template <typename T>
@@ -55,8 +55,8 @@ namespace glibby
 		Vec(T x, T y, T z) : x(x), y(y), z(z) {}
 		Vec(const Vec<T, 2>& other) : x(other.x), y(other.y), z(0.0f) {}
 		Vec(const Vec<T, 4>& other) : x(other.x), y(other.y), z(other.z) {}
-		Vec(const Point2D& other) : x(other.x), y(other.y), z(0.0f) {}
-		Vec(const Point3D& other) : x(other.x), y(other.y), z(other.z) {}
+		Vec(const Point2& other) : x(other.points[0]), y(other.points[1]), z(0.0f) {}
+		Vec(const Point3& other) : x(other.points[0]), y(other.points[1]), z(other.points[2]) {}
 	};
 
 	template <typename T>
@@ -76,8 +76,8 @@ namespace glibby
 		Vec(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {}
 		Vec(const Vec<T, 2>& other) : x(other.x), y(other.y), z(0.0f), w(0.0f) {}
 		Vec(const Vec<T, 3>& other) : x(other.x), y(other.y), z(other.z), w(0.0f) {}
-		Vec(const Point2D& other) : x(other.x), y(other.y), z(0.0f), w(0.0f) {}
-		Vec(const Point3D& other) : x(other.x), y(other.y), z(other.z), w(0.0f) {}
+		Vec(const Point2& other) : x(other.points[0]), y(other.points[1]), z(0.0f), w(0.0f) {}
+		Vec(const Point3& other) : x(other.points[0]), y(other.points[1]), z(other.points[2]), w(0.0f) {}
 	};
 
 	typedef Vec<float, 2> Vec2;
