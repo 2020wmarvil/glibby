@@ -80,6 +80,15 @@ namespace glibby
 		Vec(const Point3D& other) : x(other.x), y(other.y), z(other.z), w(0.0f) {}
 	};
 
+	typedef Vec<float, 2> Vec2;
+	typedef Vec<float, 3> Vec3;
+	typedef Vec<float, 4> Vec4;
+	typedef Vec<double, 2> Vec2d;
+	typedef Vec<double, 3> Vec3d;
+	typedef Vec<double, 4> Vec4d;
+	typedef Vec<uint32_t, 2> Vec2i;
+	typedef Vec<uint32_t, 3> Vec3i;
+	typedef Vec<uint32_t, 4> Vec4i;
 
 	template<typename T, size_t n>
 	Vec<T, n> operator-(Vec<T, n> vec)
