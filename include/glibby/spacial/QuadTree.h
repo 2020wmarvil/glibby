@@ -38,8 +38,7 @@ namespace glibby {
           int capacity = 1);
 
       bool insert(std::shared_ptr<Point2D> point);
-      const std::shared_ptr<const Point2D> contains(
-          std::shared_ptr<Point2D> point) const;
+      bool contains(std::shared_ptr<Point2D> point) const;
       const std::vector<std::shared_ptr<const Point2D>> query(
           std::shared_ptr<Point2D> point, float width, float height) const;
 
@@ -47,8 +46,7 @@ namespace glibby {
       bool add_point(std::shared_ptr<QuadTreeNode> node, 
           std::shared_ptr<Point2D> point);
       void subdivide(std::shared_ptr<QuadTreeNode> node);
-      const std::shared_ptr<const Point2D> search(
-          std::shared_ptr<QuadTreeNode> node, 
+      bool search(std::shared_ptr<QuadTreeNode> node, 
           std::shared_ptr<Point2D> point) const;
       void search_tree(
           std::vector<std::shared_ptr<const Point2D>>* points,

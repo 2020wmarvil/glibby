@@ -1,7 +1,11 @@
 #include "glibby/spacial/QuadTree.h"
 #include "glibby/primitives/point2D.h"
+#include "glibby/math/general_math.h"
 
 #include <memory>
+#include <cmath>
+#include <vector>
+
 
 namespace glibby {
   QuadTreeNode::QuadTreeNode(std::shared_ptr<Point2D> cen, float width, 
@@ -86,10 +90,9 @@ namespace glibby {
     return add_point(this->node_, point);
   }
 
-  const std::shared_ptr<const Point2D> QuadTree::contains(
-      std::shared_ptr<Point2D> point) const {
+  bool QuadTree::contains(std::shared_ptr<Point2D> point) const {
     if (!this->node_->inside_boundary(point)) {
-      return NULL;
+      return false;
     }
     return search(this->node_,point);
   }
@@ -107,10 +110,10 @@ namespace glibby {
   bool QuadTree::add_point(std::shared_ptr<QuadTreeNode> node,
       std::shared_ptr<Point2D> point) {
     // if we have space at this node, add it here
+    if (!node->inside_boundary(point)) {
+      return false;
+    }
     if (node->points_.size() < node->capacity_) {
-      if (!node->inside_boundary(point)) {
-        return false;
-      }
       node->points_.push_back(point);
       this->tree_points_++;
       return true;
@@ -146,7 +149,7 @@ namespace glibby {
     }
   }
 
-  void subdivide(std::shared_ptr<QuadTreeNode> node) {
+  void QuadTree::subdivide(std::shared_ptr<QuadTreeNode> node) {
     node->divided_ = true;
 
     float new_width = node->width_ / 2;
@@ -182,23 +185,22 @@ namespace glibby {
         );
   }
 
-  const std::shared_ptr<const Point2D> QuadTree::search(
-      std::shared_ptr<QuadTreeNode> node,
+  bool QuadTree::search(std::shared_ptr<QuadTreeNode> node,
       std::shared_ptr<Point2D> point) const {
     if (!node->inside_boundary(point)) {
-      return NULL;
+      return false;
     }
     // check all points at this node
     for (long unsigned i=0; i < node->points_.size(); i++) {
-      if (node->points_[i]->x == point->x &&
-          node->points_[i]->y == point->y) {
-        return std::shared_ptr<const Point2D>(node->points_[i]);
+      if (fabsf(node->points_[i]->x - point->x) < FLT_NEAR_ZERO  &&
+          fabsf(node->points_[i]->y - point->y) < FLT_NEAR_ZERO) {
+        return true;
       } 
     }
     // not at this node, so check sub-node it might be in, but first
     // check if we actually have any sub-nodes
     if (!node->divided_) {
-      return NULL;
+      return false;
     }
     // is point to E or W
     if (point->x < node->center_->x) {
