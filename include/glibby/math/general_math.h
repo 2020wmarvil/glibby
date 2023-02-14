@@ -461,5 +461,91 @@ namespace glibby
 		}
 		return result;
 	}
-
-}
+	template <typename T, size_t n>
+	float matrix_determinant(const MAT<T, n>& mat)
+	{
+		float result;
+		if (n == 2)
+		{
+			result = (mat.data[0][0] * mat.data[1][1] - mat.data[0][1] * mat.data[1][0]);
+		}
+		if (n == 3)
+		{
+			MAT<T, 2> temp2x2_1;
+			MAT<T, 2> temp2x2_2;
+			MAT<T, 2> temp2x2_3;
+			int count1 = 0, count2 = 0, count3 = 0;
+			for (int j = 0; j < 3; j++)
+			{
+				for (int i = 0; i < 2; i++)
+				{
+					if (j == 0)
+					{
+						temp2x2_2.data[i][count2] = mat.data[i + 1][j];
+						temp2x2_3.data[i][count3] = mat.data[i + 1][j];
+					}
+					if (j == 1)
+					{
+						temp2x2_1.data[i][count1] = mat.data[i + 1][j];
+						temp2x2_3.data[i][count3] = mat.data[i + 1][j];
+					}
+					if (j == 2)
+					{
+						temp2x2_1.data[i][count1] = mat.data[i + 1][j];
+						temp2x2_2.data[i][count2] = mat.data[i + 1][j];
+					}
+				}
+				if (j == 0)count2++; count3++;
+				if (j == 1)count1++;
+			}
+			result = mat.data[0][0] * matrix_determinant(temp2x2_1)
+				- mat.data[0][1] * matrix_determinant(temp2x2_2)
+				+ mat.data[0][2] * matrix_determinant(temp2x2_3);
+		}
+		if (n == 4)
+		{
+			MAT<T, 3> temp3x3_1;
+			MAT<T, 3> temp3x3_2;
+			MAT<T, 3> temp3x3_3;
+			MAT<T, 3> temp3x3_4;
+			int count1 = 0, count2 = 0, count3 = 0, count4 = 0;
+			for (int j = 0; j < 4; j++)
+			{
+				for (int i = 0; i < 3; i++)
+				{
+					if (j == 0)
+					{
+						temp3x3_2.data[i][count2] = mat.data[i + 1][j];
+						temp3x3_3.data[i][count3] = mat.data[i + 1][j];
+						temp3x3_4.data[i][count4] = mat.data[i + 1][j];
+					}
+					if (j == 1)
+					{
+						temp3x3_1.data[i][count1] = mat.data[i + 1][j];
+						temp3x3_3.data[i][count3] = mat.data[i + 1][j];
+						temp3x3_4.data[i][count4] = mat.data[i + 1][j];
+					}
+					if (j == 2)
+					{
+						temp3x3_1.data[i][count1] = mat.data[i + 1][j];
+						temp3x3_2.data[i][count2] = mat.data[i + 1][j];
+						temp3x3_4.data[i][count4] = mat.data[i + 1][j];
+					}
+					if (j == 3)
+					{
+						temp3x3_1.data[i][count1] = mat.data[i + 1][j];
+						temp3x3_2.data[i][count2] = mat.data[i + 1][j];
+						temp3x3_3.data[i][count3] = mat.data[i + 1][j];
+					}
+				}
+				if (j == 0)count2++; count3++; count4++;
+				if (j == 1)count1++; count3++; count4++;
+				if (j == 2)count1++; count2++; count4++;
+			}
+			result = mat.data[0][0] * matrix_determinant(temp3x3_1)
+				- mat.data[0][1] * matrix_determinant(temp3x3_2)
+				+ mat.data[0][2] * matrix_determinant(temp3x3_3)
+				- mat.data[0][3] * matrix_determinant(temp3x3_4);
+		}
+		return result;
+	}
