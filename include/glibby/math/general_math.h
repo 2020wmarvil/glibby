@@ -549,3 +549,38 @@ namespace glibby
 		}
 		return result;
 	}
+	template<typename T, size_t n>
+	std::ostream& operator <<(std::ostream& out, const MAT<T, n>& mat)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			if (i == 0)
+				out << "[";
+			else
+				out << " ";
+			for (int j = 0; j < n; j++)
+			{
+				out << mat.data[i][j];
+				if (j != n - 1)
+					out << " ";
+			}
+			if (i == n - 1)
+				out << "]";
+			else
+				out << " ";
+			out << std::endl;
+		}
+		return out;
+	}
+	template<typename T, size_t n>
+	std::istream& operator >>(std::istream& in, MAT<T, n>& mat)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				in >> mat.data[i][j];
+			}
+		}
+		return in;
+	}
