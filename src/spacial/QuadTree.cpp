@@ -109,10 +109,11 @@ namespace glibby {
 
   bool QuadTree::add_point(std::shared_ptr<QuadTreeNode> node,
       std::shared_ptr<Point2D> point) {
-    // if we have space at this node, add it here
+    // is it inside the boundary of the node?
     if (!node->inside_boundary(point)) {
       return false;
     }
+    // if we have space at this node, add it here
     if (node->points_.size() < node->capacity_) {
       node->points_.push_back(point);
       this->tree_points_++;
@@ -180,7 +181,7 @@ namespace glibby {
 
     NE_center->x = node->center_->x + node->width_ / 4;
     NE_center->y = node->center_->y + node->height_ / 4;
-    node->SE_.reset(
+    node->NE_.reset(
         new QuadTreeNode(NE_center,new_width,new_height,node->capacity_)
         );
   }
