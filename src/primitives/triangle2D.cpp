@@ -36,10 +36,16 @@ namespace glibby
         return a + b + c;
     }
 
+    Point2D Triangle2D::get_center() const {
+        float cx = (p1.get_x() + p2.get_x() + p3.get_x())/3;
+        float cy = (p1.get_y() + p2.get_y() + p3.get_y())/3;
+
+        return Point2D(cx, cy);
+    }
+
     float Distance(const Triangle2D& t1, const Triangle2D& t2){
-        //float deltaX = t1.x - t2.x;
-		//float deltaY = t1.y - t2.y;
-		//return std::sqrt(deltaX * deltaX + deltaY * deltaY);
-        return -1;
+        Point2D c1 = t1.get_center();
+        Point2D c2 = t2.get_center();
+        return c1.distance(c2);
     }
 }
