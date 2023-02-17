@@ -28,4 +28,16 @@ namespace glibby
     float Circle2D::perimeter() const {
         return 2 * M_PI * r;
     }
+
+    bool Circle2D::intersects(Circle2D circle) {
+        float dist = c.distance(circle.get_center());
+        return dist <= r + circle.get_radius();
+    }
+
+    //Output
+    std::ostream& operator<< (std::ostream& out, const Circle2D& circle) {
+        out << "(" << circle.get_center().get_x() << "," << circle.get_center().get_y() 
+            << ") : r = " << circle.get_radius();
+        return out;
+    }
 }

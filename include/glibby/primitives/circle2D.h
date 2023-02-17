@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include "glibby/primitives/point2D.h"
 
 
@@ -19,10 +20,13 @@ namespace glibby
         float area() const;
         float perimeter() const;
 
+        bool intersects(Circle2D circle);
+
     private:
         //Member Variables
         Point2D c;
         float r;
     };
 
+    std::ostream& operator<< (std::ostream& out, const Circle2D& circle);
 }
