@@ -62,7 +62,7 @@ namespace glibby {
     float width = TopR->x - TopL->x;
     float height = TopR->y - BotR->y;
     
-    std::shared_ptr<Point2D> temp(new Point2D);
+    std::shared_ptr<Point2D> temp(new glibby::Point2D);
     temp->x = BotR->x + width/2;
     temp->y = BotR->y + height/2;
 
