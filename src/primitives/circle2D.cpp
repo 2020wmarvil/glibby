@@ -36,8 +36,7 @@ namespace glibby
 
     //Output
     std::ostream& operator<< (std::ostream& out, const Circle2D& circle) {
-        out << "(" << circle.get_center().get_x() << "," << circle.get_center().get_y() 
-            << ") : r = " << circle.get_radius();
+        out << circle.get_center() << " : r = " << circle.get_radius();
         return out;
     }
 }

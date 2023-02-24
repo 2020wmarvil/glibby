@@ -22,6 +22,9 @@ namespace glibby
 
         bool intersects(Circle2D circle);
 
+        //http://www.phatcode.net/articles.php?id=459
+        //Circle abd triangle intersect
+
     private:
         //Member Variables
         Point2D c;
