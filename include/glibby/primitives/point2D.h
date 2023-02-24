@@ -1,4 +1,6 @@
 #pragma once
+#include <iostream>
+
 
 namespace glibby
 {
@@ -19,5 +21,6 @@ namespace glibby
 			float y;
 	};
 
+	std::ostream& operator<< (std::ostream& out, const Point2D& point);
 	
 }

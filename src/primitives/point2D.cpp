@@ -1,5 +1,6 @@
 #include "glibby/primitives/point2D.h"
 
+#include <iostream>
 #include <cmath>
 
 namespace glibby
@@ -20,4 +21,11 @@ namespace glibby
 		float deltaY = y - p.y;
 		return std::sqrt(deltaX * deltaX + deltaY * deltaY);
 	}
+
+	
+	std::ostream& operator<<(std::ostream& out, const Point2D& point){
+		out << "(" << point.get_x() << ", " << point.get_y() << ")";
+		return out;
+	}
+	
 }
