@@ -444,7 +444,7 @@ namespace glibby
 			{
 				for (int j = 0; j < 3; j++)
 				{
-					data[i][j] = vall[i][j];
+					data[i][j] = vall[i].data[j];
 				}
 			}
 		}
@@ -514,7 +514,7 @@ namespace glibby
 			{
 				for (int j = 0; j < 2; j++)
 				{
-					data[i][j] = vall[i][j];
+					data[i][j] = vall[i].data[j];
 				}
 			}
 		}
