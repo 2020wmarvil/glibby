@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include "glibby/primitives/point2D.h"
 
 namespace glibby
@@ -12,6 +13,10 @@ namespace glibby
         Triangle2D(const Point2D& _p1, const Point2D& _p2, const Point2D& _p3);
 
         //Getters
+        Point2D get_p1() const { return p1; };
+        Point2D get_p2() const { return p2; };
+        Point2D get_p3() const { return p3; };
+
         float area() const;
         float perimeter() const;
         Point2D get_center() const;
@@ -20,6 +25,6 @@ namespace glibby
     };
 
     float Distance(const Triangle2D& t1, const Triangle2D& t2);
-
+    std::ostream& operator<< (std::ostream& out, const Triangle2D& triangle);
 
 }

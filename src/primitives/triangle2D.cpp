@@ -21,6 +21,7 @@ namespace glibby
         p3 = p3;
     }
 
+
     float Triangle2D::area() const {
         float a = p1.distance(p2);
         float b = p2.distance(p3);
@@ -47,5 +48,11 @@ namespace glibby
         Point2D c1 = t1.get_center();
         Point2D c2 = t2.get_center();
         return c1.distance(c2);
+    }
+    std::ostream& operator<<(std::ostream& out, const Triangle2D& triangle){
+        out << "P1: " << triangle.get_p1()
+            << "\nP2: " << triangle.get_p2()
+            << "\nP3: " << triangle.get_p3();
+        return out;
     }
 }
