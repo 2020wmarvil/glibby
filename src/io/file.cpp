@@ -51,7 +51,7 @@ namespace glibby
                 // Face
                 int a, b, c;
                 file >> a >> b >> c;
-                triangles.push_back({vertices[a], vertices[b], vertices[c]});
+                triangles.push_back({vertices[a-1], vertices[b-1], vertices[c-1]});
             }
         }
 
