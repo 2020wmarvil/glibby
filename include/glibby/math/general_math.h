@@ -349,6 +349,7 @@ namespace glibby
 			return *this;
 		}
 	};
+
 	template <typename T>
 	using MAT2x2 = MAT<T, 2>;
 	template <typename T>
@@ -356,6 +357,219 @@ namespace glibby
 	template <typename T>
 	using MAT4x4 = MAT<T, 4>;
 
+	template<typename T>
+	struct MAT<T, 4>
+	{
+		T data[4][4];
+		size_t size = 4;
+		MAT<T, 4>(Vec<T, 4> v1, Vec<T, 4> v2, Vec<T, 4> v3, Vec<T, 4> v4)
+		{
+			Vec<T, 4> vall[4];
+			vall[0] = v1;
+			vall[1] = v2;
+			vall[2] = v3;
+			vall[3] = v4;
+			for (int i = 0; i < 4; i++)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+					data[i][j] = vall[i].data[j];
+				}
+			}
+		}
+		MAT()
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+					data[i][j] = 0;
+				}
+			}
+		}
+		MAT(T all)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+					data[i][j] = all;
+				}
+			}
+		}
+		MAT(T mat[4][4])
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+					data[i][j] = mat[i][j];
+				}
+			}
+		}
+		MAT(const MAT4x4<T>& copy)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+					data[i][j] = copy.data[i][j];
+				}
+			}
+		}
+		MAT4x4<T>& operator =(const MAT4x4<T>& rhs)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+					data[i][j] = rhs.data[i][j];
+				}
+			}
+			return *this;
+		}
+	};
+	template<typename T>
+	struct MAT<T, 3>
+	{
+		T data[3][3];
+		size_t size = 3;
+		MAT<T, 3>(Vec<T, 3> v1, Vec<T, 3> v2, Vec<T, 3> v3)
+		{
+			Vec<T, 3> vall[3];
+			vall[0] = v1;
+			vall[1] = v2;
+			vall[2] = v3;
+			for (int i = 0; i < 3; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					data[i][j] = vall[i][j];
+				}
+			}
+		}
+		MAT()
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					data[i][j] = 0;
+				}
+			}
+		}
+		MAT(T all)
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					data[i][j] = all;
+				}
+			}
+		}
+		MAT(T mat[3][3])
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					data[i][j] = mat[i][j];
+				}
+			}
+		}
+		MAT(const MAT3x3<T>& copy)
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					data[i][j] = copy.data[i][j];
+				}
+			}
+		}
+		MAT3x3<T>& operator =(const MAT3x3<T>& rhs)
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					data[i][j] = rhs.data[i][j];
+				}
+			}
+			return *this;
+		}
+	};
+	template<typename T>
+	struct MAT<T, 2>
+	{
+		T data[2][2];
+		size_t size = 2;
+		MAT<T, 2>(Vec<T, 2> v1, Vec<T, 2> v2)
+		{
+			Vec<T, 2> vall[2];
+			vall[0] = v1;
+			vall[1] = v2;
+			for (int i = 0; i < 2; i++)
+			{
+				for (int j = 0; j < 2; j++)
+				{
+					data[i][j] = vall[i][j];
+				}
+			}
+		}
+		MAT()
+		{
+			for (int i = 0; i < 2; i++)
+			{
+				for (int j = 0; j < 2; j++)
+				{
+					data[i][j] = 0;
+				}
+			}
+		}
+		MAT(T all)
+		{
+			for (int i = 0; i < 2; i++)
+			{
+				for (int j = 0; j < 2; j++)
+				{
+					data[i][j] = all;
+				}
+			}
+		}
+		MAT(T mat[2][2])
+		{
+			for (int i = 0; i < 2; i++)
+			{
+				for (int j = 0; j < 2; j++)
+				{
+					data[i][j] = mat[i][j];
+				}
+			}
+		}
+		MAT(const MAT2x2<T>& copy)
+		{
+			for (int i = 0; i < 2; i++)
+			{
+				for (int j = 0; j < 2; j++)
+				{
+					data[i][j] = copy.data[i][j];
+				}
+			}
+		}
+		MAT2x2<T>& operator =(const MAT2x2<T>& rhs)
+		{
+			for (int i = 0; i < 2; i++)
+			{
+				for (int j = 0; j < 2; j++)
+				{
+					data[i][j] = rhs.data[i][j];
+				}
+			}
+			return *this;
+		}
+	};
 	template<typename T, size_t n>
 	void print_matrix(const MAT<T, n>& mat)
 	{
@@ -584,3 +798,19 @@ namespace glibby
 		}
 		return in;
 	}
+	template<typename T>
+	MAT4x4<T> LookAt(const Vec<T, 3>& eye, const Vec<T, 3>& at, const Vec<T, 3>& up)
+	{
+		Vec<T, 3> zaxis = Normalize(at - eye);
+		Vec<T, 3> xaxis = Normalize(Cross(zaxis, up));
+		Vec<T, 3> yaxis = Cross(zaxis, xaxis);
+		zaxis = -zaxis;
+		MAT4x4<T> m(Vec4(xaxis.x, xaxis.y, xaxis.z, -Dot(xaxis, eye)),
+			Vec4(yaxis.x, yaxis.y, yaxis.z, -Dot(yaxis, eye)),
+			Vec4(zaxis.x, zaxis.y, zaxis.z, -Dot(zaxis, eye)),
+			Vec4(0, 0, 0, 1));
+		return m;
+
+	}
+
+
