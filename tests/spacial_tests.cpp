@@ -106,22 +106,22 @@ TEST_CASE("QuadTree random insertion and check","[spacial][QuadTree]") {
     std::shared_ptr<glibby::Point2D> temp1(new glibby::Point2D);
     temp1->x = distribution(gen) + 3;
     temp1->y = distribution(gen) + 3;
-    valid.push_back(temp1);
+    invalid.push_back(temp1);
 
     std::shared_ptr<glibby::Point2D> temp2(new glibby::Point2D);
     temp2->x = distribution(gen) - 3;
     temp2->y = distribution(gen) + 3;
-    valid.push_back(temp2);
+    invalid.push_back(temp2);
 
     std::shared_ptr<glibby::Point2D> temp3(new glibby::Point2D);
     temp3->x = distribution(gen) + 3;
     temp3->y = distribution(gen) - 3;
-    valid.push_back(temp3);
+    invalid.push_back(temp3);
 
     std::shared_ptr<glibby::Point2D> temp4(new glibby::Point2D);
     temp4->x = distribution(gen) - 3;
     temp4->y = distribution(gen) - 3;
-    valid.push_back(temp4);
+    invalid.push_back(temp4);
   }
   for (int i=0; i < invalid.size(); i++) {
     CHECK_FALSE(qt1.insert(invalid[i]));
