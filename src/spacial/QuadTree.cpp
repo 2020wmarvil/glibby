@@ -72,8 +72,11 @@ namespace glibby {
    
   QuadTree::QuadTree(std::shared_ptr<Point2D> p, float width, float height, 
       int capacity) {
+    std::shared_ptr<Point2D> temp(new Point2D);
+    temp->x = p->x;
+    temp->y = p->y;
     this->node_ = std::shared_ptr<QuadTreeNode>(
-        new QuadTreeNode(p,width,height,capacity));
+        new QuadTreeNode(temp,width,height,capacity));
     if (capacity > 0) {
       this->capacity_ = capacity;
     } else {
