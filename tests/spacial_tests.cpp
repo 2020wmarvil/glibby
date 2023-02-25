@@ -144,10 +144,11 @@ TEST_CASE("QuadTree find all points in area","[spacial][QuadTree]") {
       temp.y = j;
       should_include.push_back(temp);
       CHECK(qt1.insert(&temp));
+      CHECK(qt1.contains(&temp));
     }
   }
 
-  std::vector<glibby::Point2D> in_area = qt1.query(&(*pt1),1.500f,1.500f);
+  std::vector<glibby::Point2D> in_area = qt1.query(&(*pt1),3.00f,3.00f);
 
   CHECK(in_area.size() == should_include.size());
 
