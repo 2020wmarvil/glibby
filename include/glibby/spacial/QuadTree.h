@@ -12,9 +12,8 @@ namespace glibby {
       QuadTreeNode(std::shared_ptr<Point2D> cen, float width, float height, 
           int cap);
 
-      bool inside_boundary(std::shared_ptr<Point2D> ptr) const;
-      bool intersect_boundary(std::shared_ptr<Point2D> center, 
-          float width, float height) const;
+      bool inside_boundary(Point2D* ptr) const;
+      bool intersect_boundary(Point2D* center, float width, float height) const;
 
       std::shared_ptr<Point2D> center_;
       long unsigned capacity_;
@@ -37,21 +36,18 @@ namespace glibby {
       QuadTree(std::shared_ptr<Point2D> p, float width, float height, 
           int capacity = 1);
 
-      bool insert(std::shared_ptr<Point2D> point);
-      bool contains(std::shared_ptr<Point2D> point) const;
-      const std::vector<std::shared_ptr<const Point2D>> query(
-          std::shared_ptr<Point2D> point, float width, float height) const;
+      bool insert(Point2D* point);
+      bool contains(Point2D* point) const;
+      std::vector<Point2D> query(Point2D* point, float width, 
+          float height) const;
 
     private:
-      bool add_point(std::shared_ptr<QuadTreeNode> node, 
-          std::shared_ptr<Point2D> point);
+      bool add_point(std::shared_ptr<QuadTreeNode> node, Point2D* point);
       void subdivide(std::shared_ptr<QuadTreeNode> node);
-      bool search(std::shared_ptr<QuadTreeNode> node, 
-          std::shared_ptr<Point2D> point) const;
+      bool search(std::shared_ptr<QuadTreeNode> node, Point2D* point) const;
       void search_tree(
-          std::vector<std::shared_ptr<const Point2D>>* points,
-          std::shared_ptr<QuadTreeNode> node, std::shared_ptr<Point2D> center, 
-          float width, float height) const;
+          std::vector<Point2D>* points, std::shared_ptr<QuadTreeNode> node, 
+          Point2D* center, float width, float height) const;
       
       std::shared_ptr<QuadTreeNode> node_;
       int capacity_;

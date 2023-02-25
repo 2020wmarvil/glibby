@@ -17,7 +17,7 @@ namespace glibby {
     this->capacity_ = cap;
   }
 
-  bool QuadTreeNode::inside_boundary(std::shared_ptr<Point2D> ptr) const {
+  bool QuadTreeNode::inside_boundary(Point2D* ptr) const {
     if (ptr->x <= this->center_->x + this->width_ / 2 &&
         ptr->x >= this->center_->x - this->width_ / 2 &&
         ptr->y <= this->center_->y + this->height_ / 2 &&
@@ -27,7 +27,7 @@ namespace glibby {
     return false;
   }
 
-  bool QuadTreeNode::intersect_boundary(std::shared_ptr<Point2D> center,
+  bool QuadTreeNode::intersect_boundary(Point2D* center,
       float width, float height) const {
     float thisL, thisR, thisT, thisB; // Left, Right, Top, Bottom of boundary
     thisL = this->center_->x - this->width_ / 2;
@@ -82,7 +82,7 @@ namespace glibby {
     this->tree_points_ = 0;
   }
 
-  bool QuadTree::insert(std::shared_ptr<Point2D> point) {
+  bool QuadTree::insert(Point2D* point) {
     // out of bounds
     if (!this->node_->inside_boundary(point)) {
       return false;
@@ -90,32 +90,32 @@ namespace glibby {
     return add_point(this->node_, point);
   }
 
-  bool QuadTree::contains(std::shared_ptr<Point2D> point) const {
+  bool QuadTree::contains(Point2D* point) const {
     if (!this->node_->inside_boundary(point)) {
       return false;
     }
     return search(this->node_,point);
   }
 
-  const std::vector<std::shared_ptr<const Point2D>>
-    QuadTree::query (std::shared_ptr<Point2D> point, float width, 
-    float height) const {
-      std::vector<std::shared_ptr<const Point2D>> points;
-      search_tree(&points, this->node_, point, width, height);
-      return points;
-    }
+  std::vector<Point2D> QuadTree::query (Point2D* point, 
+      float width, float height) const {
+    std::vector<Point2D> points;
+    search_tree(&points, this->node_, point, width, height);
+    return points;
+  }
 
 
 
-  bool QuadTree::add_point(std::shared_ptr<QuadTreeNode> node,
-      std::shared_ptr<Point2D> point) {
+  bool QuadTree::add_point(std::shared_ptr<QuadTreeNode> node, Point2D* point) {
     // is it inside the boundary of the node?
     if (!node->inside_boundary(point)) {
       return false;
     }
     // if we have space at this node, add it here
     if (node->points_.size() < node->capacity_) {
-      node->points_.push_back(point);
+      node->points_.push_back(std::shared_ptr<Point2D>(new Point2D));
+      node->points_[node->points_.size()-1]->x = point->x;
+      node->points_[node->points_.size()-1]->y = point->y;
       this->tree_points_++;
       return true;
     }
@@ -187,7 +187,7 @@ namespace glibby {
   }
 
   bool QuadTree::search(std::shared_ptr<QuadTreeNode> node,
-      std::shared_ptr<Point2D> point) const {
+      Point2D* point) const {
     if (!node->inside_boundary(point)) {
       return false;
     }
@@ -226,9 +226,8 @@ namespace glibby {
   }
 
   void QuadTree::search_tree(
-      std::vector<std::shared_ptr<const Point2D>>* points,
-      std::shared_ptr<QuadTreeNode> node, std::shared_ptr<Point2D> center, 
-      float width, float height) const {
+      std::vector<Point2D>* points, std::shared_ptr<QuadTreeNode> node, 
+      Point2D* center, float width, float height) const {
     if (!node->intersect_boundary(center, width, height)) {
       return;
     }
@@ -237,8 +236,14 @@ namespace glibby {
           node->points_[i]->x > center->x - width/2 &&
           node->points_[i]->y < center->y + height/2 &&
           node->points_[i]->y > center->y - height/2) {
-        points->push_back(node->points_[i]);        
+        Point2D temp;
+        temp.x = node->points_[i]->x;
+        temp.y = node->points_[i]->y;
+        points->push_back(temp);        
       }
+    }
+    if (!node->divided_) {
+      return;
     }
     search_tree(points,node->SW_,center,width,height);
     search_tree(points,node->SE_,center,width,height);
