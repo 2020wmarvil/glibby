@@ -41,6 +41,8 @@ namespace glibby {
       std::vector<Point2D> query(Point2D* point, float width, 
           float height) const;
 
+      int size() const {return size_;};
+
     private:
       bool add_point(std::shared_ptr<QuadTreeNode> node, Point2D* point);
       void subdivide(std::shared_ptr<QuadTreeNode> node);
@@ -51,7 +53,7 @@ namespace glibby {
       
       std::shared_ptr<QuadTreeNode> node_;
       int capacity_;
-      int tree_points_;
+      int size_;
   };
 }
 

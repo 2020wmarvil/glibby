@@ -56,7 +56,7 @@ namespace glibby {
     } else {
       this->capacity_ = 1;
     }
-    this->tree_points_ = 0;
+    this->size_ = 0;
 
     // using points to create rectangle that will be the bounding box
     float width = TopR->x - TopL->x;
@@ -82,7 +82,7 @@ namespace glibby {
     } else {
       this->capacity_ = 1;
     }
-    this->tree_points_ = 0;
+    this->size_ = 0;
   }
 
   bool QuadTree::insert(Point2D* point) {
@@ -119,7 +119,7 @@ namespace glibby {
       node->points_.push_back(std::shared_ptr<Point2D>(new Point2D));
       node->points_[node->points_.size()-1]->x = point->x;
       node->points_[node->points_.size()-1]->y = point->y;
-      this->tree_points_++;
+      this->size_++;
       return true;
     }
     
