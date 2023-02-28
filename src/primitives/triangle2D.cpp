@@ -16,9 +16,9 @@ namespace glibby
     }
 
     Triangle2D::Triangle2D(const Point2D& _p1, const Point2D& _p2, const Point2D& _p3) {
-        p1 = p1;
-        p2 = p2;
-        p3 = p3;
+        p1 = Point2D(_p1.get_x(), _p1.get_y());
+        p2 = Point2D(_p2.get_x(), _p2.get_y());
+        p3 = Point2D(_p3.get_x(), _p3.get_y());
     }
 
 
