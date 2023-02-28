@@ -66,7 +66,6 @@ namespace glibby
       std::shared_ptr<QuadTreeNode> NE_;
       std::shared_ptr<QuadTreeNode> SW_;
       std::shared_ptr<QuadTreeNode> SE_;
-      std::shared_ptr<QuadTreeNode> parent_; 
       std::vector<std::shared_ptr<Point2D>> points_;
   };
 
