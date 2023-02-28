@@ -142,12 +142,14 @@ namespace glibby
 			}
 		}
 
+		
+
 		//Help for debugging(may or may not be in the final version)
 		void BFSprint() {
 			if (!parent) {
 				return;
 			}
-			Point<T, N> p = parent->val;
+			glibby::Point<T, N> p = parent->val;
 			std::queue<Node<glibby::Point<T, N>>*> q;
 			q.push(parent);
 			int layer = 0;
