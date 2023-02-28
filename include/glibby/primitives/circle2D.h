@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include "glibby/primitives/point2D.h"
+#include "glibby/primitives/triangle2D.h"
 
 
 namespace glibby
@@ -12,6 +13,7 @@ namespace glibby
         Circle2D();
         Circle2D(float _x, float _y, float _r);
         Circle2D(const Point2D& _c, float _r);
+        Circle2D(const Circle2D& other);
 
         //Accessors
         const Point2D& get_center() const {return c;}
@@ -20,10 +22,10 @@ namespace glibby
         float area() const;
         float perimeter() const;
 
-        bool intersects(Circle2D circle);
+        bool intersects(const Circle2D& circle);
+        bool intersects(const Triangle2D& triangle);
 
         //http://www.phatcode.net/articles.php?id=459
-        //Circle abd triangle intersect
 
     private:
         //Member Variables
