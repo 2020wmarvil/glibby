@@ -6,8 +6,10 @@
 #include <memory>
 #include <vector>
 
-namespace glibby {
-  class QuadTreeNode {
+namespace glibby 
+{
+  class QuadTreeNode 
+  {
     public:
       QuadTreeNode(std::shared_ptr<Point2D> cen, float width, float height, 
           int cap);
@@ -28,7 +30,8 @@ namespace glibby {
       std::vector<std::shared_ptr<Point2D>> points_;
   };
 
-  class QuadTree {
+  class QuadTree 
+  {
     public:
       QuadTree(std::shared_ptr<Point2D> TopL, std::shared_ptr<Point2D> TopR, 
           std::shared_ptr<Point2D> BotL, std::shared_ptr<Point2D> BotR, 
