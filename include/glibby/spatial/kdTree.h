@@ -1,11 +1,11 @@
 #pragma once
 
-#include <vector>
-#include <map>
-#include <queue>
 #include "glibby/primitives/point.h"
 #include <iostream>
+#include <map>
+#include <queue>
 #include <string>
+#include <vector>
 
 namespace glibby
 {
@@ -21,109 +21,49 @@ namespace glibby
 	};
 
 	template<typename T, int N>
-	class kdTree {
-	private:
-		std::vector<glibby::Point<T, N>> points;
-		Node<glibby::Point<T, N>>* parent = NULL;
-
-		bool find(Node<glibby::Point<T, N>>*& node, glibby::Point<T, N> point) {
-			if (!node) {
-				return false;
-			}
-
-			if (node->val == point) {
-				return true;
-			}
-			return find(node->left, point) || find(node->right, point);
-		}
-
-		void construct_tree(std::vector<glibby::Point<T, N>>& points, Node<glibby::Point<T, N>>*& node, int depth) {
-			if (points.size() == 0) {
-				return;
-			}
-
-			if (points.size() == 1) {
-				node = new Node(points[0]);
-				return;
-			}
-
-			std::vector<Point<T, N>> left;
-			std::vector<Point<T, N>> right;
-
-			std::map<int, std::vector<Point<T, N>>> mp;
-			for (int i = 0; i < points.size(); i++) {
-				mp[points[i].coord[depth]].push_back(points[i]);
-			}
-
-			int half = points.size() / 2;
-			int index = 0;
-			for (auto x : mp) {
-				for (int i = 0; i < x.second.size(); i++) {
-					if (index < half) {
-						left.push_back(x.second[i]);
-					}
-					else if (index > half) {
-						right.push_back(x.second[i]);
-					}
-					else {
-						node = new Node<glibby::Point<T, N>>(x.second[i]);
-					}
-					index++;
-				}
-			}
-			construct_tree(left, node->left, (depth + 1) % N);
-			construct_tree(right, node->right, (depth + 1) % N);
-		}
-
-		void destroy_tree(Node<glibby::Point<T, N>>* node) {
-			if (node->left) {
-				destroy_tree(node->left);
-			}
-			if (node->right) {
-				destroy_tree(node->right);
-			}
-			delete(node);
-		}
+	class kdTree 
+	{
 
 	public:
-		kdTree(std::vector<glibby::Point<T, N>> pointss) {
-			for (int i = 0; i < pointss.size(); i++) {
-				points.push_back(pointss[i]);
+		kdTree(std::vector<Point<T, N>> const& NewPoints) {
+			for (int i = 0; i < NewPoints.size(); i++) {
+				points.push_back(NewPoints[i]);
 			}
-			construct_tree(pointss, parent, 0);
+
+			ConstructTree(NewPoints, parent, 0);
 		}
 
 		kdTree(Point<T, N> point) {
 			points.push_back(point);
-			parent = new Node<glibby::Point<T, N>>(point);
+			parent = new Node<Point<T, N>>(point);
 		}
 
-		~kdTree() { destroy_tree(parent); }
+		~kdTree() { DestroyTree(parent); }
 
 
-		void insert(glibby::Point<T, N> point) {
-			if (find(parent, point)) {
+		void Insert(const Point<T, N>& point) {
+			if (Find(parent, point)) {
 				return;
 			}
 
-			destroy_tree(parent);
+			DestroyTree(parent);
 			points.push_back(point);
-			construct_tree(points, parent, 0);
+			ConstructTree(points, parent, 0);
 		}
 
-		void insert(std::vector<glibby::Point<T, N>>& point) {
+		void Insert(const std::vector<Point<T, N>>& point) {
 			for (int i = 0; i < point.size(); i++) {
-				insert(point[i]);
+				Insert(point[i]);
 			}
 		}
 
-		void remove(glibby::Point<T, N> point) {
-			if (!find(parent, point)) {
+		void Delete(const Point<T, N>& point) {
+			if (!Find(parent, point)) {
 				return;
 			}
 
-			destroy_tree(parent);
-			std::vector<glibby::Point<T, N>> temp;
+			DestroyTree(parent);
+			std::vector<Point<T, N>> temp;
 			for (int i = 0; i < points.size(); i++) {
 				if (points[i] != point) {
 					temp.push_back(points[i]);
@@ -133,24 +73,23 @@ namespace glibby
 			for (int i = 0; i < temp.size(); i++) {
 				points.push_back(temp[i]);
 			}
-			construct_tree(points, parent, 0);
+			ConstructTree(points, parent, 0);
 		}
 
-		void remove(std::vector<glibby::Point<T, N>>& point) {
-			for (int i = 0; i < point.size(); i++) {
-				remove(point[i]);
+		void Delete(const std::vector<Point<T, N>>& points) {
+			for (int i = 0; i < points.size(); i++) {
+				Delete(points[i]);
 			}
 		}
 
-		
 
 		//Help for debugging(may or may not be in the final version)
 		void BFSprint() {
 			if (!parent) {
 				return;
 			}
-			glibby::Point<T, N> p = parent->val;
-			std::queue<Node<glibby::Point<T, N>>*> q;
+			Point<T, N> p = parent->val;
+			std::queue<Node<Point<T, N>>*> q;
 			q.push(parent);
 			int layer = 0;
 			while (q.size() > 0) {
@@ -164,7 +103,7 @@ namespace glibby
 						std::cout << " " << f->val.coord[j] << " ";
 					}
 					std::cout << "]" << std::endl;
-					if(f->left){
+					if (f->left) {
 						q.push(f->left);
 					}
 					if (f->right) {
@@ -173,6 +112,72 @@ namespace glibby
 				}
 				layer++;
 			}
+		}
+
+	private:
+		std::vector<Point<T, N>> points;
+		Node<Point<T, N>>* parent = NULL;
+
+		bool Find(Node<Point<T, N>>*& node, const Point<T, N>& point) {
+			if (!node) {
+				return false;
+			}
+
+			if (node->val == point) {
+				return true;
+			}
+
+			return Find(node->left, point) || Find(node->right, point);
+		}
+
+		void ConstructTree(const std::vector<Point<T, N>>& points, Node<Point<T, N>>*& node, int depth) {
+			if (points.size() == 0) {
+				return;
+			}
+
+			if (points.size() == 1) {
+				node = new Node(points[0]);
+				return;
+			}
+
+			std::vector<Point<T, N>> left;
+			std::vector<Point<T, N>> right;
+
+			std::map<int, std::vector<Point<T, N>>> sortedPointsByAxis;
+			for (int i = 0; i < points.size(); i++) {
+				sortedPointsByAxis[points[i].coord[depth]].push_back(points[i]);
+			}
+
+			int half = points.size() / 2;
+			int index = 0;
+			for (auto const& x : sortedPointsByAxis) {
+				for (int i = 0; i < x.second.size(); i++) {
+					if (index < half) {
+						left.push_back(x.second[i]);
+					}
+					else if (index > half) {
+						right.push_back(x.second[i]);
+					}
+					else {
+						node = new Node<Point<T, N>>(x.second[i]);
+					}
+					index++;
+				}
+			}
+
+			ConstructTree(left, node->left, (depth + 1) % N);
+			ConstructTree(right, node->right, (depth + 1) % N);
+		}
+
+		void DestroyTree(Node<Point<T, N>>* node) {
+			if (node->left) {
+				DestroyTree(node->left);
+			}
+			if (node->right) {
+				DestroyTree(node->right);
+			}
+
+			delete(node);
 		}
 	};
 }

@@ -17,7 +17,8 @@ namespace glibby
 		explicit Point(T arr[N]) { for (size_t i = 0; i < N; i++) coord[i] = arr[i]; }
 		explicit Point(std::vector<T> arr) { for (size_t i = 0; i < N; i++) coord[i] = arr[i]; }
 
-		bool operator==(Point<T, N> p) {
+		bool operator==(const Point<T, N> p) 
+		{
 			for (int i = 0; i < N; i++) {
 				if (coord[i] != p.coord[i]) {
 					return false;
