@@ -12,10 +12,11 @@ namespace glibby
   {
     public:
       OcTreeNode(std::shared_ptr<Point3> cen, float width, float height, 
-          int cap);
+          float depth, int cap);
 
       bool inside_boundary(Point3* ptr) const;
-      bool intersect_boundary(Point3* center, float width, float height) const;
+      bool intersect_boundary(Point3* center, float width, float height, 
+          float depth) const;
 
       std::shared_ptr<Point3> center_;
       long unsigned capacity_;
@@ -31,20 +32,19 @@ namespace glibby
       std::shared_ptr<OcTreeNode> NEB_;
       std::shared_ptr<OcTreeNode> SWB_;
       std::shared_ptr<OcTreeNode> SEB_;
-      std::shared_ptr<OcTreeNode> parent_; 
       std::vector<std::shared_ptr<Point3>> points_;
   };
 
   class OcTree 
   {
     public:
-      OcTree(std::shared_ptr<Point3> p, float width, float height, 
+      OcTree(std::shared_ptr<Point3> p, float width, float height, float depth,
           int capacity = 1);
 
       bool insert(Point3* point);
       bool contains(Point3* point) const;
-      std::vector<Point3> query(Point3* point, float width, 
-          float height) const;
+      std::vector<Point3> query(Point3* point, float width, float height, 
+          float depth) const;
 
       int size() const {return size_;};
 
@@ -54,7 +54,7 @@ namespace glibby
       bool search(std::shared_ptr<OcTreeNode> node, Point3* point) const;
       void search_tree(
           std::vector<Point3>* points, std::shared_ptr<OcTreeNode> node, 
-          Point3* center, float width, float height) const;
+          Point3* center, float width, float height, float depth) const;
       
       std::shared_ptr<OcTreeNode> node_;
       int capacity_;
