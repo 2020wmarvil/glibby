@@ -5,7 +5,7 @@ namespace glibby
 	class CubicBezierSpline
 	{
 	public:
-		CubicBezierSpline(const Point<T, N> (&sourcepoints))
+		CubicBezierSpline(const Point<T, N> sourcepoints[])
 		{
 			for(int i = 0; i < 4; i++)
 			{
@@ -52,7 +52,7 @@ namespace glibby
 			int i = 0;
 			targetDistance = t * totalDistance;
 
-			while (distance < targetDistance)
+			while (distance < targetDistance && i < 20)
 			{
 				distance += distances[i];
 				i++;
