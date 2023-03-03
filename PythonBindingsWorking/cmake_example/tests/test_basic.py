@@ -7,3 +7,4 @@ def test_main():
     assert m.subtract(1, 2) == -1
 
 print(m.add(1,2))
+print(m.multiply(2, 2.5))
