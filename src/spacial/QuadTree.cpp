@@ -109,6 +109,16 @@ namespace glibby
     return add_point(this->node_, point);
   }
 
+  bool QuadTree::remove(Point2D* point) 
+  {
+    // out of bounds
+    if (!this->node_->inside_boundary(point)) 
+    {
+      return false;
+    }
+    return remove_point(this->node_, point);
+  }
+
   bool QuadTree::contains(Point2D* point) const 
   {
     if (!this->node_->inside_boundary(point)) 
@@ -124,6 +134,17 @@ namespace glibby
     std::vector<Point2D> points;
     search_tree(&points, this->node_, point, width, height);
     return points;
+  }
+
+  void QuadTree::clear() {
+    this->size_ = 0;
+    std::shared_ptr<QuadTreeNode> temp;
+    temp.reset( new QuadTreeNode(
+        this->node_->center_,
+        this->node_->width_,
+        this->node_->height_,
+        this->node_->capacity_));
+    this->node_ = temp;
   }
 
 
@@ -184,6 +205,62 @@ namespace glibby
       }
     }
   }
+
+  bool QuadTree::remove_point(std::shared_ptr<QuadTreeNode> node, 
+      Point2D* point) 
+  {
+    // is it inside the boundary of the node?
+    if (!node->inside_boundary(point)) 
+    {
+      return false;
+    }
+    // if point is here, remove it
+    for (unsigned long i=0; i < node->points_.size(); i++) 
+    {
+      // check if points are the same
+      if (node->points_[i]->x == point->x && node->points_[i]->y == point->y) 
+      {
+        node->points_.erase(node->points_.begin() + i);
+        return true;
+      }
+    }
+    
+    // if no sub-nodes, return false
+    if (!node->divided_) 
+    {
+      return false;
+    }
+    // are we to the left (W) of center
+    if (point->x < node->center_->x) 
+    {
+      // above/below (N/S) of center
+      if (point->y < node->center_->y) 
+      {
+        // SW
+        return remove_point(node->SW_, point);
+      } 
+      else 
+      {
+        // NW
+        return remove_point(node->NW_, point);
+      }
+    } 
+    else 
+    { // E of center
+      // above/below (N/S) of center
+      if (point->y < node->center_->y) 
+      {
+        // SE
+        return remove_point(node->SE_, point);
+      } 
+      else 
+      {
+        // NE
+        return remove_point(node->NE_, point);
+      }
+    }
+  }
+
 
   void QuadTree::subdivide(std::shared_ptr<QuadTreeNode> node) 
   {

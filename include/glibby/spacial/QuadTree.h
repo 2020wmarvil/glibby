@@ -111,6 +111,17 @@ namespace glibby
        * */
       bool insert(Point2D* point);
       /**
+       * @brief Will remove point from QuadTree if the point is in the tree.
+       * If multiple copies of the same point are in the tree, only the first
+       * point found will be removed.
+       *
+       * @param point - point to be removed
+       *
+       * @return true if point was successfully removed, false otherwise, if 
+       * false, it is likely that point is not in the QuadTree
+       * */
+      bool remove(Point2D* point);
+      /**
        * @brief Check if point has been added to the QuadTree
        *
        * @param point - point to check if inserted
@@ -132,6 +143,10 @@ namespace glibby
           float height) const;
 
       int size() const {return size_;};
+      /**
+       * @brief removes all points from tree
+       * */
+      void clear();
 
     private:
       /*
@@ -139,6 +154,10 @@ namespace glibby
        * the point there, starts at given node
        * */
       bool add_point(std::shared_ptr<QuadTreeNode> node, Point2D* point);
+      /*
+       * recursively finds point and removes it
+       * */
+      bool remove_point(std::shared_ptr<QuadTreeNode> node, Point2D* point);
       /*
        * will subdivide a node, creating the proper children
        * */
