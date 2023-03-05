@@ -42,11 +42,13 @@ namespace glibby
           int capacity = 1);
 
       bool insert(Point3* point);
+      bool remove(Point3* point);
       bool contains(Point3* point) const;
       std::vector<Point3> query(Point3* point, float width, float height, 
           float depth) const;
 
       int size() const {return size_;};
+      void clear();
 
     private:
       bool add_point(std::shared_ptr<OcTreeNode> node, Point3* point);
