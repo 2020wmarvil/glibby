@@ -33,11 +33,7 @@ PYBIND11_MODULE(cmake_example, m) {
         Some other explanation about the add function.
     )pbdoc");
 
-    m.def("multiply", &multiply, R"pbdoc(
-        Multiply two numbers
-
-        The first number is an int. The second is a float
-    )pbdoc");
+    m.def("multiply", &multiply, "The first number is an int, the second is a float");
 
     m.def("subtract", [](int i, int j) { return i - j; }, R"pbdoc(
         Subtract two numbers

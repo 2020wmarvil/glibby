@@ -1,0 +1,5 @@
+C:/Users/Kyle/Dropbox/My PC (DESKTOP-FKBGLVA)/Documents/Mods Not In Use/PyBinds/glibby/PythonBindingsWorking/cmake_example/out/build/x64-Debug/CMakeFiles/cmake_example.dir
+C:/Users/Kyle/Dropbox/My PC (DESKTOP-FKBGLVA)/Documents/Mods Not In Use/PyBinds/glibby/PythonBindingsWorking/cmake_example/out/build/x64-Debug/CMakeFiles/edit_cache.dir
+C:/Users/Kyle/Dropbox/My PC (DESKTOP-FKBGLVA)/Documents/Mods Not In Use/PyBinds/glibby/PythonBindingsWorking/cmake_example/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
+C:/Users/Kyle/Dropbox/My PC (DESKTOP-FKBGLVA)/Documents/Mods Not In Use/PyBinds/glibby/PythonBindingsWorking/cmake_example/out/build/x64-Debug/pybind11/CMakeFiles/edit_cache.dir
+C:/Users/Kyle/Dropbox/My PC (DESKTOP-FKBGLVA)/Documents/Mods Not In Use/PyBinds/glibby/PythonBindingsWorking/cmake_example/out/build/x64-Debug/pybind11/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -flto -shared  -o cmake_example.cpython-310-x86_64-linux-gnu.so CMakeFiles/cmake_example.dir/src/main.cpp.o 
