@@ -52,6 +52,7 @@ namespace glibby
 
     private:
       bool add_point(std::shared_ptr<OcTreeNode> node, Point3* point);
+      bool remove_point(std::shared_ptr<OcTreeNode> node, Point3* point);
       void subdivide(std::shared_ptr<OcTreeNode> node);
       bool search(std::shared_ptr<OcTreeNode> node, Point3* point) const;
       void search_tree(

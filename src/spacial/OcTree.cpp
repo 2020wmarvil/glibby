@@ -241,7 +241,9 @@ namespace glibby
     for (unsigned long i=0; i < node->points_.size(); i++) 
     {
       // check if points are the same
-      if (node->points_[i]->x == point->x && node->points_[i]->y == point->y) 
+      if (node->points_[i]->points[0] == point->points[0] && 
+          node->points_[i]->points[1] == point->points[1] &&
+          node->points_[i]->points[2] == point->points[2]) 
       {
         node->points_.erase(node->points_.begin() + i);
         return true;
@@ -253,33 +255,73 @@ namespace glibby
     {
       return false;
     }
-    // are we to the left (W) of center
-    if (point->x < node->center_->x) 
+    // WEST/east (W/E) of center
+    if (point->points[0] < node->center_->points[0]) 
     {
-      // above/below (N/S) of center
-      if (point->y < node->center_->y) 
+      // north/SOUTH (N/S) of center
+      if (point->points[1] < node->center_->points[1]) 
       {
-        // SW
-        return remove_point(node->SW_, point);
+        // FRONT/back (F/B) of center
+        if (point->points[2] < node->center_->points[2])
+        {
+          // SWF
+          return remove_point(node->SWF_,point);
+        }
+        else
+        {
+          //SWB
+          return remove_point(node->SWB_,point);
+        }
+
       } 
       else 
       {
-        // NW
-        return remove_point(node->NW_, point);
+        // FRONT/back (F/B) of center
+        if (point->points[2] < node->center_->points[2])
+      {
+          // NWF
+          return remove_point(node->NWF_,point);
+        }
+        else
+        {
+          // NWB
+          return remove_point(node->NWB_,point);
+        }
+
       }
     } 
     else 
     { // E of center
-      // above/below (N/S) of center
-      if (point->y < node->center_->y) 
+      // north/SOUTH (N/S) of center
+      if (point->points[1] < node->center_->points[1]) 
       {
-        // SE
-        return remove_point(node->SE_, point);
+        // FRONT/back (F/B) of center
+        if (point->points[2] < node->center_->points[2])
+        {
+          // SEF
+          return remove_point(node->SEF_,point);
+        }
+        else
+        {
+          //SEB
+          return remove_point(node->SEB_,point);
+        }
+
       } 
       else 
       {
-        // NE
-        return remove_point(node->NE_, point);
+        // FRONT/back (F/B) of center
+        if (point->points[2] < node->center_->points[2])
+        {
+          // NEF
+          return remove_point(node->NEF_,point);
+        }
+        else
+        {
+          // NEB
+          return remove_point(node->NEB_,point);
+        }
+
       }
     }
   }
@@ -291,39 +333,76 @@ namespace glibby
 
     float new_width = node->width_ / 2;
     float new_height = node->height_ / 2;
+    float new_depth = node->depth_ / 2;
     
-    std::shared_ptr<Point2D> SW_center = std::make_shared<Point2D>();
-    std::shared_ptr<Point2D> SE_center = std::make_shared<Point2D>();
-    std::shared_ptr<Point2D> NW_center = std::make_shared<Point2D>();
-    std::shared_ptr<Point2D> NE_center = std::make_shared<Point2D>();
+    std::shared_ptr<Point3> SWF_center = std::make_shared<Point3>();
+    std::shared_ptr<Point3> SEF_center = std::make_shared<Point3>();
+    std::shared_ptr<Point3> NWF_center = std::make_shared<Point3>();
+    std::shared_ptr<Point3> NEF_center = std::make_shared<Point3>();
+    std::shared_ptr<Point3> SWB_center = std::make_shared<Point3>();
+    std::shared_ptr<Point3> SEB_center = std::make_shared<Point3>();
+    std::shared_ptr<Point3> NWB_center = std::make_shared<Point3>();
+    std::shared_ptr<Point3> NEB_center = std::make_shared<Point3>();
 
-    SW_center->x = node->center_->x - node->width_ / 4;
-    SW_center->y = node->center_->y - node->height_ / 4;
-    node->SW_.reset(
-        new OcTreeNode(SW_center,new_width,new_height,node->capacity_)
-        );
+    SWF_center->points[0] = node->center_->points[0] - node->width_ / 4;
+    SWF_center->points[1] = node->center_->points[1] - node->height_ / 4;
+    SWF_center->points[2] = node->center_->points[2] - node->depth_ / 4;
+    node->SWF_.reset(
+      new OcTreeNode(SWF_center,new_width,new_height,new_depth,node->capacity_)
+      );
 
-    SE_center->x = node->center_->x + node->width_ / 4;
-    SE_center->y = node->center_->y - node->height_ / 4;
-    node->SE_.reset(
-        new OcTreeNode(SE_center,new_width,new_height,node->capacity_)
-        );
+    SWB_center->points[0] = node->center_->points[0] - node->width_ / 4;
+    SWB_center->points[1] = node->center_->points[1] - node->height_ / 4;
+    SWB_center->points[2] = node->center_->points[2] + node->depth_ / 4;
+    node->SWB_.reset(
+      new OcTreeNode(SWB_center,new_width,new_height,new_depth,node->capacity_)
+      );
 
-    NW_center->x = node->center_->x - node->width_ / 4;
-    NW_center->y = node->center_->y + node->height_ / 4;
-    node->NW_.reset(
-        new OcTreeNode(NW_center,new_width,new_height,node->capacity_)
-        );
+    SEF_center->points[0] = node->center_->points[0] - node->width_ / 4;
+    SEF_center->points[1] = node->center_->points[1] + node->height_ / 4;
+    SEF_center->points[2] = node->center_->points[2] - node->depth_ / 4;
+    node->SEF_.reset(
+      new OcTreeNode(SEF_center,new_width,new_height,new_depth,node->capacity_)
+      );
 
-    NE_center->x = node->center_->x + node->width_ / 4;
-    NE_center->y = node->center_->y + node->height_ / 4;
-    node->NE_.reset(
-        new OcTreeNode(NE_center,new_width,new_height,node->capacity_)
-        );
+    SEB_center->points[0] = node->center_->points[0] - node->width_ / 4;
+    SEB_center->points[1] = node->center_->points[1] + node->height_ / 4;
+    SEB_center->points[2] = node->center_->points[2] + node->depth_ / 4;
+    node->SEB_.reset(
+      new OcTreeNode(SEB_center,new_width,new_height,new_depth,node->capacity_)
+      );
+
+    NWF_center->points[0] = node->center_->points[0] + node->width_ / 4;
+    NWF_center->points[1] = node->center_->points[1] - node->height_ / 4;
+    NWF_center->points[2] = node->center_->points[2] - node->depth_ / 4;
+    node->NWF_.reset(
+      new OcTreeNode(NWF_center,new_width,new_height,new_depth,node->capacity_)
+      );
+
+    NWB_center->points[0] = node->center_->points[0] + node->width_ / 4;
+    NWB_center->points[1] = node->center_->points[1] - node->height_ / 4;
+    NWB_center->points[2] = node->center_->points[2] + node->depth_ / 4;
+    node->NWB_.reset(
+      new OcTreeNode(NWB_center,new_width,new_height,new_depth,node->capacity_)
+      );
+
+    NEF_center->points[0] = node->center_->points[0] + node->width_ / 4;
+    NEF_center->points[1] = node->center_->points[1] + node->height_ / 4;
+    NEF_center->points[2] = node->center_->points[2] - node->depth_ / 4;
+    node->NEF_.reset(
+      new OcTreeNode(NEF_center,new_width,new_height,new_depth,node->capacity_)
+      );
+
+    NEB_center->points[0] = node->center_->points[0] + node->width_ / 4;
+    NEB_center->points[1] = node->center_->points[1] + node->height_ / 4;
+    NEB_center->points[2] = node->center_->points[2] + node->depth_ / 4;
+    node->NEB_.reset(
+      new OcTreeNode(NEB_center,new_width,new_height,new_depth,node->capacity_)
+      );
   }
 
   bool OcTree::search(std::shared_ptr<OcTreeNode> node,
-      Point2D* point) const 
+      Point3* point) const 
   {
     if (!node->inside_boundary(point)) 
     {
@@ -332,8 +411,9 @@ namespace glibby
     // check all points at this node
     for (long unsigned i=0; i < node->points_.size(); i++) 
     {
-      if (fabsf(node->points_[i]->x - point->x) < FLT_NEAR_ZERO  &&
-          fabsf(node->points_[i]->y - point->y) < FLT_NEAR_ZERO) 
+      if (fabsf(node->points_[i]->points[0]-point->points[0]) < FLT_NEAR_ZERO &&
+          fabsf(node->points_[i]->points[1]-point->points[1]) < FLT_NEAR_ZERO &&
+          fabsf(node->points_[i]->points[2]-point->points[2]) < FLT_NEAR_ZERO) 
       {
         return true;
       } 
@@ -344,55 +424,98 @@ namespace glibby
     {
       return false;
     }
-    // is point to E or W
-    if (point->x < node->center_->x) 
+    // WEST/east (W/E) of center
+    if (point->points[0] < node->center_->points[0]) 
     {
-      // is point to N or S
-      if (point->y < node->center_->y) 
+      // north/SOUTH (N/S) of center
+      if (point->points[1] < node->center_->points[1]) 
       {
-        // SW
-        return search(node->SW_,point);
+        // FRONT/back (F/B) of center
+        if (point->points[2] < node->center_->points[2])
+        {
+          // SWF
+          return search(node->SWF_,point);
+        }
+        else
+        {
+          //SWB
+          return search(node->SWB_,point);
+        }
+
       } 
       else 
       {
-        // NW
-        return search(node->NW_,point);
+        // FRONT/back (F/B) of center
+        if (point->points[2] < node->center_->points[2])
+        {
+          // NWF
+          return search(node->NWF_,point);
+        }
+        else
+        {
+          // NWB
+          return search(node->NWB_,point);
+        }
+
       }
     } 
     else 
-    {
-      // is point to N or S
-      if (point->y < node->center_->y) 
+    { // E of center
+      // north/SOUTH (N/S) of center
+      if (point->points[1] < node->center_->points[1]) 
       {
-        // SE
-        return search(node->SE_,point);
+        // FRONT/back (F/B) of center
+        if (point->points[2] < node->center_->points[2])
+        {
+          // SEF
+          return search(node->SEF_,point);
+        }
+        else
+        {
+          //SEB
+          return search(node->SEB_,point);
+        }
+
       } 
       else 
       {
-        // SW
-        return search(node->NE_,point);
+        // FRONT/back (F/B) of center
+        if (point->points[2] < node->center_->points[2])
+        {
+          // NEF
+          return search(node->NEF_,point);
+        }
+        else
+        {
+          // NEB
+          return search(node->NEB_,point);
+        }
+
       }
-    }
+    }    
   }
 
   void OcTree::search_tree(
-      std::vector<Point2D>* points, std::shared_ptr<OcTreeNode> node, 
-      Point2D* center, float width, float height) const 
+      std::vector<Point3>* points, std::shared_ptr<OcTreeNode> node, 
+      Point3* center, float width, float height, float depth) const 
   {
-    if (!node->intersect_boundary(center, width, height)) 
+    if (!node->intersect_boundary(center, width, height, depth)) 
     {
       return;
     }
     for (long unsigned i=0; i < node->points_.size(); i++) 
     {
-      if (node->points_[i]->x < center->x + width/2 &&
-          node->points_[i]->x > center->x - width/2 &&
-          node->points_[i]->y < center->y + height/2 &&
-          node->points_[i]->y > center->y - height/2) 
+      if (node->points_[i]->points[0] < center->points[0] + width/2 &&
+          node->points_[i]->points[0] > center->points[0] - width/2 &&
+          node->points_[i]->points[1] < center->points[1] + height/2 &&
+          node->points_[i]->points[1] > center->points[1] - height/2 && 
+          node->points_[i]->points[2] < center->points[2] + depth/2 &&
+          node->points_[i]->points[2] > center->points[2] - depth/2) 
       {
-        Point2D temp;
-        temp.x = node->points_[i]->x;
-        temp.y = node->points_[i]->y;
+        Point3 temp;
+        temp.points[0] = node->points_[i]->points[0];
+        temp.points[1] = node->points_[i]->points[1];
+        temp.points[2] = node->points_[i]->points[2];
         points->push_back(temp);        
       }
     }
@@ -400,10 +523,14 @@ namespace glibby
     {
       return;
     }
-    search_tree(points,node->SW_,center,width,height);
-    search_tree(points,node->SE_,center,width,height);
-    search_tree(points,node->NW_,center,width,height);
-    search_tree(points,node->NE_,center,width,height);
+    search_tree(points,node->SWF_,center,width,height,depth);
+    search_tree(points,node->SEF_,center,width,height,depth);
+    search_tree(points,node->NWF_,center,width,height,depth);
+    search_tree(points,node->NEF_,center,width,height,depth);
+    search_tree(points,node->SWB_,center,width,height,depth);
+    search_tree(points,node->SEB_,center,width,height,depth);
+    search_tree(points,node->NWB_,center,width,height,depth);
+    search_tree(points,node->NEB_,center,width,height,depth);
   }
   
 }
