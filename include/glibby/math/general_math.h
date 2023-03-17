@@ -812,5 +812,34 @@ namespace glibby
 		return m;
 
 	}
+	// Orthogonal Projection Matrix
+	MAT4x4<float> orthogonalProjection(float left, float right, float bottom, float top, float near, float far)
+	{
+		MAT4x4<float> projection;
+
+		projection.data[0][0] = 2.0f / (right - left);
+		projection.data[1][1] = 2.0f / (top - bottom);
+		projection.data[2][2] = -2.0f / (far - near);
+		projection.data[0][3] = -(right + left) / (right - left);
+		projection.data[1][3] = -(top + bottom) / (top - bottom);
+		projection.data[2][3] = -(far + near) / (far - near);
+
+		return projection;
+	}
+
+	// Perspective Projection Matrix
+	MAT4x4<float> perspectiveProjection(float fovY, float aspectRatio, float near, float far)
+	{
+		MAT4x4<float> projection;
+
+		float f = 1.0f / tan(fovY * 0.5f);
+		projection.data[0][0] = f / aspectRatio;
+		projection.data[1][1] = f;
+		projection.data[2][2] = (near + far) / (near - far);
+		projection.data[2][3] = (2.0f * near * far) / (near - far);
+		projection.data[3][2] = -1.0f;
+
+		return projection;
+	}
 
 
