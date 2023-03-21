@@ -1,6 +1,7 @@
 #include "glibby/primitives/point2D.h"
 #include "glibby/primitives/circle2D.h"
 #include "glibby/primitives/triangle2D.h"
+#include "glibby/primitives/quad2D.h"
 
 #include <iostream>
 #include <assert.h>
@@ -54,10 +55,15 @@ int main()
 	std::cout << "C1 & T5 intersect: " << c1.intersects(t5) << std::endl;
 	assert(c1.intersects(t5) == true);
 
-
-
-
 	//Out of bounds
 	std::cout << "C2 & Out Triangle intersect: " << c2.intersects(out_triangle) << std::endl;
 	assert(c2.intersects(out_triangle) == false);
+
+	/*QUADRILATERALS*/
+	glibby::Quad2D q1(glibby::Quad2D(glibby::Point2D(0, 0), glibby::Point2D(0, 5), glibby::Point2D(5, 5), glibby::Point2D(5, 0)));
+	std::cout << "Quadrilateral 1: \n" << q1 << std::endl;
+	assert(q1.area() == 25);
+	assert(q1.get_center().get_x() == 2.5 && q1.get_center().get_y() == 2.5);
+	assert(q1.perimeter() == 20);
+
 }
