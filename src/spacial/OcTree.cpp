@@ -15,6 +15,7 @@ namespace glibby
     this->center_ = cen;
     this->width_ = width;
     this->height_ = height;
+    this->depth_ = depth;
     this->divided_ = false;
     this->capacity_ = cap;
   }
@@ -55,9 +56,9 @@ namespace glibby
     otherFront = center->points[1] + depth / 2;
     otherBack = center->points[1] - depth / 2;
 
-    if (otherLeft > thisRight || otherRight < thisLeft || 
-        otherTop < thisBottom || otherBottom > thisTop ||
-        otherBack < thisFront || otherFront > thisBack) 
+    if (thisLeft > otherRight || otherLeft > thisRight ||
+        thisBottom > otherTop || otherBottom > thisTop ||
+        thisBack > otherFront || otherBack > thisFront)
     {
       return false;
     }
@@ -158,75 +159,41 @@ namespace glibby
     {
       subdivide(node);
     }
-    // WEST/east (W/E) of center
-    if (point->points[0] < node->center_->points[0]) 
+
+    // Add to everything, one of them will be righta
+    if (add_point(node->SWF_,point))
     {
-      // north/SOUTH (N/S) of center
-      if (point->points[1] < node->center_->points[1]) 
-      {
-        // FRONT/back (F/B) of center
-        if (point->points[2] < node->center_->points[2])
-        {
-          // SWF
-          return add_point(node->SWF_,point);
-        }
-        else
-        {
-          //SWB
-          return add_point(node->SWB_,point);
-        }
-
-      } 
-      else 
-      {
-        // FRONT/back (F/B) of center
-        if (point->points[2] < node->center_->points[2])
-        {
-          // NWF
-          return add_point(node->NWF_,point);
-        }
-        else
-        {
-          // NWB
-          return add_point(node->NWB_,point);
-        }
-
-      }
-    } 
-    else 
-    { // E of center
-      // north/SOUTH (N/S) of center
-      if (point->points[1] < node->center_->points[1]) 
-      {
-        // FRONT/back (F/B) of center
-        if (point->points[2] < node->center_->points[2])
-        {
-          // SEF
-          return add_point(node->SEF_,point);
-        }
-        else
-        {
-          //SEB
-          return add_point(node->SEB_,point);
-        }
-
-      } 
-      else 
-      {
-        // FRONT/back (F/B) of center
-        if (point->points[2] < node->center_->points[2])
-        {
-          // NEF
-          return add_point(node->NEF_,point);
-        }
-        else
-        {
-          // NEB
-          return add_point(node->NEB_,point);
-        }
-
-      }
+      return true;
     }
+    else if (add_point(node->SWB_,point))
+    {
+      return true;
+    }
+    else if (add_point(node->SEF_,point))
+    {
+      return true;
+    }
+    else if (add_point(node->SEB_,point))
+    {
+      return true;
+    }
+    else if (add_point(node->NWF_,point))
+    {
+      return true;
+    }
+    else if (add_point(node->NWB_,point))
+    {
+      return true;
+    }
+    else if (add_point(node->NEF_,point))
+    {
+      return true;
+    }
+    else if (add_point(node->NEB_,point))
+    {
+      return true;
+    }
+    return false;
   }
 
   bool OcTree::remove_point(std::shared_ptr<OcTreeNode> node, 
@@ -255,75 +222,41 @@ namespace glibby
     {
       return false;
     }
-    // WEST/east (W/E) of center
-    if (point->points[0] < node->center_->points[0]) 
+ 
+    // Remove from everything, one of them will be righta
+    if (remove_point(node->SWF_,point))
     {
-      // north/SOUTH (N/S) of center
-      if (point->points[1] < node->center_->points[1]) 
-      {
-        // FRONT/back (F/B) of center
-        if (point->points[2] < node->center_->points[2])
-        {
-          // SWF
-          return remove_point(node->SWF_,point);
-        }
-        else
-        {
-          //SWB
-          return remove_point(node->SWB_,point);
-        }
-
-      } 
-      else 
-      {
-        // FRONT/back (F/B) of center
-        if (point->points[2] < node->center_->points[2])
-      {
-          // NWF
-          return remove_point(node->NWF_,point);
-        }
-        else
-        {
-          // NWB
-          return remove_point(node->NWB_,point);
-        }
-
-      }
-    } 
-    else 
-    { // E of center
-      // north/SOUTH (N/S) of center
-      if (point->points[1] < node->center_->points[1]) 
-      {
-        // FRONT/back (F/B) of center
-        if (point->points[2] < node->center_->points[2])
-        {
-          // SEF
-          return remove_point(node->SEF_,point);
-        }
-        else
-        {
-          //SEB
-          return remove_point(node->SEB_,point);
-        }
-
-      } 
-      else 
-      {
-        // FRONT/back (F/B) of center
-        if (point->points[2] < node->center_->points[2])
-        {
-          // NEF
-          return remove_point(node->NEF_,point);
-        }
-        else
-        {
-          // NEB
-          return remove_point(node->NEB_,point);
-        }
-
-      }
+      return true;
     }
+    else if (remove_point(node->SWB_,point))
+    {
+      return true;
+    }
+    else if (remove_point(node->SEF_,point))
+    {
+      return true;
+    }
+    else if (remove_point(node->SEB_,point))
+    {
+      return true;
+    }
+    else if (remove_point(node->NWF_,point))
+    {
+      return true;
+    }
+    else if (remove_point(node->NWB_,point))
+    {
+      return true;
+    }
+    else if (remove_point(node->NEF_,point))
+    {
+      return true;
+    }
+    else if (remove_point(node->NEB_,point))
+    {
+      return true;
+    }
+    return false;
   }
 
 
@@ -424,75 +357,41 @@ namespace glibby
     {
       return false;
     }
-    // WEST/east (W/E) of center
-    if (point->points[0] < node->center_->points[0]) 
+
+    // Search everything, one of them will be righta
+    if (search(node->SWF_,point))
     {
-      // north/SOUTH (N/S) of center
-      if (point->points[1] < node->center_->points[1]) 
-      {
-        // FRONT/back (F/B) of center
-        if (point->points[2] < node->center_->points[2])
-        {
-          // SWF
-          return search(node->SWF_,point);
-        }
-        else
-        {
-          //SWB
-          return search(node->SWB_,point);
-        }
-
-      } 
-      else 
-      {
-        // FRONT/back (F/B) of center
-        if (point->points[2] < node->center_->points[2])
-        {
-          // NWF
-          return search(node->NWF_,point);
-        }
-        else
-        {
-          // NWB
-          return search(node->NWB_,point);
-        }
-
-      }
-    } 
-    else 
-    { // E of center
-      // north/SOUTH (N/S) of center
-      if (point->points[1] < node->center_->points[1]) 
-      {
-        // FRONT/back (F/B) of center
-        if (point->points[2] < node->center_->points[2])
-        {
-          // SEF
-          return search(node->SEF_,point);
-        }
-        else
-        {
-          //SEB
-          return search(node->SEB_,point);
-        }
-
-      } 
-      else 
-      {
-        // FRONT/back (F/B) of center
-        if (point->points[2] < node->center_->points[2])
-        {
-          // NEF
-          return search(node->NEF_,point);
-        }
-        else
-        {
-          // NEB
-          return search(node->NEB_,point);
-        }
-
-      }
-    }    
+      return true;
+    }
+    else if (search(node->SWB_,point))
+    {
+      return true;
+    }
+    else if (search(node->SEF_,point))
+    {
+      return true;
+    }
+    else if (search(node->SEB_,point))
+    {
+      return true;
+    }
+    else if (search(node->NWF_,point))
+    {
+      return true;
+    }
+    else if (search(node->NWB_,point))
+    {
+      return true;
+    }
+    else if (search(node->NEF_,point))
+    {
+      return true;
+    }
+    else if (search(node->NEB_,point))
+    {
+      return true;
+    }
+    return false;
   }
 
   void OcTree::search_tree(

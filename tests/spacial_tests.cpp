@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 #include <random>
+#include <iostream>
 
 /*
  * QUADTREE TESTS
@@ -299,8 +300,8 @@ TEST_CASE("QuadTree find all randomized points in area","[spacial][QuadTree]")
     CHECK(qt1.contains(&temp));
   }
 
-  float width = distribution(gen);
-  float height = distribution(gen);
+  float width = 2*fabs(distribution(gen));
+  float height = 2*fabs(distribution(gen));
 
   std::vector<glibby::Point2D> in_area = qt1.query(&(*pt1),width,height);
   std::vector<glibby::Point2D> should_include;
@@ -470,7 +471,7 @@ TEST_CASE("OcTree random insertion and check","[spacial][OcTree]")
   pt1->points[0] = 0.00f;
   pt1->points[1] = 0.00f;
   pt1->points[2] = 0.00f;
-  glibby::QuadTree ot1 = glibby::QuadTree(pt1,3.00f,3.00f,3.00f);
+  glibby::OcTree ot1 = glibby::OcTree(pt1,3.00f,3.00f,3.00f);
 
   std::vector<std::shared_ptr<glibby::Point3>> valid;
   std::vector<std::shared_ptr<glibby::Point3>> invalid;
@@ -555,7 +556,7 @@ TEST_CASE("OcTree random insertion with larger capacity","[spacial][OcTree]")
   pt1->points[0] = 0.00f;
   pt1->points[1] = 0.00f;
   pt1->points[2] = 0.00f;
-  glibby::QuadTree ot1 = glibby::QuadTree(pt1,3.00f,3.00f,3.00f,5);
+  glibby::OcTree ot1 = glibby::OcTree(pt1,3.00f,3.00f,3.00f,5);
 
   std::vector<std::shared_ptr<glibby::Point3>> valid;
   std::vector<std::shared_ptr<glibby::Point3>> invalid;
@@ -639,7 +640,7 @@ TEST_CASE("OcTree find all points in area","[spacial][OcTree]") {
   pt1->points[0] = 0.00f;
   pt1->points[1] = 0.00f;
   pt1->points[2] = 0.00f;
-  glibby::OcTree ot1 = glibby::OcTree(pt1,3.00f,3.00f);
+  glibby::OcTree ot1 = glibby::OcTree(pt1,3.00f,3.00f,3.00f);
 
   std::vector<glibby::Point3> should_include;
   for (int i=-1; i <= 1; i++) 
@@ -685,13 +686,13 @@ TEST_CASE("OcTree find all points in randomized area","[spacial][OcTree]") {
   pt1->points[0] = 0.00f;
   pt1->points[1] = 0.00f;
   pt1->points[2] = 0.00f;
-  glibby::OcTree ot1 = glibby::OcTree(pt1,3.00f,3.00f);
+  glibby::OcTree ot1 = glibby::OcTree(pt1,5.00f,5.00f,5.00f);
 
   std::default_random_engine gen;
   std::uniform_real_distribution<float>  distribution(-2.5f, 2.5f);
 
   std::vector<glibby::Point3> all_points;
-  for (int i=0; i < 100; i++) 
+  for (int i=0; i < 1000; i++) 
   {
     glibby::Point3 temp;
     temp.points[0] = distribution(gen);
@@ -702,9 +703,9 @@ TEST_CASE("OcTree find all points in randomized area","[spacial][OcTree]") {
     CHECK(ot1.contains(&temp));
   }
 
-  float width = distribution(gen);
-  float height = distribution(gen);
-  float depth = distribution(gen);
+  float width = 2*fabs(distribution(gen));
+  float height = 2*fabs(distribution(gen));
+  float depth = 2*fabs(distribution(gen));
 
   std::vector<glibby::Point3> in_area = ot1.query(&(*pt1),width,height,depth);
   std::vector<glibby::Point3> should_include;
@@ -715,8 +716,8 @@ TEST_CASE("OcTree find all points in randomized area","[spacial][OcTree]") {
         all_points[i].points[0] > -1*width / 2 &&
         all_points[i].points[1] < height / 2 && 
         all_points[i].points[1] > -1*height / 2 &&
-        all_points[i].points[2] < height / 2 && 
-        all_points[i].points[2] > -1*height / 2 &&
+        all_points[i].points[2] < depth / 2 && 
+        all_points[i].points[2] > -1*depth / 2)
     {
       should_include.push_back(all_points[i]);
     }
