@@ -13,8 +13,8 @@ namespace glibby
 	struct Node
 	{
 		T val;
-		Node<T>* left;
-		Node<T>* right;
+		std::unique_ptr<Node<T>> left;
+		std::unique_ptr<Node<T>> right;
 
 		Node() { left = NULL; right = NULL; }
 		Node(T newVal) { val = newVal; left = NULL; right = NULL; }
@@ -35,18 +35,14 @@ namespace glibby
 
 		kdTree(Point<T, N> point) {
 			points.push_back(point);
-			parent = new Node<Point<T, N>>(point);
+			parent = std::make_unique<Node<Point<T, N>>>(point);
 		}
-
-		~kdTree() { DestroyTree(parent); }
-
 
 		void Insert(const Point<T, N>& point) {
 			if (Find(parent, point)) {
 				return;
 			}
 
-			DestroyTree(parent);
 			points.push_back(point);
 			ConstructTree(points, parent, 0);
 		}
@@ -62,7 +58,7 @@ namespace glibby
 				return;
 			}
 
-			DestroyTree(parent);
+			//DestroyTree(parent);
 			std::vector<Point<T, N>> temp;
 			for (int i = 0; i < points.size(); i++) {
 				if (points[i] != point) {
@@ -84,41 +80,16 @@ namespace glibby
 
 
 		//Help for debugging(may or may not be in the final version)
-		void BFSprint() {
-			if (!parent) {
-				return;
-			}
-			Point<T, N> p = parent->val;
-			std::queue<Node<Point<T, N>>*> q;
-			q.push(parent);
-			int layer = 0;
-			while (q.size() > 0) {
-				std::cout << "Layer " << layer << std::endl;
-				int w = q.size();
-				for (int i = 0; i < w; i++) {
-					Node<glibby::Point<T, N>>* f = q.front();
-					q.pop();
-					std::cout << "[";
-					for (int j = 0; j < f->val.axis; j++) {
-						std::cout << " " << f->val.coord[j] << " ";
-					}
-					std::cout << "]" << std::endl;
-					if (f->left) {
-						q.push(f->left);
-					}
-					if (f->right) {
-						q.push(f->right);
-					}
-				}
-				layer++;
-			}
+		void DFSPrint() {
+			DFSPrint(parent);
+			std::cout << std::endl;
 		}
 
 	private:
 		std::vector<Point<T, N>> points;
-		Node<Point<T, N>>* parent = NULL;
+		std::unique_ptr<Node<Point<T, N>>> parent;
 
-		bool Find(Node<Point<T, N>>*& node, const Point<T, N>& point) {
+		bool Find(const std::unique_ptr<Node<Point<T, N>>>& node, const Point<T, N>& point) {
 			if (!node) {
 				return false;
 			}
@@ -130,13 +101,13 @@ namespace glibby
 			return Find(node->left, point) || Find(node->right, point);
 		}
 
-		void ConstructTree(const std::vector<Point<T, N>>& points, Node<Point<T, N>>*& node, int depth) {
+		void ConstructTree(const std::vector<Point<T, N>>& points, std::unique_ptr<Node<Point<T, N>>>& node, int depth) {
 			if (points.size() == 0) {
 				return;
 			}
 
 			if (points.size() == 1) {
-				node = new Node(points[0]);
+				node = std::make_unique<Node<Point<T, N>>> (points[0]);
 				return;
 			}
 
@@ -159,7 +130,7 @@ namespace glibby
 						right.push_back(x.second[i]);
 					}
 					else {
-						node = new Node<Point<T, N>>(x.second[i]);
+						node = std::make_unique<Node<Point<T, N>>>(x.second[i]);
 					}
 					index++;
 				}
@@ -169,15 +140,22 @@ namespace glibby
 			ConstructTree(right, node->right, (depth + 1) % N);
 		}
 
-		void DestroyTree(Node<Point<T, N>>* node) {
-			if (node->left) {
-				DestroyTree(node->left);
-			}
-			if (node->right) {
-				DestroyTree(node->right);
+		void DFSPrint(const std::unique_ptr<Node<Point<T, N>>>& node) {
+			if (!node) {
+				return;
 			}
 
-			delete(node);
+			std::cout << "(";
+			for (int i = 0; i < node->val.axis; i++) {
+				std::cout << node->val.coord[i];
+				if (i < node->val.axis-1) {
+					std::cout << ",";
+				}
+			}
+			std::cout << ")" << std::endl;
+
+			DFSPrint(node->left);
+			DFSPrint(node->right);
 		}
 	};
 }
