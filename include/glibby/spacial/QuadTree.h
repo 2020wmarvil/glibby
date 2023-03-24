@@ -53,7 +53,7 @@ namespace glibby
        * @param height - overall height of the boundary, the top edge is 
        * center.y + height / 2, the bottom edge is center.y - height / 2
        *
-       * @param true if boundaries intersect, false otherwise
+       * @return true if boundaries intersect, false otherwise
        * */
       bool intersect_boundary(Point2D* center, float width, float height) const;
 
