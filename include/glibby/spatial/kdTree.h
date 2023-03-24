@@ -3,6 +3,7 @@
 #include "glibby/primitives/point.h"
 #include <iostream>
 #include <map>
+#include <memory>
 #include <queue>
 #include <string>
 #include <vector>
