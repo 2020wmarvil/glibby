@@ -57,8 +57,6 @@ namespace glibby
 			if (!Find(parent, point)) {
 				return;
 			}
-
-			//DestroyTree(parent);
 			std::vector<Point<T, N>> temp;
 			for (int i = 0; i < points.size(); i++) {
 				if (points[i] != point) {
