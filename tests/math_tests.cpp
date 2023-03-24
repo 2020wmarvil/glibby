@@ -149,3 +149,52 @@ TEST_CASE("VecN Operations", "[math][vecN]")
     copyConstructedVec /= 5.0f;
     CHECK(copyConstructedVec == simpleVec);
 }
+TEST_CASE("MAT2x2 Operations", "[math][mat2x2]")
+{
+    const MAT2x2<float> zeroMat;
+    const MAT2x2<float> oneMat(1);
+    const MAT2x2<float> simpleMat({ {1,2},{3,4} });
+    const MAT2x2<float> negativeMat({ {-1,-2},{-3,-4} });
+    const MAT2x2<float> doubleMat({ 2,4 }, { 6,8 });
+    const MAT2x2<float> productMat({ 14,20 }, { 30,44 });
+    const MAT2x2<float> transposedMat({ 1,3 }, { 2,4 });
+    CHECK(scalar_multiplication(2, simpleMat) == doubleMat);
+    CHECK(scalar_division(2, doubleMat) == simpleMat);
+
+    CHECK(matrix_addition(simpleMat, negativeMat) == zeroMat);
+    CHECK(matrix_subtraction(simpleMat, simpleMat) == zeroMat);
+    CHECK(matrix_subtraction(simpleMat, negativeMat) == doubleMat);
+    CHECK(matrix_multiplication(simpleMat, doubleMat) == productMat);
+
+    CHECK(matrix_transposition(simpleMat) == transposedMat);
+    CHECK(matrix_determinant(simpleMat) == -2);
+}  
+TEST_CASE("MAT3x3 Operations", "[math][mat3x3]")
+{
+    const MAT3x3<float> zeroMat;
+    const MAT3x3<float> oneMat(1);
+    const MAT3x3<float> simpleMat({ {1,2,3},{4,5,6},{7,8,9} });
+    const MAT3x3<float> negativeMat({ {-1,-2,-3},{-4,-5,-6},{-7,-8,-9 } });
+    const MAT3x3<float> doubleMat({ {2,4,6},{8,10,12},{14,16,18} });
+    const MAT3x3<float> productMat({ {60,72,84},{132,162,192},{204,252,300} });
+    const MAT3x3<float> transposedMat({ 1,4,7 }, { 2,5,8 }, { 3,6,9 });
+    CHECK(scalar_multiplication(2, simpleMat) == doubleMat);
+    CHECK(scalar_division(2, doubleMat) == simpleMat);
+
+    CHECK(matrix_addition(simpleMat, negativeMat) == zeroMat);
+    CHECK(matrix_subtraction(simpleMat, simpleMat) == zeroMat);
+    CHECK(matrix_subtraction(simpleMat, negativeMat) == doubleMat);
+    CHECK(matrix_multiplication(simpleMat, doubleMat) == productMat);
+
+    CHECK(matrix_transposition(simpleMat) == transposedMat);
+    CHECK(matrix_determinant(simpleMat) == -2);
+
+}
+TEST_CASE("MAT4x4 Operations", "[math][mat4x4]")
+{
+
+}
+TEST_CASE("MATnxn Operations", "[math][matnxn]")
+{
+
+}

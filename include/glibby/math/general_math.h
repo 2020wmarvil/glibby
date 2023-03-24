@@ -8,7 +8,7 @@
 
 namespace glibby
 {
-	#define FLT_NEAR_ZERO 0.0001f
+#define FLT_NEAR_ZERO 0.0001f
 
 	template <typename T, size_t n>
 	struct Vec
@@ -260,7 +260,7 @@ namespace glibby
 		os << ")";
 		return os;
 	}
-	
+
 	template<typename T, size_t n>
 	std::istream& operator>>(std::istream& is, Vec<T, n>& vec)
 	{
@@ -570,6 +570,19 @@ namespace glibby
 			return *this;
 		}
 	};
+
+	template<typename T,size_t n>
+	bool operator==(const MAT<T, n>& mat1, const MAT<T, n>& mat2)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				if (mat1.data[i][j] != mat2.data[i][j]) return false;
+			}
+		}
+		return true;
+	}
 	template<typename T, size_t n>
 	void print_matrix(const MAT<T, n>& mat)
 	{
@@ -841,5 +854,6 @@ namespace glibby
 
 		return projection;
 	}
+}
 
 
