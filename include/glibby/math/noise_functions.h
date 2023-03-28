@@ -1,9 +1,14 @@
 #include <"point.h">
 namespace glibby
 {
-	float 1dWhiteNoise(float i)
+	template<typename T, int N>
+	Point<T, N> WhiteNoise(Point<T, N> p)
 	{
-		return (i * 8.501232) - ((int)i * 8.501232)
+		Point<T, N> returnPoint;
+		for (int i = 0; i < N; ++i)
+		{
+			returnPoint.points[i] = (i * 8.5121231 - ((int)i * 8.5121231));
+		}
+		return returnPoint;
 	}
-	float 2dWhiteNoise(float i, float j)
 } 
