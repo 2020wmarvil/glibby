@@ -70,6 +70,28 @@ namespace glibby
       std::vector<std::shared_ptr<Point2D>> points_;
   };
 
+  class QuadTreeIterator
+  {
+    public:
+      QuadTreeIterator() : ptr_(NULL), pos_(0) {};
+      QuadTreeIterator(QuadTreeNode* ptr, unsigned int pos) : ptr_(ptr), pos_(pos) {};
+      QuadTreeIterator& operator=(const QuadTreeIterator& other);
+
+      bool operator==(const QuadTreeIterator& other) const;
+      bool operator!=(const QuadTreeIterator& other) const;
+
+      QuadTreeIterator& operator++();
+      QuadTreeIterator operator++(int);
+      QuadTreeIterator& operator--();
+      QuadTreeIterator operator--(int);
+
+      const std::shared_ptr<const Point2D> operator*() const;
+
+    private:
+      QuadTreeNode* ptr_;
+      unsigned int pos_;
+  };
+
   class QuadTree 
   {
     public:
@@ -143,7 +165,7 @@ namespace glibby
       std::vector<Point2D> query(Point2D* point, float width, 
           float height) const;
 
-      int size() const {return size_;};
+      unsigned int size() const {return size_;};
       /**
        * @brief removes all points from tree
        * */
@@ -178,7 +200,7 @@ namespace glibby
       
       std::shared_ptr<QuadTreeNode> node_;
       int capacity_;
-      int size_;
+      unsigned int size_;
   };
 }
 

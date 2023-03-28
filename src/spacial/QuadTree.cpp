@@ -9,6 +9,11 @@
 
 namespace glibby 
 {
+  /*
+   *
+   * QUAD TREE NODE CLASS
+   *
+   * */
   QuadTreeNode::QuadTreeNode(std::shared_ptr<Point2D> cen, float width, 
       float height, int cap) 
   {
@@ -55,6 +60,76 @@ namespace glibby
     return true;
   }
 
+  /*
+   *
+   * QUAD TREE ITERATOR CLASS
+   *
+   * */
+  QuadTreeIterator& QuadTreeIterator::operator=(const QuadTreeIterator& other)
+  {
+    // no self assignment
+    if (this == &other)
+    {
+      return *this;
+    }
+
+    this->ptr_ = other.ptr_;
+    this->pos_ = other.pos_;
+
+    return *this;
+  }
+
+  bool QuadTreeIterator::operator==(const QuadTreeIterator& other) const
+  {
+    return (this->ptr_ == other.ptr_ && this->pos_ == other.pos_);
+  }
+
+  bool QuadTreeIterator::operator!=(const QuadTreeIterator& other) const
+  {
+    if (this->ptr_ != other.ptr_)
+    {
+      return false;
+    }
+    return this->pos_ != other.pos_;
+  }
+
+  QuadTreeIterator& QuadTreeIterator::operator++()
+  {
+
+  }
+
+  QuadTreeIterator QuadTreeIterator::operator++(int)
+  {
+    QuadTreeIterator temp;
+    temp = *this;
+    ++(*this);
+    return temp;
+  }
+
+  QuadTreeIterator& QuadTreeIterator::operator--()
+  {
+
+  }
+
+  QuadTreeIterator QuadTreeIterator::operator--(int)
+  {
+    QuadTreeIterator temp;
+    temp = *this;
+    --(*this);
+    return temp;
+  }
+
+  const std::shared_ptr<const Point2D> QuadTreeIterator::operator*() const
+  {
+    return this->ptr_->points_[this->pos_];
+  }
+
+
+  /*
+   *
+   * QUAD TREE CLASS
+   *
+   * */
   QuadTree::QuadTree(std::shared_ptr<Point2D> TopL, 
       std::shared_ptr<Point2D> TopR, std::shared_ptr<Point2D> BotL, 
       std::shared_ptr<Point2D> BotR, int capacity) 
