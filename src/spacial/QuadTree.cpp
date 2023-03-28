@@ -17,6 +17,7 @@ namespace glibby
     this->height_ = height;
     this->divided_ = false;
     this->capacity_ = cap;
+    this->parent_ = NULL;
   }
 
   bool QuadTreeNode::inside_boundary(Point2D* ptr) const 
@@ -279,24 +280,28 @@ namespace glibby
     node->SW_.reset(
         new QuadTreeNode(SW_center,new_width,new_height,node->capacity_)
         );
+    node->SW_->parent_ = node;
 
     SE_center->x = node->center_->x + node->width_ / 4;
     SE_center->y = node->center_->y - node->height_ / 4;
     node->SE_.reset(
         new QuadTreeNode(SE_center,new_width,new_height,node->capacity_)
         );
+    node->SE_->parent_ = node;
 
     NW_center->x = node->center_->x - node->width_ / 4;
     NW_center->y = node->center_->y + node->height_ / 4;
     node->NW_.reset(
         new QuadTreeNode(NW_center,new_width,new_height,node->capacity_)
         );
+    node->NW_->parent_ = node;
 
     NE_center->x = node->center_->x + node->width_ / 4;
     NE_center->y = node->center_->y + node->height_ / 4;
     node->NE_.reset(
         new QuadTreeNode(NE_center,new_width,new_height,node->capacity_)
         );
+    node->NE_->parent_ = node;
   }
 
   bool QuadTree::search(std::shared_ptr<QuadTreeNode> node,
