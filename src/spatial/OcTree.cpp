@@ -1,4 +1,4 @@
-#include "glibby/spacial/OcTree.h"
+#include "glibby/spatial/OcTree.h"
 #include "glibby/primitives/point.h"
 #include "glibby/math/general_math.h"
 
