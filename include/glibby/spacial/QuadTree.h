@@ -75,6 +75,7 @@ namespace glibby
     public:
       QuadTreeIterator() : ptr_(NULL), pos_(0) {};
       QuadTreeIterator(QuadTreeNode* ptr, unsigned int pos) : ptr_(ptr), pos_(pos) {};
+      ~QuadTreeIterator() {};
       QuadTreeIterator& operator=(const QuadTreeIterator& other);
 
       bool operator==(const QuadTreeIterator& other) const;
@@ -82,13 +83,11 @@ namespace glibby
 
       QuadTreeIterator& operator++();
       QuadTreeIterator operator++(int);
-      QuadTreeIterator& operator--();
-      QuadTreeIterator operator--(int);
 
       const std::shared_ptr<const Point2D> operator*() const;
 
     private:
-      QuadTreeNode* ptr_;
+      std::shared_ptr<QuadTreeNode> ptr_;
       unsigned int pos_;
   };
 

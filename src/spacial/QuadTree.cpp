@@ -95,7 +95,68 @@ namespace glibby
 
   QuadTreeIterator& QuadTreeIterator::operator++()
   {
+    if (ptr_ == NULL) 
+    { // end of iteration, nothing left to look at
+      return *this;
+    }
+    if (pos_ < ptr_->points_.size())
+    { // still more to look at in this node, so don't leave yet
+      pos_++;
+    }
+    else 
+    { // nothing more at this node, move to next
+      /*
+       * if we are in the parent's SW node, we go to SW-most node of parent's NW
+       * if we are in the parent's NW node, we go to SW-most node of parent's NE
+       * if we are in the parent's NE node, we go to SW-most node of parent's SE
+       * if we are in the parent's SE node, we go to parent
+       *
+       * we will never have to check if the parent does not have a SW/NW/NE/SE
+       * because when we subdivide a node, all of the children are created at
+       * once
+       * */
+      if (ptr_ == ptr_->parent_->SW_) 
+      {
+        ptr_ = ptr_->parent_->NW_;
+        pos_ = 0;
+        while (ptr_->SW_ != NULL)
+        {
+          ptr_ = ptr_->SW_;
+        }
+      }
+      else if (ptr_ == ptr_->parent_->NW_) 
+      {
+        ptr_ = ptr_->parent_->NE_;
+        pos_ = 0;
+        while (ptr_->SW_ != NULL)
+        {
+          ptr_ = ptr_->SW_;
+        }
+      }
+      if (ptr_ == ptr_->parent_->NE_) 
+      {
+        ptr_ = ptr_->parent_->SE_;
+        pos_ = 0;
+        while (ptr_->SW_ != NULL)
+        {
+          ptr_ = ptr_->SW_;
+        }
+      }
+      if (ptr_ == ptr_->parent_->SE_) 
+      {
+        ptr_ = ptr_->parent_;
+        pos_ = 0;
+      }
+    }
 
+    // there is a chance that we just moved to a child that doesn't actually
+    // contain any data. We need to fix that by iterating again
+    if (pos_ == ptr_->points_.size()) 
+    {
+      ++(*this);
+    }
+
+    return *this;
   }
 
   QuadTreeIterator QuadTreeIterator::operator++(int)
@@ -103,19 +164,6 @@ namespace glibby
     QuadTreeIterator temp;
     temp = *this;
     ++(*this);
-    return temp;
-  }
-
-  QuadTreeIterator& QuadTreeIterator::operator--()
-  {
-
-  }
-
-  QuadTreeIterator QuadTreeIterator::operator--(int)
-  {
-    QuadTreeIterator temp;
-    temp = *this;
-    --(*this);
     return temp;
   }
 
