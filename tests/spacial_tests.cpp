@@ -25,27 +25,27 @@ TEST_CASE("QuadTree insert point","[spacial][QuadTree]")
   std::shared_ptr<glibby::Point2D> pt2(new glibby::Point2D);
   pt2->x = 1.00f;
   pt2->y = 1.00f;
-  CHECK(qt1.insert(&(*pt2)));
+  CHECK(qt1.insert(&(*pt2)).first);
 
   std::shared_ptr<glibby::Point2D> pt3(new glibby::Point2D);
   pt3->x = -1.00f;
   pt3->y = -1.00f;
-  CHECK(qt1.insert(&(*pt3)));
+  CHECK(qt1.insert(&(*pt3)).first);
   
   std::shared_ptr<glibby::Point2D> pt4(new glibby::Point2D);
   pt4->x = 1.49f;
   pt4->y = -1.49f;
-  CHECK(qt1.insert(&(*pt4)));
+  CHECK(qt1.insert(&(*pt4)).first);
   
   std::shared_ptr<glibby::Point2D> pt5(new glibby::Point2D);
   pt5->x = 3.00f;
   pt5->y = -3.00f;
-  CHECK_FALSE(qt1.insert(&(*pt5)));
+  CHECK_FALSE(qt1.insert(&(*pt5)).first);
 
   std::shared_ptr<glibby::Point2D> pt6(new glibby::Point2D);
   pt6->x = -10.00f;
   pt6->y = -10.00f;
-  CHECK_FALSE(qt1.insert(&(*pt6)));
+  CHECK_FALSE(qt1.insert(&(*pt6)).first);
 }
 
 TEST_CASE("QuadTree remove point","[spacial][QuadTree]") 
@@ -58,31 +58,31 @@ TEST_CASE("QuadTree remove point","[spacial][QuadTree]")
   std::shared_ptr<glibby::Point2D> pt2(new glibby::Point2D);
   pt2->x = 1.00f;
   pt2->y = 1.00f;
-  CHECK(qt1.insert(&(*pt2)));
+  CHECK(qt1.insert(&(*pt2)).first);
   CHECK(qt1.remove(&(*pt2)));
 
   std::shared_ptr<glibby::Point2D> pt3(new glibby::Point2D);
   pt3->x = -1.00f;
   pt3->y = -1.00f;
-  CHECK(qt1.insert(&(*pt3)));
+  CHECK(qt1.insert(&(*pt3)).first);
   CHECK(qt1.remove(&(*pt3)));
   
   std::shared_ptr<glibby::Point2D> pt4(new glibby::Point2D);
   pt4->x = 1.49f;
   pt4->y = -1.49f;
-  CHECK(qt1.insert(&(*pt4)));
+  CHECK(qt1.insert(&(*pt4)).first);
   CHECK(qt1.remove(&(*pt4)));
   
   std::shared_ptr<glibby::Point2D> pt5(new glibby::Point2D);
   pt5->x = 3.00f;
   pt5->y = -3.00f;
-  CHECK_FALSE(qt1.insert(&(*pt5)));
+  CHECK_FALSE(qt1.insert(&(*pt5)).first);
   CHECK_FALSE(qt1.remove(&(*pt5)));
 
   std::shared_ptr<glibby::Point2D> pt6(new glibby::Point2D);
   pt6->x = -10.00f;
   pt6->y = -10.00f;
-  CHECK_FALSE(qt1.insert(&(*pt6)));
+  CHECK_FALSE(qt1.insert(&(*pt6)).first);
   CHECK_FALSE(qt1.remove(&(*pt6)));
 }
 
@@ -97,33 +97,33 @@ TEST_CASE("QuadTree contains point","[spacial][QuadTree]")
   std::shared_ptr<glibby::Point2D> pt2(new glibby::Point2D);
   pt2->x = 1.00f;
   pt2->y = 1.00f;
-  CHECK(qt1.insert(&(*pt2)));
+  CHECK(qt1.insert(&(*pt2)).first);
 
   std::shared_ptr<glibby::Point2D> pt3(new glibby::Point2D);
   pt3->x = -1.00f;
   pt3->y = -1.00f;
-  CHECK(qt1.insert(&(*pt3)));
+  CHECK(qt1.insert(&(*pt3)).first);
   
   std::shared_ptr<glibby::Point2D> pt4(new glibby::Point2D);
   pt4->x = 1.45f;
   pt4->y = -1.45f;
-  CHECK(qt1.insert(&(*pt4)));
+  CHECK(qt1.insert(&(*pt4)).first);
   
   std::shared_ptr<glibby::Point2D> pt5(new glibby::Point2D);
   pt5->x = 3.00f;
   pt5->y = -3.00f;
-  CHECK_FALSE(qt1.insert(&(*pt5)));
+  CHECK_FALSE(qt1.insert(&(*pt5)).first);
 
   std::shared_ptr<glibby::Point2D> pt6(new glibby::Point2D);
   pt6->x = -10.00f;
   pt6->y = -10.00f;
-  CHECK_FALSE(qt1.insert(&(*pt6)));
+  CHECK_FALSE(qt1.insert(&(*pt6)).first);
 
-  CHECK(qt1.contains(&(*pt2)));
-  CHECK(qt1.contains(&(*pt3)));
-  CHECK(qt1.contains(&(*pt4)));
-  CHECK_FALSE(qt1.contains(&(*pt5)));
-  CHECK_FALSE(qt1.contains(&(*pt6)));
+  CHECK(qt1.contains(&(*pt2)).first);
+  CHECK(qt1.contains(&(*pt3)).first);
+  CHECK(qt1.contains(&(*pt4)).first);
+  CHECK_FALSE(qt1.contains(&(*pt5)).first);
+  CHECK_FALSE(qt1.contains(&(*pt6)).first);
 }
 
 TEST_CASE("QuadTree random insertion and check","[spacial][QuadTree]") 
@@ -148,8 +148,8 @@ TEST_CASE("QuadTree random insertion and check","[spacial][QuadTree]")
   }
   for (int i=0; i < valid.size(); i++) 
   {
-    CHECK(qt1.insert(&(*(valid[i]))));
-    CHECK(qt1.contains(&(*(valid[i]))));
+    CHECK(qt1.insert(&(*(valid[i]))).first);
+    CHECK(qt1.contains(&(*(valid[i]))).first);
   }
 
   for (int i=0; i < 25; i++) 
@@ -176,8 +176,8 @@ TEST_CASE("QuadTree random insertion and check","[spacial][QuadTree]")
   }
   for (int i=0; i < invalid.size(); i++) 
   {
-    CHECK_FALSE(qt1.insert(&(*(invalid[i]))));
-    CHECK_FALSE(qt1.contains(&(*(invalid[i]))));
+    CHECK_FALSE(qt1.insert(&(*(invalid[i]))).first);
+    CHECK_FALSE(qt1.contains(&(*(invalid[i]))).first);
   }
 
 }
@@ -204,8 +204,8 @@ TEST_CASE("QuadTree larger capacity per node","[spacial][QuadTree]")
   }
   for (int i=0; i < valid.size(); i++) 
   {
-    CHECK(qt1.insert(&(*(valid[i]))));
-    CHECK(qt1.contains(&(*(valid[i]))));
+    CHECK(qt1.insert(&(*(valid[i]))).first);
+    CHECK(qt1.contains(&(*(valid[i]))).first);
   }
 
   for (int i=0; i < 25; i++) 
@@ -232,8 +232,8 @@ TEST_CASE("QuadTree larger capacity per node","[spacial][QuadTree]")
   }
   for (int i=0; i < invalid.size(); i++) 
   {
-    CHECK_FALSE(qt1.insert(&(*(invalid[i]))));
-    CHECK_FALSE(qt1.contains(&(*(invalid[i]))));
+    CHECK_FALSE(qt1.insert(&(*(invalid[i]))).first);
+    CHECK_FALSE(qt1.contains(&(*(invalid[i]))).first);
   }
 
 }
@@ -254,8 +254,8 @@ TEST_CASE("QuadTree find all points in area","[spacial][QuadTree]") {
       temp.x = i;
       temp.y = j;
       should_include.push_back(temp);
-      CHECK(qt1.insert(&temp));
-      CHECK(qt1.contains(&temp));
+      CHECK(qt1.insert(&temp).first);
+      CHECK(qt1.contains(&temp).first);
     }
   }
 
@@ -296,8 +296,8 @@ TEST_CASE("QuadTree find all randomized points in area","[spacial][QuadTree]")
     temp.x = distribution(gen);
     temp.y = distribution(gen);
     all_points.push_back(temp);
-    CHECK(qt1.insert(&temp));
-    CHECK(qt1.contains(&temp));
+    CHECK(qt1.insert(&temp).first);
+    CHECK(qt1.contains(&temp).first);
   }
 
   float width = 2*fabs(distribution(gen));
@@ -330,6 +330,43 @@ TEST_CASE("QuadTree find all randomized points in area","[spacial][QuadTree]")
       }
     }
     CHECK(in);
+  }
+}
+
+TEST_CASE("QuadTree iterator testing","[spacial][QuadTree]")
+{
+  std::shared_ptr<glibby::Point2D> pt1(new glibby::Point2D);
+  pt1->x = 0.00f;
+  pt1->y = 0.00f;
+  glibby::QuadTree qt1 = glibby::QuadTree(pt1,5.00f,5.00f);
+
+  std::default_random_engine gen;
+  std::uniform_real_distribution<float>  distribution(-2.5f, 2.5f);
+
+  std::vector<glibby::Point2D> all_points;
+  for (int i=0; i < 25; i++) 
+  {
+    glibby::Point2D temp;
+    temp.x = distribution(gen);
+    temp.y = distribution(gen);
+    all_points.push_back(temp);
+    CHECK(qt1.insert(&temp).first);
+    CHECK(qt1.contains(&temp).first);
+  }
+
+  glibby::QuadTree::iterator itr = qt1.begin();
+  while (itr != qt1.end()) {
+    std::shared_ptr<const glibby::Point2D> temp = *itr;
+    bool contains = false;
+    for (int i=0; i < all_points.size(); i++)
+    {
+      if (fabs(temp->x - all_points[i].x) < 0.001f &&
+          fabs(temp->y - all_points[i].y) < 0.001f)
+      {
+        contains = true;
+      }
+    }
+    CHECK(contains);
   }
 }
 
