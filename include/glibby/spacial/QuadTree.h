@@ -144,6 +144,7 @@ namespace glibby
        *
        * @return true if point was successfully added, false otherwise, if 
        * false, it is likely that point is not in boundary of QuadTree
+       * @return an iterator to where the point has been inserted
        * */
       std::pair<bool,iterator> insert(Point2D* point);
       /**
@@ -163,6 +164,7 @@ namespace glibby
        * @param point - point to check if inserted
        *
        * @return true if point is in tree, false otherwise
+       * @return iterator to where the point was found
        * */
       std::pair<bool,iterator> contains(Point2D* point) const;
       /**
