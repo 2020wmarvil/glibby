@@ -1,4 +1,4 @@
-#include <vector>
+#include <noise_functions.h>
 namespace glibby
 {
 	std::vector<float> whiteNoise1d(float i)
@@ -14,4 +14,4 @@ namespace glibby
 		returnVector[0] = (4.9482 * i - (int)(4.9482 * i));
 		returnVector[1] = (5.3267 * i - (int)(5.3267 * i));
 	}
-} 
+}
