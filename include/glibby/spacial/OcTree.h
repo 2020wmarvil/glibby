@@ -121,6 +121,17 @@ namespace glibby
 
       typedef OcTreeIterator iterator;
       friend class OcTreeIterator;
+      /**
+       * @brief returns an iterator to the beginning of the OcTree which can
+       * be used to move through the tree
+       * */
+      iterator begin() const;
+      /**
+       * @brief returns iterator to the end of the OcTree. This iterator is
+       * basically just a NULL iterator. Reverse iteration is not supported
+       * */
+      iterator end() const;
+
 
       /**
        * @brief Will insert point into OcTree at correct subnode if the point is
@@ -201,7 +212,7 @@ namespace glibby
           std::vector<Point3>* points, std::shared_ptr<OcTreeNode> node, 
           Point3* center, float width, float height, float depth) const;
       
-      std::shared_ptr<OcTreeNode> node_;
+      std::shared_ptr<OcTreeNode> root_;
       int capacity_;
       int size_;
   };

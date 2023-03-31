@@ -66,7 +66,125 @@ namespace glibby
     return true;
   }
 
-  OcTree::OcTree(std::shared_ptr<Point3> p, float width, float height, 
+  /*
+   *
+   * OC TREE ITERATOR CLASS
+   *
+   * */
+  OcTreeIterator& OcTreeIterator::operator=(const OcTreeIterator& other)
+  {
+    // no self assignment
+    if (this == &other)
+    {
+      return *this;
+    }
+
+    this->ptr_ = other.ptr_;
+    this->pos_ = other.pos_;
+
+    return *this;
+  }
+
+  bool OcTreeIterator::operator==(const OcTreeIterator& other) const
+  {
+    return (this->ptr_ == other.ptr_ && this->pos_ == other.pos_);
+  }
+
+  bool OcTreeIterator::operator!=(const OcTreeIterator& other) const
+  {
+    if (this->ptr_ != other.ptr_)
+    {
+      return false;
+    }
+    return this->pos_ != other.pos_;
+  }
+
+  QuadTreeIterator& QuadTreeIterator::operator++()
+  {
+    if (ptr_ == NULL) 
+    { // end of iteration, nothing left to look at
+      return *this;
+    }
+    if (pos_ < ptr_->points_.size())
+    { // still more to look at in this node, so don't leave yet
+      pos_++;
+    }
+    else 
+    { // nothing more at this node, move to next
+      /*
+       * if we are in the parent's SW node, we go to SW-most node of parent's NW
+       * if we are in the parent's NW node, we go to SW-most node of parent's NE
+       * if we are in the parent's NE node, we go to SW-most node of parent's SE
+       * if we are in the parent's SE node, we go to parent
+       *
+       * we will never have to check if the parent does not have a SW/NW/NE/SE
+       * because when we subdivide a node, all of the children are created at
+       * once
+       * */
+      if (ptr_ == ptr_->parent_->SW_) 
+      {
+        ptr_ = ptr_->parent_->NW_;
+        pos_ = 0;
+        while (ptr_->SW_ != NULL)
+        {
+          ptr_ = ptr_->SW_;
+        }
+      }
+      else if (ptr_ == ptr_->parent_->NW_) 
+      {
+        ptr_ = ptr_->parent_->NE_;
+        pos_ = 0;
+        while (ptr_->SW_ != NULL)
+        {
+          ptr_ = ptr_->SW_;
+        }
+      }
+      if (ptr_ == ptr_->parent_->NE_) 
+      {
+        ptr_ = ptr_->parent_->SE_;
+        pos_ = 0;
+        while (ptr_->SW_ != NULL)
+        {
+          ptr_ = ptr_->SW_;
+        }
+      }
+      if (ptr_ == ptr_->parent_->SE_) 
+      {
+        ptr_ = ptr_->parent_;
+        pos_ = 0;
+      }
+    }
+
+    // there is a chance that we just moved to a child that doesn't actually
+    // contain any data. We need to fix that by iterating again
+    if (pos_ == ptr_->points_.size()) 
+    {
+      ++(*this);
+    }
+
+    return *this;
+  }
+
+  OcTreeIterator OcTreeIterator::operator++(int)
+  {
+    OcTreeIterator temp;
+    temp = *this;
+    ++(*this);
+    return temp;
+  }
+
+  const std::shared_ptr<const Point3> OcTreeIterator::operator*() const
+  {
+    return this->ptr_->points_[this->pos_];
+  }
+
+
+  /*
+   *
+   * OC TREE CLASS
+   *
+   * */
+   OcTree::OcTree(std::shared_ptr<Point3> p, float width, float height, 
       float depth, int capacity) 
   {
     std::shared_ptr<Point3> temp(new Point3);
@@ -81,45 +199,66 @@ namespace glibby
     {
       this->capacity_ = 1;
     }
-    this->node_ = std::shared_ptr<OcTreeNode>(
+    this->root_ = std::shared_ptr<OcTreeNode>(
         new OcTreeNode(temp,width,height,depth,this->capacity_));
     this->size_ = 0;
   }
 
-  bool OcTree::insert(Point3* point) 
+  OcTree::iterator OcTree::begin() const
+  {
+    OcTreeNode* p = &(*root_);
+    while (p->SWB_ != NULL)
+    {
+      p = &(*p->SWB_);
+    }
+    OcTree::iterator temp(p,0);
+    // just in case the node we just moved to does not contain any data
+    if (p->points_.size() == 0)
+    {
+      temp++;
+    }
+    return temp;
+  }
+
+  OcTree::iterator OcTree::end() const
+  {
+    return OcTree::iterator();
+  }
+
+ std::pair<bool,OcTree::iterator> OcTree::insert(Point3* point) 
   {
     // out of bounds
-    if (!this->node_->inside_boundary(point)) 
+    if (!this->root_->inside_boundary(point)) 
     {
-      return false;
+      return std::pair<bool,OcTree::iterator>(false,OcTree::iterator());
     }
-    return add_point(this->node_, point);
+    return add_point(this->root_, point);
   }
 
   bool OcTree::remove(Point3* point) 
   {
     // out of bounds
-    if (!this->node_->inside_boundary(point)) 
+    if (!this->root_->inside_boundary(point)) 
     {
       return false;
     }
-    return remove_point(this->node_, point);
+    return remove_point(this->root_, point);
   }
 
-  bool OcTree::contains(Point3* point) const 
+  std::pair<bool,OcTree::iterator> OcTree::contains(Point3* point) const 
   {
-    if (!this->node_->inside_boundary(point)) 
+    if (!this->root_->inside_boundary(point)) 
     {
-      return false;
+      return std::pair<bool,OcTree::iterator>(false,OcTree::iterator());
     }
-    return search(this->node_,point);
+    return search(this->root_,point);
   }
 
   std::vector<Point3> OcTree::query (Point3* point, 
       float width, float height, float depth) const 
   {
     std::vector<Point3> points;
-    search_tree(&points, this->node_, point, width, height, depth);
+    search_tree(&points, this->root_, point, width, height, depth);
     return points;
   }
 
@@ -127,22 +266,23 @@ namespace glibby
     this->size_ = 0;
     std::shared_ptr<OcTreeNode> temp;
     temp.reset( new OcTreeNode(
-        this->node_->center_,
-        this->node_->width_,
-        this->node_->height_,
-        this->node_->depth_,
-        this->node_->capacity_));
-    this->node_ = temp;
+        this->root_->center_,
+        this->root_->width_,
+        this->root_->height_,
+        this->root_->depth_,
+        this->root_->capacity_));
+    this->root_ = temp;
   }
 
 
 
-  bool OcTree::add_point(std::shared_ptr<OcTreeNode> node, Point3* point) 
+  std::pair<bool,OcTree::iterator> OcTree::add_point(
+      std::shared_ptr<OcTreeNode> node, Point3* point) 
   {
     // is it inside the boundary of the node?
     if (!node->inside_boundary(point)) 
     {
-      return false;
+      return std::pair<bool,OcTree::iterator>(false,OcTree::iterator());
     }
     // if we have space at this node, add it here
     if (node->points_.size() < node->capacity_) 
@@ -152,7 +292,8 @@ namespace glibby
       node->points_[node->points_.size()-1]->points[1] = point->points[1];
       node->points_[node->points_.size()-1]->points[2] = point->points[2];
       this->size_++;
-      return true;
+      OcTree::iterator temp(node,node->points_.size()-1);
+      return std::pair<bool,OcTree::iterator>(true,temp);
     }
     
     // if we need to subdivide this node, do so
@@ -161,40 +302,49 @@ namespace glibby
       subdivide(node);
     }
 
-    // Add to everything, one of them will be righta
-    if (add_point(node->SWF_,point))
+    // Add to everything, one of them will be right
+    std::pair<bool,OcTree::iterator> temp;
+    temp = add_point(node->SWF_,point);
+    if (temp.first)
     {
-      return true;
+      return temp;
     }
-    else if (add_point(node->SWB_,point))
+    temp = add_point(node->SWB_,point);
+    if (temp.first)
     {
-      return true;
+      return temp;
     }
-    else if (add_point(node->SEF_,point))
+    temp = add_point(node->SEF_,point);
+    if (temp.first)
     {
-      return true;
+      return temp;
     }
-    else if (add_point(node->SEB_,point))
+    temp = add_point(node->SEB_,point);
+    if (temp.first)
     {
-      return true;
+      return temp;
     }
-    else if (add_point(node->NWF_,point))
+    temp = add_point(node->NWF_,point);
+    if (temp.first)
     {
-      return true;
+      return temp;
     }
-    else if (add_point(node->NWB_,point))
+    temp = add_point(node->NWB_,point);
+    if (temp.first)
     {
-      return true;
+      return temp;
     }
-    else if (add_point(node->NEF_,point))
+    temp = add_point(node->NEF_,point);
+    if (temp.first)
     {
-      return true;
+      return temp;
     }
-    else if (add_point(node->NEB_,point))
+    temp = add_point(node->NEB_,point);
+    if (temp.first)
     {
-      return true;
+      return temp;
     }
-    return false;
+    return std::pair<bool,OcTree::iterator>(false,OcTree::iterator());
   }
 
   bool OcTree::remove_point(std::shared_ptr<OcTreeNode> node, 
