@@ -69,4 +69,5 @@ TEST_CASE("PointND distance", "[primitive][point]") {
     BENCHMARK("Point2D distance") {
         return glibby::Distance({ 0.0f, 0.0f }, { 5.0f, 8.0f });
     };
+<<<<<<< HEAD
 }*/
