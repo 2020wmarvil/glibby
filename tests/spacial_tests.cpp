@@ -15,7 +15,7 @@
 /*
  * QUADTREE TESTS
  * */
-TEST_CASE("QuadTree insert point","[spacial][QuadTree]") 
+TEST_CASE("QuadTree insert point","[spatial][QuadTree]") 
 {
   std::shared_ptr<glibby::Point2> pt1(new glibby::Point2);
   pt1->coord[0] = 0.00f;
@@ -48,7 +48,7 @@ TEST_CASE("QuadTree insert point","[spacial][QuadTree]")
   CHECK_FALSE(qt1.insert(&(*pt6)));
 }
 
-TEST_CASE("QuadTree remove point","[spacial][QuadTree]") 
+TEST_CASE("QuadTree remove point","[spatial][QuadTree]") 
 {
   std::shared_ptr<glibby::Point2> pt1(new glibby::Point2);
   pt1->coord[0] = 0.00f;
@@ -87,7 +87,7 @@ TEST_CASE("QuadTree remove point","[spacial][QuadTree]")
 }
 
 
-TEST_CASE("QuadTree contains point","[spacial][QuadTree]") 
+TEST_CASE("QuadTree contains point","[spatial][QuadTree]") 
 {
   std::shared_ptr<glibby::Point2> pt1(new glibby::Point2);
   pt1->coord[0] = 0.00f;
@@ -126,7 +126,7 @@ TEST_CASE("QuadTree contains point","[spacial][QuadTree]")
   CHECK_FALSE(qt1.contains(&(*pt6)));
 }
 
-TEST_CASE("QuadTree random insertion and check","[spacial][QuadTree]") 
+TEST_CASE("QuadTree random insertion and check","[spatial][QuadTree]") 
 {
   std::shared_ptr<glibby::Point2> pt1(new glibby::Point2);
   pt1->coord[0] = 0.00f;
@@ -182,7 +182,7 @@ TEST_CASE("QuadTree random insertion and check","[spacial][QuadTree]")
 
 }
 
-TEST_CASE("QuadTree larger capacity per node","[spacial][QuadTree]") 
+TEST_CASE("QuadTree larger capacity per node","[spatial][QuadTree]") 
 {
   std::shared_ptr<glibby::Point2> pt1(new glibby::Point2);
   pt1->coord[0] = 0.00f;
@@ -239,7 +239,7 @@ TEST_CASE("QuadTree larger capacity per node","[spacial][QuadTree]")
 }
 
 
-TEST_CASE("QuadTree find all points in area","[spacial][QuadTree]") {
+TEST_CASE("QuadTree find all points in area","[spatial][QuadTree]") {
   std::shared_ptr<glibby::Point2> pt1(new glibby::Point2);
   pt1->coord[0] = 0.00f;
   pt1->coord[1] = 0.00f;
@@ -279,7 +279,7 @@ TEST_CASE("QuadTree find all points in area","[spacial][QuadTree]") {
   }
 }
 
-TEST_CASE("QuadTree find all randomized points in area","[spacial][QuadTree]") 
+TEST_CASE("QuadTree find all randomized points in area","[spatial][QuadTree]") 
 {
   std::shared_ptr<glibby::Point2> pt1(new glibby::Point2);
   pt1->coord[0] = 0.00f;
@@ -336,7 +336,7 @@ TEST_CASE("QuadTree find all randomized points in area","[spacial][QuadTree]")
 /*
  * OCTREE TESTS
  * */
-TEST_CASE("OcTree insert point","[spacial][OcTree]") 
+TEST_CASE("OcTree insert point","[spatial][OcTree]") 
 {
   std::shared_ptr<glibby::Point3> pt1(new glibby::Point3);
   pt1->coord[0] = 0.00f;
@@ -375,7 +375,7 @@ TEST_CASE("OcTree insert point","[spacial][OcTree]")
   CHECK_FALSE(ot1.insert(&(*pt6)));
 }
 
-TEST_CASE("OcTree remove point","[spacial][OcTree]") 
+TEST_CASE("OcTree remove point","[spatial][OcTree]") 
 {
   std::shared_ptr<glibby::Point3> pt1(new glibby::Point3);
   pt1->coord[0] = 0.00f;
@@ -420,7 +420,7 @@ TEST_CASE("OcTree remove point","[spacial][OcTree]")
   CHECK_FALSE(ot1.remove(&(*pt6)));
 }
 
-TEST_CASE("OcTree contains point","[spacial][OcTree]") 
+TEST_CASE("OcTree contains point","[spatial][OcTree]") 
 {
   std::shared_ptr<glibby::Point3> pt1(new glibby::Point3);
   pt1->coord[0] = 0.00f;
@@ -465,7 +465,7 @@ TEST_CASE("OcTree contains point","[spacial][OcTree]")
   CHECK_FALSE(ot1.contains(&(*pt6)));
 }
 
-TEST_CASE("OcTree random insertion and check","[spacial][OcTree]") 
+TEST_CASE("OcTree random insertion and check","[spatial][OcTree]") 
 {
   std::shared_ptr<glibby::Point3> pt1(new glibby::Point3);
   pt1->coord[0] = 0.00f;
@@ -550,7 +550,7 @@ TEST_CASE("OcTree random insertion and check","[spacial][OcTree]")
   }
 }
 
-TEST_CASE("OcTree random insertion with larger capacity","[spacial][OcTree]") 
+TEST_CASE("OcTree random insertion with larger capacity","[spatial][OcTree]") 
 {
   std::shared_ptr<glibby::Point3> pt1(new glibby::Point3);
   pt1->coord[0] = 0.00f;
@@ -635,7 +635,7 @@ TEST_CASE("OcTree random insertion with larger capacity","[spacial][OcTree]")
   }
 }
 
-TEST_CASE("OcTree find all points in area","[spacial][OcTree]") {
+TEST_CASE("OcTree find all points in area","[spatial][OcTree]") {
   std::shared_ptr<glibby::Point3> pt1(new glibby::Point3);
   pt1->coord[0] = 0.00f;
   pt1->coord[1] = 0.00f;
@@ -681,7 +681,7 @@ TEST_CASE("OcTree find all points in area","[spacial][OcTree]") {
   }
 }
 
-TEST_CASE("OcTree find all points in randomized area","[spacial][OcTree]") {
+TEST_CASE("OcTree find all points in randomized area","[spatial][OcTree]") {
   std::shared_ptr<glibby::Point3> pt1(new glibby::Point3);
   pt1->coord[0] = 0.00f;
   pt1->coord[1] = 0.00f;
