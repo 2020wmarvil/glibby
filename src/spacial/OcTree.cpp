@@ -18,6 +18,7 @@ namespace glibby
     this->depth_ = depth;
     this->divided_ = false;
     this->capacity_ = cap;
+    this->parent_ = NULL;
   }
 
   bool OcTreeNode::inside_boundary(Point3* ptr) const 
@@ -283,6 +284,7 @@ namespace glibby
     node->SWF_.reset(
       new OcTreeNode(SWF_center,new_width,new_height,new_depth,node->capacity_)
       );
+    node->SWF_->parent_ = node;
 
     SWB_center->points[0] = node->center_->points[0] - node->width_ / 4;
     SWB_center->points[1] = node->center_->points[1] - node->height_ / 4;
@@ -290,6 +292,7 @@ namespace glibby
     node->SWB_.reset(
       new OcTreeNode(SWB_center,new_width,new_height,new_depth,node->capacity_)
       );
+    node->SWB_->parent_ = node;
 
     SEF_center->points[0] = node->center_->points[0] - node->width_ / 4;
     SEF_center->points[1] = node->center_->points[1] + node->height_ / 4;
@@ -297,6 +300,7 @@ namespace glibby
     node->SEF_.reset(
       new OcTreeNode(SEF_center,new_width,new_height,new_depth,node->capacity_)
       );
+    node->SEF_->parent_ = node;
 
     SEB_center->points[0] = node->center_->points[0] - node->width_ / 4;
     SEB_center->points[1] = node->center_->points[1] + node->height_ / 4;
@@ -304,6 +308,7 @@ namespace glibby
     node->SEB_.reset(
       new OcTreeNode(SEB_center,new_width,new_height,new_depth,node->capacity_)
       );
+    node->SEB_->parent_ = node;
 
     NWF_center->points[0] = node->center_->points[0] + node->width_ / 4;
     NWF_center->points[1] = node->center_->points[1] - node->height_ / 4;
@@ -311,6 +316,7 @@ namespace glibby
     node->NWF_.reset(
       new OcTreeNode(NWF_center,new_width,new_height,new_depth,node->capacity_)
       );
+    node->NWF_->parent_ = node;
 
     NWB_center->points[0] = node->center_->points[0] + node->width_ / 4;
     NWB_center->points[1] = node->center_->points[1] - node->height_ / 4;
@@ -318,6 +324,7 @@ namespace glibby
     node->NWB_.reset(
       new OcTreeNode(NWB_center,new_width,new_height,new_depth,node->capacity_)
       );
+    node->NWB_->parent_ = node;
 
     NEF_center->points[0] = node->center_->points[0] + node->width_ / 4;
     NEF_center->points[1] = node->center_->points[1] + node->height_ / 4;
@@ -325,6 +332,7 @@ namespace glibby
     node->NEF_.reset(
       new OcTreeNode(NEF_center,new_width,new_height,new_depth,node->capacity_)
       );
+    node->NEF_->parent_ = node;
 
     NEB_center->points[0] = node->center_->points[0] + node->width_ / 4;
     NEB_center->points[1] = node->center_->points[1] + node->height_ / 4;
@@ -332,6 +340,7 @@ namespace glibby
     node->NEB_.reset(
       new OcTreeNode(NEB_center,new_width,new_height,new_depth,node->capacity_)
       );
+    node->NEB_->parent_ = node;
   }
 
   bool OcTree::search(std::shared_ptr<OcTreeNode> node,

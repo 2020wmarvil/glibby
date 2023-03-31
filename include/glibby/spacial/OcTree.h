@@ -76,6 +76,7 @@ namespace glibby
       std::shared_ptr<OcTreeNode> NEB_;
       std::shared_ptr<OcTreeNode> SWB_;
       std::shared_ptr<OcTreeNode> SEB_;
+      std::shared_ptr<OcTreeNode> parent_;
       std::vector<std::shared_ptr<Point3>> points_;
   };
 
