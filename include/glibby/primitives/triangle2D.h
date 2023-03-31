@@ -20,8 +20,6 @@ namespace glibby
         float area() const;
         float perimeter() const;
         Point2D get_center() const;
-        
-        bool intersects(const Circle2D& circle);
     private:
         Point2D p1, p2, p3;
     };
