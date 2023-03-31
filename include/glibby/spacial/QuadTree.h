@@ -75,6 +75,7 @@ namespace glibby
     public:
       QuadTreeIterator() : ptr_(NULL), pos_(0) {};
       QuadTreeIterator(QuadTreeNode* ptr, unsigned int pos) : ptr_(ptr), pos_(pos) {};
+      QuadTreeIterator(std::shared_ptr<QuadTreeNode> ptr, unsigned int pos) : ptr_(ptr), pos_(pos) {};
       ~QuadTreeIterator() {};
       QuadTreeIterator& operator=(const QuadTreeIterator& other);
 
@@ -121,6 +122,19 @@ namespace glibby
       QuadTree(std::shared_ptr<Point2D> p, float width, float height, 
           int capacity = 1);
 
+      typedef QuadTreeIterator iterator;
+      friend class QuadTreeIterator;
+      /**
+       * @brief returns an iterator to the beginning of the QuadTree which can
+       * be used to move through the tree
+       * */
+      iterator begin() const;
+      /**
+       * @brief returns iterator to the end of the QuadTree. This iterator is
+       * basically just a NULL iterator. Reverse iteration is not supported
+       * */
+      iterator end() const;
+
       /**
        * @brief Will insert point into QuadTree at correct subnode if the point
        * is valid. Valid nodes are those within the boundary defined by the
@@ -131,7 +145,7 @@ namespace glibby
        * @return true if point was successfully added, false otherwise, if 
        * false, it is likely that point is not in boundary of QuadTree
        * */
-      bool insert(Point2D* point);
+      std::pair<bool,iterator> insert(Point2D* point);
       /**
        * @brief Will remove point from QuadTree if the point is in the tree.
        * If multiple copies of the same point are in the tree, only the first
@@ -150,7 +164,7 @@ namespace glibby
        *
        * @return true if point is in tree, false otherwise
        * */
-      bool contains(Point2D* point) const;
+      std::pair<bool,iterator> contains(Point2D* point) const;
       /**
        * @brief Find all points within a boundary defined by parameters
        *
@@ -175,7 +189,8 @@ namespace glibby
        * recursively finds/creates correct node to insert point and inserts
        * the point there, starts at given node
        * */
-      bool add_point(std::shared_ptr<QuadTreeNode> node, Point2D* point);
+      std::pair<bool,iterator> add_point(std::shared_ptr<QuadTreeNode> node, 
+          Point2D* point);
       /*
        * recursively finds point and removes it
        * */
@@ -188,7 +203,8 @@ namespace glibby
        * recursively searches tree for a specific point. starts at given
        * node
        * */
-      bool search(std::shared_ptr<QuadTreeNode> node, Point2D* point) const;
+      std::pair<bool,iterator> search(std::shared_ptr<QuadTreeNode> node, 
+          Point2D* point) const;
       /*
        * recursively finds all points within given boundary and adds copies of
        * those points to the given vector
@@ -197,7 +213,7 @@ namespace glibby
           std::vector<Point2D>* points, std::shared_ptr<QuadTreeNode> node, 
           Point2D* center, float width, float height) const;
       
-      std::shared_ptr<QuadTreeNode> node_;
+      std::shared_ptr<QuadTreeNode> root_;
       int capacity_;
       unsigned int size_;
   };
