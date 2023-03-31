@@ -80,6 +80,28 @@ namespace glibby
       std::vector<std::shared_ptr<Point3>> points_;
   };
 
+  class OcTreeIterator
+  {
+    public:
+      OcTreeIterator() : ptr_(NULL), pos_(0) {};
+      OcTreeIterator(OcTreeNode* ptr, unsigned int pos) : ptr_(ptr), pos_(pos) {};
+      OcTreeIterator(std::shared_ptr<OcTreeNode> ptr, unsigned int pos) : ptr_(ptr), pos_(pos) {};
+      ~OcTreeIterator() {};
+      OcTreeIterator& operator=(const OcTreeIterator& other);
+
+      bool operator==(const OcTreeIterator& other) const;
+      bool operator!=(const OcTreeIterator& other) const;
+
+      OcTreeIterator& operator++();
+      OcTreeIterator operator++(int);
+
+      const std::shared_ptr<const Point3> operator*() const;
+
+    private:
+      std::shared_ptr<OcTreeNode> ptr_;
+      unsigned int pos_;
+  };
+
   class OcTree 
   {
     public:
@@ -97,6 +119,9 @@ namespace glibby
       OcTree(std::shared_ptr<Point3> p, float width, float height, float depth,
           int capacity = 1);
 
+      typedef OcTreeIterator iterator;
+      friend class OcTreeIterator;
+
       /**
        * @brief Will insert point into OcTree at correct subnode if the point is
        * valid. Valid points are those within the boundary defined by
@@ -107,7 +132,7 @@ namespace glibby
        * @return true if point was successfully added, false otherwise. if
        * false, if is likely the point is not in the boundary of the OcTree
        * */
-      bool insert(Point3* point);
+      std::pair<bool,iterator> insert(Point3* point);
       /**
        * @brief Will remove point from OcTree if the point is in the tree,
        * If multiple copies of the same point are in the tree, only the first
@@ -126,7 +151,7 @@ namespace glibby
        *
        * @return true if point is found in tree, false otherwise
        * */
-      bool contains(Point3* point) const;
+      std::pair<bool,iterator> contains(Point3* point) const;
       /**
        * @brief Find all points within boundary defined by parameters
        *
@@ -155,7 +180,7 @@ namespace glibby
        * recursively finds/creates correct node to insert point and inserts the
        * point there, starts at node passed as argument
        * */
-      bool add_point(std::shared_ptr<OcTreeNode> node, Point3* point);
+      std::pair<bool,iterator> add_point(std::shared_ptr<OcTreeNode> node, Point3* point);
       /*
        * recursively finds a point and removes it
        * */
@@ -167,7 +192,7 @@ namespace glibby
       /*
        * recursively search tree for a specific point, starts at given node
        * */
-      bool search(std::shared_ptr<OcTreeNode> node, Point3* point) const;
+      std::pair<bool,iterator> search(std::shared_ptr<OcTreeNode> node, Point3* point) const;
       /*
        * recursively finds all points within given boundary and adds copies of
        * those points to the given vector
