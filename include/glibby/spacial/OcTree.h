@@ -98,6 +98,8 @@ namespace glibby
       const std::shared_ptr<const Point3> operator*() const;
 
     private:
+      void find_deepest_child();
+
       std::shared_ptr<OcTreeNode> ptr_;
       unsigned int pos_;
   };
@@ -148,6 +150,7 @@ namespace glibby
        * @brief Will remove point from OcTree if the point is in the tree,
        * If multiple copies of the same point are in the tree, only the first
        * point found will be removed.
+       * This will completely DESTROY all iterators that exist currently.
        *
        * @param point - point to be removed
        *
@@ -180,7 +183,7 @@ namespace glibby
       /**
        * @brief Returns number of nodes in OcTree
        * */
-      int size() const {return size_;};
+      unsigned int size() const {return size_;};
       /**
        * @brief Removes all point from tree
        * */
@@ -211,10 +214,15 @@ namespace glibby
       void search_tree(
           std::vector<Point3>* points, std::shared_ptr<OcTreeNode> node, 
           Point3* center, float width, float height, float depth) const;
+      /*
+       * will take all points in the vector and insert them into the tree.
+       * will start be destroying the current tree completely.
+       * */
+      void reformat_tree(std::vector<Point3> points);
       
       std::shared_ptr<OcTreeNode> root_;
       int capacity_;
-      int size_;
+      unsigned int size_;
   };
 }
 

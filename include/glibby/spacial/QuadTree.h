@@ -217,7 +217,6 @@ namespace glibby
       void search_tree(
           std::vector<Point2D>* points, std::shared_ptr<QuadTreeNode> node, 
           Point2D* center, float width, float height) const;
-      
       /*
        * will take all points in the vector and insert them into the tree.
        * will start be destroying the current tree completely.
