@@ -338,49 +338,26 @@ TEST_CASE("QuadTree iterator testing","[spacial][QuadTree]")
   std::shared_ptr<glibby::Point2D> pt1(new glibby::Point2D);
   pt1->x = 0.00f;
   pt1->y = 0.00f;
-  glibby::QuadTree qt1 = glibby::QuadTree(pt1,3.00f,3.00f);
+  glibby::QuadTree qt1 = glibby::QuadTree(pt1,8.00f,8.00f);
 
   std::vector<glibby::Point2D> all_points;
   std::vector<bool> found;
+
+  float points_x[21] = {0, -2, -2, 2,  2, -3, -3, -1, -1, -3, -3, -1, -1, 1, 1, 3, 3,  1,  1,  3,  3};
+  float points_y[21] = {0, -2,  2, 2, -2, -3, -1, -1, -3,  1,  3,  3,  1, 1, 3, 3, 1, -3, -1, -1, -3};
   
   glibby::Point2D temp;
-  temp.x = 0;
-  temp.y = 0;
-  all_points.push_back(temp);
-  found.push_back(false);
-  CHECK(qt1.insert(&temp).first);
-  CHECK(qt1.contains(&temp).first);
-  
-  temp.x = -1;
-  temp.y = -1;
-  all_points.push_back(temp);
-  found.push_back(false);
-  CHECK(qt1.insert(&temp).first);
-  CHECK(qt1.contains(&temp).first);
-  
-  temp.x = -1;
-  temp.y = 1;
-  all_points.push_back(temp);
-  found.push_back(false);
-  CHECK(qt1.insert(&temp).first);
-  CHECK(qt1.contains(&temp).first);
-  
-  temp.x = 1;
-  temp.y = -1;
-  all_points.push_back(temp);
-  found.push_back(false);
-  CHECK(qt1.insert(&temp).first);
-  CHECK(qt1.contains(&temp).first);
-  
-  temp.x = 1;
-  temp.y = 1;
-  all_points.push_back(temp);
-  found.push_back(false);
-  CHECK(qt1.insert(&temp).first);
-  CHECK(qt1.contains(&temp).first);
+  for (int i=0; i < 21; i++)
+  {
+    temp.x = points_x[i];
+    temp.y = points_y[i];
+    all_points.push_back(temp);
+    found.push_back(false);
+    CHECK(qt1.insert(&temp).first);
+    CHECK(qt1.contains(&temp).first);
+  }
 
   glibby::QuadTree::iterator itr = qt1.begin();
-  std::cout << *itr << std::endl;
   while (itr != qt1.end()) {
     std::shared_ptr<const glibby::Point2D> temp = *itr;
     bool contains = false;
@@ -426,7 +403,6 @@ TEST_CASE("QuadTree random iterator testing","[spacial][QuadTree]")
   }
 
   glibby::QuadTree::iterator itr = qt1.begin();
-  std::cout << *itr << std::endl;
   while (itr != qt1.end()) {
     std::shared_ptr<const glibby::Point2D> temp = *itr;
     bool contains = false;
