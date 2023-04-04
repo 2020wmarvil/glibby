@@ -301,7 +301,13 @@ namespace glibby
     {
       return false;
     }
-    return remove_point(this->root_, point);
+    bool temp = remove_point(this->root_, point);
+
+    std::vector<Point2D> points = query(&(*(this->root_->center_)),
+        (*this).root_->width_,(*this).root_->height_);
+    reformat_tree(points);
+
+    return temp;
   }
 
   std::pair<bool,QuadTree::iterator> QuadTree::contains(Point2D* point) const 
@@ -577,6 +583,19 @@ namespace glibby
     search_tree(points,node->SE_,center,width,height);
     search_tree(points,node->NW_,center,width,height);
     search_tree(points,node->NE_,center,width,height);
+  }
+
+  void QuadTree::reformat_tree(std::vector<Point2D> points)
+  {
+    std::shared_ptr<QuadTreeNode> temp(new QuadTreeNode(
+        (*this).root_->center_, (*this).root_->width_, (*this).root_->height_,
+        (*this).root_->capacity_));
+
+    this->root_ = temp;
+
+    for (unsigned int i=0; i < points.size(); i++) {
+      this->insert(&points[i]);
+    }
   }
   
 }

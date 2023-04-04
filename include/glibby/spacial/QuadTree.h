@@ -153,6 +153,7 @@ namespace glibby
        * @brief Will remove point from QuadTree if the point is in the tree.
        * If multiple copies of the same point are in the tree, only the first
        * point found will be removed.
+       * This will completely DESTROY all iterators that exist currently.
        *
        * @param point - point to be removed
        *
@@ -216,6 +217,12 @@ namespace glibby
       void search_tree(
           std::vector<Point2D>* points, std::shared_ptr<QuadTreeNode> node, 
           Point2D* center, float width, float height) const;
+      
+      /*
+       * will take all points in the vector and insert them into the tree.
+       * will start be destroying the current tree completely.
+       * */
+      void reformat_tree(std::vector<Point2D> points);
       
       std::shared_ptr<QuadTreeNode> root_;
       int capacity_;
