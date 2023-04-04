@@ -23,4 +23,6 @@ namespace glibby
 
 	std::ostream& operator<< (std::ostream& out, const Point2D& point);
 	
+	//Computes the direction of the three given points
+	int direction(Point2D p, Point2D q, Point2D r);
 }

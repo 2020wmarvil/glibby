@@ -27,5 +27,15 @@ namespace glibby
 		out << "(" << point.get_x() << ", " << point.get_y() << ")";
 		return out;
 	}
+
+	/*
+	Computes the direction of the three given points
+	+ = counter-clockwise orientation,
+	- = clockwise orientation,
+	0 = collinear
+	*/
+	int direction(Point2D p, Point2D q, Point2D r) {
+		return (q.get_y() - p.get_y()) * (r.get_x() - q.get_x()) - (q.get_x() - p.get_x()) * (r.get_y() - q.get_y());
+	}
 	
 }
