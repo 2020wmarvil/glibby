@@ -88,6 +88,8 @@ namespace glibby
       const std::shared_ptr<const Point2D> operator*() const;
 
     private:
+      void find_deepest_child();
+
       std::shared_ptr<QuadTreeNode> ptr_;
       unsigned int pos_;
   };

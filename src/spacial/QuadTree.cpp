@@ -177,6 +177,38 @@ namespace glibby
     return this->ptr_->points_[this->pos_];
   }
 
+  void find_deepest_node()
+  {
+    while (ptr_->SW_ != NULL)
+    {
+      // there are some children, just have to find which one has actual points
+      if (ptr_->SW_->points_.size() != 0)
+      {
+        // there are points at this child
+        ptr_ = ptr_->SW_;
+      } 
+      else if (ptr_->NW_->points_.size() != 0)
+      {
+        // there are points at this child
+        ptr_ = ptr_->NW_;
+      } 
+      else if (ptr_->NE_->points_.size() != 0)
+      {
+        // there are points at this child
+        ptr_ = ptr_->NE_;
+      }
+      else if (ptr_->SE_->points_.size() != 0)
+      {
+        ptr_ = ptr_->NE_;
+      }
+      else
+      {
+        // AAAH, we need to reformat the QuadTree because some point was deleted
+        // and now part of the graph is "disconnected"
+      }
+    }
+  }
+
 
   /*
    *
