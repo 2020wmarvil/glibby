@@ -1,4 +1,3 @@
-#include <iostream>
 #include<vector>
 #include <cmath>
 using namespace std;
@@ -11,6 +10,13 @@ namespace glibby
             //constructor
             Quadratic(vector<int>_values){
                 values =_values;
+            }
+
+            // copy constructor
+            Quadratic(const Quadratic &one){
+                for (int i = 0; i < one.get_values().size(); i++){
+                    values.push_back(one.get_values()[i]);
+                }
             }
 
             // add function
@@ -70,24 +76,6 @@ namespace glibby
                 return result;
             }
 
-            //prints the polynomial
-           void print(){
-            int n = values.size();
-            if (n == 0) {
-                cout << "0" << endl;
-                return;
-            }
-            for (int i = n - 1; i >= 0; i--) {
-                if (values[i] == 0){continue;}
-                if (values[i] > 0 && i < n - 1) {cout << " + ";}
-                if (values[i] < 0) {cout << " - ";}
-                if (abs(values[i]) != 1 or i == 0) {cout << abs(values[i]);}
-                if (i >= 1){ cout << "x";}
-                if (i >= 2){ cout << "^" << i;}
-            }
-            cout << endl;
-        }
-
             //multipliying function
             Quadratic multiply(const Quadratic &one) {
                 int n1 = values.size();
@@ -122,7 +110,51 @@ namespace glibby
                 return roots;
             }
 
+            // overloading - operator 
+            Quadratic operator-(const Quadratic& b) {
+                Quadratic tmp(values);
+                Quadratic answer = tmp.subtract(b);
+                return answer;
+            }
 
+            // overloading + operator 
+            Quadratic operator+(const Quadratic& b) {
+                Quadratic tmp(values);
+                Quadratic answer = tmp.add(b);
+                return answer;
+            }
+
+            // overloading * operator
+            Quadratic operator*(const Quadratic& b) {
+                Quadratic tmp(values);
+                Quadratic answer = tmp.multiply(b);
+                return answer;
+            }
+
+            // overloading = operator
+            Quadratic operator=(const Quadratic& b) {
+                return Quadratic(b);
+            }
+
+            // bool == operator
+            bool operator==(const Quadratic& one){
+                for (int i = 0; i < one.get_values().size(); i++){
+                    if (values[i] != one.get_values()[i]){
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+             // bool != operator
+            bool operator!=(const Quadratic& one){
+                for (int i = 0; i < one.get_values().size(); i++){
+                    if (values[i] != one.get_values()[i]){
+                        return true;
+                    }
+                }
+                return false;
+            }
 
         private:
             vector<int> values;
