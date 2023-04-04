@@ -593,7 +593,8 @@ namespace glibby
 
     this->root_ = temp;
 
-    for (unsigned int i=0; i < points.size(); i++) {
+    for (unsigned int i=0; i < points.size(); i++) 
+    {
       this->insert(&points[i]);
     }
   }

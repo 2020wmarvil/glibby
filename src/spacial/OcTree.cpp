@@ -9,6 +9,11 @@
 
 namespace glibby 
 {
+  /*
+   *
+   * OC TREE NODE CLASS
+   *
+   * */
   OcTreeNode::OcTreeNode(std::shared_ptr<Point3> cen, float width, 
       float height, float depth, int cap) 
   {
@@ -242,7 +247,14 @@ namespace glibby
     {
       return false;
     }
-    return remove_point(this->root_, point);
+    bool temp = remove_point(this->root_, point);
+
+    std::vector<Point3> points = query(&(*(this->root_->center_)),
+        (*this).root_->width_+1,(*this).root_->height_+1,
+        (*this).root_->depth_+1);
+    reformat_tree(points);
+
+    return temp;
   }
 
   std::pair<bool,OcTree::iterator> OcTree::contains(Point3* point) const 
@@ -589,6 +601,20 @@ namespace glibby
     search_tree(points,node->SEB_,center,width,height,depth);
     search_tree(points,node->NWB_,center,width,height,depth);
     search_tree(points,node->NEB_,center,width,height,depth);
+  }
+
+  void OcTree::reformat_tree(std::vector<Point3> points) 
+  {
+    std::shared_ptr<OcTreeNode> temp(new OcTreeNode(
+          (*this).root_->center_, (*this).root_->width_, (*this).root_->height_,
+          (*this).root_->depth_, (*this).root_->capacity_));
+
+    this->root_ = temp;
+
+    for (unsigned int i=0; i < points.size(); i++)
+    {
+      this->insert(&points[i]);
+    }
   }
   
 }
