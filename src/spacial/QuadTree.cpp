@@ -304,7 +304,7 @@ namespace glibby
     bool temp = remove_point(this->root_, point);
 
     std::vector<Point2D> points = query(&(*(this->root_->center_)),
-        (*this).root_->width_,(*this).root_->height_);
+        (*this).root_->width_+1,(*this).root_->height_+1);
     reformat_tree(points);
 
     return temp;

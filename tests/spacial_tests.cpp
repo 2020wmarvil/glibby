@@ -59,30 +59,35 @@ TEST_CASE("QuadTree remove point","[spacial][QuadTree]")
   pt2->x = 1.00f;
   pt2->y = 1.00f;
   CHECK(qt1.insert(&(*pt2)).first);
-  CHECK(qt1.remove(&(*pt2)));
 
   std::shared_ptr<glibby::Point2D> pt3(new glibby::Point2D);
   pt3->x = -1.00f;
   pt3->y = -1.00f;
   CHECK(qt1.insert(&(*pt3)).first);
-  CHECK(qt1.remove(&(*pt3)));
   
   std::shared_ptr<glibby::Point2D> pt4(new glibby::Point2D);
   pt4->x = 1.49f;
   pt4->y = -1.49f;
   CHECK(qt1.insert(&(*pt4)).first);
-  CHECK(qt1.remove(&(*pt4)));
   
   std::shared_ptr<glibby::Point2D> pt5(new glibby::Point2D);
   pt5->x = 3.00f;
   pt5->y = -3.00f;
   CHECK_FALSE(qt1.insert(&(*pt5)).first);
-  CHECK_FALSE(qt1.remove(&(*pt5)));
 
   std::shared_ptr<glibby::Point2D> pt6(new glibby::Point2D);
   pt6->x = -10.00f;
   pt6->y = -10.00f;
   CHECK_FALSE(qt1.insert(&(*pt6)).first);
+ 
+  // remove pt2 and check pt3 and pt4 still exist
+  CHECK(qt1.remove(&(*pt2)));
+  CHECK(qt1.contains(&(*pt3)).first);
+  CHECK(qt1.contains(&(*pt4)).first);
+
+  CHECK(qt1.remove(&(*pt3)));
+  CHECK(qt1.remove(&(*pt4)));
+  CHECK_FALSE(qt1.remove(&(*pt5)));
   CHECK_FALSE(qt1.remove(&(*pt6)));
 }
 
@@ -504,7 +509,11 @@ TEST_CASE("OcTree remove point","[spacial][OcTree]")
   pt6->points[2] = -10.00f;
   CHECK_FALSE(ot1.insert(&(*pt6)));
   
+  // remove pt2 and check pt3 and pt4 still exist
   CHECK(ot1.remove(&(*pt2)));
+  CHECK(ot1.contains(&(*pt3)));
+  CHECK(ot1.contains(&(*pt4)));
+
   CHECK(ot1.remove(&(*pt3)));
   CHECK(ot1.remove(&(*pt4)));
   CHECK_FALSE(ot1.remove(&(*pt5)));
