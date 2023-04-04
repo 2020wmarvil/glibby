@@ -2,6 +2,7 @@
 #include "glibby/primitives/circle2D.h"
 #include "glibby/primitives/triangle2D.h"
 #include "glibby/primitives/quad2D.h"
+#include "glibby/primitives/line2D.h"
 
 #include <iostream>
 #include <assert.h>
@@ -65,5 +66,17 @@ int main()
 	assert(q1.area() == 25);
 	assert(q1.get_center().get_x() == 2.5 && q1.get_center().get_y() == 2.5);
 	assert(q1.perimeter() == 20);
+
+	glibby::Line2D l1(glibby::Line2D(glibby::Point2D(0, 0), glibby::Point2D(0, 2)));
+	glibby::Line2D l2(glibby::Line2D(-2, -1, 1, 3));
+
+	std::cout << "Line 1: \n" << l1 << std::endl
+			  << "Distance: " << l1.length() << std::endl;
+	std::cout << "Line 2: \n" << l2 << std::endl
+			  << "Distance: " << l2.length() << std::endl;
+	std::cout << "Intersect: " << l1.intersects(l2) << std::endl;
+	//Intersection explanation
+	//https://i.imgur.com/gUKSe6N.jpeg
+	assert(l1.intersects(l2) == true);
 
 }
