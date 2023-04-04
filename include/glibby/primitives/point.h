@@ -10,12 +10,22 @@ namespace glibby
 	struct Point
 	{
 		int axis = N;
-		T points[N];
+		T coord[N];
 
-		Point() { for (size_t i = 0; i < N; i++) { points[i] = 0; } };
-		explicit Point(T all) { for (size_t i = 0; i < N; i++) points[i] = all; }
-		explicit Point(T arr[N]) { for (size_t i = 0; i < N; i++) points[i] = arr[i]; }
-		explicit Point(std::vector<T> arr) { for (size_t i = 0; i < N; i++) points[i] = arr[i]; }
+		Point() { for (size_t i = 0; i < N; i++) { coord[i] = 0; } };
+		explicit Point(T all) { for (size_t i = 0; i < N; i++) coord[i] = all; }
+		explicit Point(T arr[N]) { for (size_t i = 0; i < N; i++) coord[i] = arr[i]; }
+		explicit Point(std::vector<T> arr) { for (size_t i = 0; i < N; i++) coord[i] = arr[i]; }
+
+		bool operator==(const Point<T, N> p) 
+		{
+			for (int i = 0; i < N; i++) {
+				if (coord[i] != p.coord[i]) {
+					return false;
+				}
+			}
+			return true;
+		}
 	};
 
 	typedef Point<float, 1> Point1;
@@ -33,7 +43,7 @@ namespace glibby
 	{
 		T total = 0;
 		for (int i = 0; i < p1.axis; i++) {
-			total += abs(p1.points[i] - p2.points[i]);
+			total += abs(p1.coord[i] - p2.coord[i]);
 		}
 		return total;
 	}
@@ -43,7 +53,7 @@ namespace glibby
 	{
 		T total = 0;
 		for (int i = 0; i < p1.axis; i++) {
-			total += ((p1.points[i] - p2.points[i]) * (p1.points[i] - p2.points[i]));
+			total += ((p1.coord[i] - p2.coord[i]) * (p1.coord[i] - p2.coord[i]));
 		}
 		return std::sqrt(total);
 	}
