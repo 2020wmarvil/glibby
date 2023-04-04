@@ -23,6 +23,9 @@ namespace glibby
         bool intersects(const Line2D& other);
     private:
         Point2D p1, p2;
+
+        //Intersection functions
+        bool Line2D::areCollinearAndOverlapping(Point2D a1, Point2D b1, Point2D a2, Point2D b2);
     };
 
     float Distance(const Line2D& l1, const Line2D& l2);
