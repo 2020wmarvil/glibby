@@ -342,19 +342,42 @@ TEST_CASE("QuadTree iterator testing","[spacial][QuadTree]")
 
   std::vector<glibby::Point2D> all_points;
   std::vector<bool> found;
-  for (int i=-1; i < 2; i++) 
-  {
-    for (int j=-1; j < 2; j++)
-    {
-      glibby::Point2D temp;
-      temp.x = i;
-      temp.y = j;
-      all_points.push_back(temp);
-      found.push_back(false);
-      CHECK(qt1.insert(&temp).first);
-      CHECK(qt1.contains(&temp).first);
-    }
-  }
+  
+  glibby::Point2D temp;
+  temp.x = 0;
+  temp.y = 0;
+  all_points.push_back(temp);
+  found.push_back(false);
+  CHECK(qt1.insert(&temp).first);
+  CHECK(qt1.contains(&temp).first);
+  
+  temp.x = -1;
+  temp.y = -1;
+  all_points.push_back(temp);
+  found.push_back(false);
+  CHECK(qt1.insert(&temp).first);
+  CHECK(qt1.contains(&temp).first);
+  
+  temp.x = -1;
+  temp.y = 1;
+  all_points.push_back(temp);
+  found.push_back(false);
+  CHECK(qt1.insert(&temp).first);
+  CHECK(qt1.contains(&temp).first);
+  
+  temp.x = 1;
+  temp.y = -1;
+  all_points.push_back(temp);
+  found.push_back(false);
+  CHECK(qt1.insert(&temp).first);
+  CHECK(qt1.contains(&temp).first);
+  
+  temp.x = 1;
+  temp.y = 1;
+  all_points.push_back(temp);
+  found.push_back(false);
+  CHECK(qt1.insert(&temp).first);
+  CHECK(qt1.contains(&temp).first);
 
   glibby::QuadTree::iterator itr = qt1.begin();
   std::cout << *itr << std::endl;

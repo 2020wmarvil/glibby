@@ -100,13 +100,24 @@ namespace glibby
 
   QuadTreeIterator& QuadTreeIterator::operator++()
   {
+    /*
+     * Traversing tree through post-order
+     * visit all subtree node, then visit root
+     * */
     if (ptr_ == NULL) 
     { // end of iteration, nothing left to look at
       return *this;
     }
-    if (pos_ < ptr_->points_.size())
+    if (pos_ < ptr_->points_.size()-1)
     { // still more to look at in this node, so don't leave yet
       pos_++;
+      return *this;
+    }
+    if (ptr_->parent_ == NULL)
+    { // we have reached the root, nothing more to look at
+      ptr_ = NULL;
+      pos_ = 0;
+      return *this;
     }
     else 
     { // nothing more at this node, move to next
@@ -124,30 +135,21 @@ namespace glibby
       {
         ptr_ = ptr_->parent_->NW_;
         pos_ = 0;
-        while (ptr_->SW_ != NULL)
-        {
-          ptr_ = ptr_->SW_;
-        }
+        find_deepest_child();
       }
       else if (ptr_ == ptr_->parent_->NW_) 
       {
         ptr_ = ptr_->parent_->NE_;
         pos_ = 0;
-        while (ptr_->SW_ != NULL)
-        {
-          ptr_ = ptr_->SW_;
-        }
+        find_deepest_child();
       }
-      if (ptr_ == ptr_->parent_->NE_) 
+      else if (ptr_ == ptr_->parent_->NE_) 
       {
         ptr_ = ptr_->parent_->SE_;
         pos_ = 0;
-        while (ptr_->SW_ != NULL)
-        {
-          ptr_ = ptr_->SW_;
-        }
+        find_deepest_child();
       }
-      if (ptr_ == ptr_->parent_->SE_) 
+       else 
       {
         ptr_ = ptr_->parent_;
         pos_ = 0;
@@ -177,7 +179,7 @@ namespace glibby
     return this->ptr_->points_[this->pos_];
   }
 
-  void find_deepest_node()
+  void QuadTreeIterator::find_deepest_child()
   {
     while (ptr_->SW_ != NULL)
     {
