@@ -1,5 +1,7 @@
 #include "glibby/math/general_math.h"
 
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 
@@ -192,8 +194,38 @@ TEST_CASE("MAT3x3 Operations", "[math][mat3x3]")
 }
 TEST_CASE("MAT4x4 Operations", "[math][mat4x4]")
 {
+    const MAT4x4<float> zeroMat;
+    const MAT4x4<float> oneMat(1);
+    const MAT4x4<float> simpleMat({ {1,2,3,4},{5,6,7,8},{9,10,11,12},{13,14,15,16} });
+    const MAT4x4<float> negativeMat({ {-1,-2,-3,-4},{-5,-6,-7,-8},{-9,-10,-11,-12},{-13,-14,-15,-16} });
+    const MAT4x4<float> doubleMat({ {2,4,6,8},{10,12,14,16},{18,20,22,24},{26,28,30,32} });
+    const MAT4x4<float> productMat({ {180,200,220,240},{404,456,508,560},{628,712,796,880},852,968,1084,1200});
+    const MAT4x4<float> transposedMat({ 1,5,9,13}, { 2,6,10,14 }, { 3,7,11,15 }, {4,8,12,16});
+    CHECK(scalar_multiplication(2, simpleMat) == doubleMat);
+    CHECK(scalar_division(2, doubleMat) == simpleMat);
 
-}
+    CHECK(matrix_addition(simpleMat, negativeMat) == zeroMat);
+    CHECK(matrix_subtraction(simpleMat, simpleMat) == zeroMat);
+    CHECK(matrix_subtraction(simpleMat, negativeMat) == doubleMat);
+    CHECK(matrix_multiplication(simpleMat, doubleMat) == productMat);
+
+    CHECK(matrix_transposition(simpleMat) == transposedMat);
+    CHECK(matrix_determinant(simpleMat) == -2);
+    float left = -10.0f, right = 10.0f, bottom = -10.0f, top = 10.0f, near = 1.0f, far = 100.0f;
+    MAT4x4<float> orthoProj = orthogonalProjection(left, right, bottom, top, near, far);
+    MAT4x4<float> orthoProj_result({ {0.1,0,0,0},{0,0.1,0,0},{0,0,-0.020202,-1.0202},{0,0,0,0} });
+    CHECK(orthoProj == orthoProj_result);
+    float fovY = M_PI / 3.0f, aspectRatio = 16.0f / 9.0f;
+    MAT4x4<float> perspProj = perspectiveProjection(fovY, aspectRatio, near, far);
+    MAT4x4<float> perspProj_result({ {0.974279,0,0,0},{0,1.73205,0,0},{0,0,-1,0202,-2.0202},{0,0,-1,0} });
+    CHECK(perspProj == perspProj_result);
+    Vec<float, 3> v1(1, 0, 1);
+    Vec<float, 3> v2(0, 1, 1);
+    Vec<float, 3> v3(0, 0, 1);
+    MAT4x4<float> Look_At = LookAt(v1, v2, v3);
+    MAT4x4<float> Look_At_result({ {0.707107,0.707107,0,-0.707107},{0,0,-1,1},{0.707107,-0.707107,0,-0.707107},{0,0,0,1} });
+}   
+
 TEST_CASE("MATnxn Operations", "[math][matnxn]")
 {
 
