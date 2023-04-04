@@ -108,7 +108,7 @@ namespace glibby
     { // end of iteration, nothing left to look at
       return *this;
     }
-    if (pos_ < ptr_->points_.size()-1)
+    if (pos_ < ptr_->points_.size()-1 && ptr_->points_.size() != 0)
     { // still more to look at in this node, so don't leave yet
       pos_++;
       return *this;
@@ -158,7 +158,7 @@ namespace glibby
 
     // there is a chance that we just moved to a child that doesn't actually
     // contain any data. We need to fix that by iterating again
-    if (pos_ == ptr_->points_.size()) 
+    if (ptr_->points_.size() == 0) 
     {
       ++(*this);
     }
