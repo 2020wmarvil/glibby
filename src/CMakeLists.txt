@@ -35,6 +35,8 @@ endfunction(assign_source_group)
 assign_source_group(${GLIBBY_SOURCES})
 assign_source_group(${GLIBBY_HEADERS})
 
+#pybind11_add_module(pythonBindings ${CMAKE_CURRENT_SOURCE_DIR}/pyb/pyBinds.cpp)
+
 add_library(${PROJECT_NAME} ${LIB_TYPE} ${GLIBBY_SOURCES} ${GLIBBY_HEADERS})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "glibby")
 
@@ -46,7 +48,9 @@ endif()
 
 target_compile_definitions(${PROJECT_NAME}
                            PRIVATE $<$<CONFIG:Debug>:GLIBBY_DEBUG>)
-target_include_directories(${PROJECT_NAME} PRIVATE ${GLIBBY_INCLUDE_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${GLIBBY_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/deps/pybind11/include)
+
+target_link_libraries(${PROJECT_NAME} pybind11)
 
 if(GLIBBY_BUILD_RENDERER)
   find_package(Vulkan)
@@ -78,3 +82,4 @@ if(GLIBBY_BUILD_RENDERER)
             ${CMAKE_SOURCE_DIR}/deps/glfw/include)
   target_link_libraries(${PROJECT_NAME} ${Vulkan_LIBRARY} glfw)
 endif()
+
