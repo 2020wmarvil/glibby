@@ -86,9 +86,14 @@ namespace glibby
 
   bool QuadTreeIterator::operator!=(const QuadTreeIterator& other) const
   {
+    if (this->ptr_ == NULL && other.ptr_ == NULL)
+    {
+      // these two are equal no matter the position
+      return false;
+    }
     if (this->ptr_ != other.ptr_)
     {
-      return false;
+      return true;
     }
     return this->pos_ != other.pos_;
   }
@@ -228,7 +233,7 @@ namespace glibby
     QuadTreeNode* p = &(*root_);
     while (p->SW_ != NULL)
     {
-      p = &(*p->SW_);
+      p = &(*(p->SW_));
     }
     QuadTree::iterator temp(p,0);
     // just in case the node we just moved to does not contain any data

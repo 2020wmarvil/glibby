@@ -338,23 +338,26 @@ TEST_CASE("QuadTree iterator testing","[spacial][QuadTree]")
   std::shared_ptr<glibby::Point2D> pt1(new glibby::Point2D);
   pt1->x = 0.00f;
   pt1->y = 0.00f;
-  glibby::QuadTree qt1 = glibby::QuadTree(pt1,5.00f,5.00f);
-
-  std::default_random_engine gen;
-  std::uniform_real_distribution<float>  distribution(-2.5f, 2.5f);
+  glibby::QuadTree qt1 = glibby::QuadTree(pt1,3.00f,3.00f);
 
   std::vector<glibby::Point2D> all_points;
-  for (int i=0; i < 25; i++) 
+  std::vector<bool> found;
+  for (int i=-1; i < 2; i++) 
   {
-    glibby::Point2D temp;
-    temp.x = distribution(gen);
-    temp.y = distribution(gen);
-    all_points.push_back(temp);
-    CHECK(qt1.insert(&temp).first);
-    CHECK(qt1.contains(&temp).first);
+    for (int j=-1; j < 2; j++)
+    {
+      glibby::Point2D temp;
+      temp.x = i;
+      temp.y = j;
+      all_points.push_back(temp);
+      found.push_back(false);
+      CHECK(qt1.insert(&temp).first);
+      CHECK(qt1.contains(&temp).first);
+    }
   }
 
   glibby::QuadTree::iterator itr = qt1.begin();
+  std::cout << *itr << std::endl;
   while (itr != qt1.end()) {
     std::shared_ptr<const glibby::Point2D> temp = *itr;
     bool contains = false;
@@ -364,9 +367,61 @@ TEST_CASE("QuadTree iterator testing","[spacial][QuadTree]")
           fabs(temp->y - all_points[i].y) < 0.001f)
       {
         contains = true;
+        found[i] = true;
       }
     }
     CHECK(contains);
+
+    itr++;
+  }
+  for (unsigned int i=0; i < found.size(); i++) {
+    CHECK(found[i]);
+  }
+}
+
+TEST_CASE("QuadTree random iterator testing","[spacial][QuadTree]")
+{
+  std::shared_ptr<glibby::Point2D> pt1(new glibby::Point2D);
+  pt1->x = 0.00f;
+  pt1->y = 0.00f;
+  glibby::QuadTree qt1 = glibby::QuadTree(pt1,5.00f,5.00f,3);
+
+  std::default_random_engine gen;
+  std::uniform_real_distribution<float>  distribution(-2.5f, 2.5f);
+
+  std::vector<glibby::Point2D> all_points;
+  std::vector<bool> found;
+  for (int i=0; i < 25; i++) 
+  {
+    glibby::Point2D temp;
+    temp.x = distribution(gen);
+    temp.y = distribution(gen);
+    all_points.push_back(temp);
+    found.push_back(false);
+    CHECK(qt1.insert(&temp).first);
+    CHECK(qt1.contains(&temp).first);
+  }
+
+  glibby::QuadTree::iterator itr = qt1.begin();
+  std::cout << *itr << std::endl;
+  while (itr != qt1.end()) {
+    std::shared_ptr<const glibby::Point2D> temp = *itr;
+    bool contains = false;
+    for (int i=0; i < all_points.size(); i++)
+    {
+      if (fabs(temp->x - all_points[i].x) < 0.001f &&
+          fabs(temp->y - all_points[i].y) < 0.001f)
+      {
+        contains = true;
+        found[i] = true;
+      }
+    }
+    CHECK(contains);
+
+    itr++;
+  }
+  for (unsigned int i=0; i < found.size(); i++) {
+    CHECK(found[i]);
   }
 }
 
