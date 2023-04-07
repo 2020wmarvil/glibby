@@ -99,7 +99,7 @@ namespace glibby
   {
     if (this->ptr_ != other.ptr_)
     {
-      return false;
+      return true;
     }
     return this->pos_ != other.pos_;
   }
@@ -311,7 +311,7 @@ namespace glibby
 
   OcTree::iterator OcTree::end() const
   {
-    return OcTree::iterator();
+    return OcTree::iterator(NULL,0);
   }
 
  std::pair<bool,OcTree::iterator> OcTree::insert(Point3* point) 
