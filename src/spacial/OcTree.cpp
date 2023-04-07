@@ -505,12 +505,13 @@ namespace glibby
     node->NEB_->parent_ = node;
   }
 
-  bool OcTree::search(std::shared_ptr<OcTreeNode> node,
+  std::pair<bool,OcTree::iterator> OcTree::search(std::shared_ptr<OcTreeNode> node,
       Point3* point) const 
   {
     if (!node->inside_boundary(point)) 
     {
-      return false;
+      OcTree::iterator temp = this->end();
+      return std::pair<bool,OcTree::iterator>(false,temp);
     }
     // check all points at this node
     for (long unsigned i=0; i < node->points_.size(); i++) 
@@ -519,50 +520,61 @@ namespace glibby
           fabsf(node->points_[i]->points[1]-point->points[1]) < FLT_NEAR_ZERO &&
           fabsf(node->points_[i]->points[2]-point->points[2]) < FLT_NEAR_ZERO) 
       {
-        return true;
+        OcTree::iterator temp(node,i);
+        return std::pair<bool,OcTree::iterator>(true,temp);
       } 
     }
     // not at this node, so check sub-node it might be in, but first
     // check if we actually have any sub-nodes
     if (!node->divided_) 
     {
-      return false;
+      OcTree::iterator temp = this->end();
+      return std::pair<bool,OcTree::iterator>(false,temp);
     }
 
-    // Search everything, one of them will be righta
-    if (search(node->SWF_,point))
+    // Search everything, one of them will be right
+    std::pair<bool,OcTree::iterator> temp = search(node->SWF_,point);
+    if (temp.first)
     {
-      return true;
+      return temp;
     }
-    else if (search(node->SWB_,point))
+    temp = search(node->SWB_,point);
+    if (temp.first)
     {
-      return true;
+      return temp;
     }
-    else if (search(node->SEF_,point))
+    temp = search(node->SEF_,point);
+    if (temp.first)
     {
-      return true;
+      return temp;
     }
-    else if (search(node->SEB_,point))
+    temp = search(node->SEB_,point);
+    if (temp.first)
     {
-      return true;
+      return temp;
     }
-    else if (search(node->NWF_,point))
+    temp = search(node->NWF_,point);
+    if (temp.first)
     {
-      return true;
+      return temp;
     }
-    else if (search(node->NWB_,point))
+    temp = search(node->NWB_,point);
+    if (temp.first)
     {
-      return true;
+      return temp;
     }
-    else if (search(node->NEF_,point))
+    temp = search(node->NEF_,point);
+    if (temp.first)
     {
-      return true;
+      return temp;
     }
-    else if (search(node->NEB_,point))
+    temp = search(node->NEF_,point);
+    if (temp.first)
     {
-      return true;
+      return temp;
     }
-    return false;
+    temp.second = this->end();
+    return std::pair<bool,OcTree::iterator>(false,temp.second);
   }
 
   void OcTree::search_tree(
