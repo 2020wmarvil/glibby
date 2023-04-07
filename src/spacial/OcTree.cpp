@@ -119,6 +119,12 @@ namespace glibby
       pos_++;
       return *this;
     }
+    if (ptr_->parent_ == NULL)
+    { // we have reached the root, nothing more to look at
+      ptr_ = NULL;
+      pos_ = 0;
+      return *this;
+    }
     else 
     { // nothing more at this node, move to next
       /*
