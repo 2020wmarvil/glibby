@@ -207,6 +207,9 @@ namespace glibby
       {
         // AAAH, we need to reformat the QuadTree because some point was deleted
         // and now part of the graph is "disconnected"
+        //
+        // If this ever happens something went majorly wrong
+        // VERY VERY BAD
       }
     }
   }

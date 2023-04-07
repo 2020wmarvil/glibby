@@ -104,56 +104,80 @@ namespace glibby
     return this->pos_ != other.pos_;
   }
 
-  QuadTreeIterator& QuadTreeIterator::operator++()
+  OcTreeIterator& OcTreeIterator::operator++()
   {
+    /*
+     * Traversing tree through post-order
+     * visit all subtree nodes, then visit root
+     * */
     if (ptr_ == NULL) 
     { // end of iteration, nothing left to look at
       return *this;
     }
-    if (pos_ < ptr_->points_.size())
+    if (pos_ < ptr_->points_.size()-1 && ptr_->points_.size() != 0)
     { // still more to look at in this node, so don't leave yet
       pos_++;
+      return *this;
     }
     else 
     { // nothing more at this node, move to next
       /*
-       * if we are in the parent's SW node, we go to SW-most node of parent's NW
-       * if we are in the parent's NW node, we go to SW-most node of parent's NE
-       * if we are in the parent's NE node, we go to SW-most node of parent's SE
-       * if we are in the parent's SE node, we go to parent
+       * if we are in the parent's SWB node, -> SWB-most node of parent's NWB
+       * if we are in the parent's NWB node, -> SWB-most node of parent's NEB
+       * if we are in the parent's NEB node, -> SWB-most node of parent's SEB
+       * if we are in the parent's SEB node, -> SWB-most node of parent's SWF
+       * if we are in the parent's SWF node, -> SWB-most node of parent's NWF
+       * if we are in the parent's NWF node, -> SWB-most node of parent's NEF
+       * if we are in the parent's NEF node, -> SWB-most node of parent's SEF
+       * if we are in the parent's SEF node, -> parent
        *
        * we will never have to check if the parent does not have a SW/NW/NE/SE
        * because when we subdivide a node, all of the children are created at
        * once
        * */
-      if (ptr_ == ptr_->parent_->SW_) 
+      if (ptr_ == ptr_->parent_->SWB_) 
       {
-        ptr_ = ptr_->parent_->NW_;
+        ptr_ = ptr_->parent_->NWB_;
         pos_ = 0;
-        while (ptr_->SW_ != NULL)
-        {
-          ptr_ = ptr_->SW_;
-        }
+        find_deepest_child();
       }
-      else if (ptr_ == ptr_->parent_->NW_) 
+      else if (ptr_ == ptr_->parent_->NWB_) 
       {
-        ptr_ = ptr_->parent_->NE_;
+        ptr_ = ptr_->parent_->NEB_;
         pos_ = 0;
-        while (ptr_->SW_ != NULL)
-        {
-          ptr_ = ptr_->SW_;
-        }
+        find_deepest_child();
       }
-      if (ptr_ == ptr_->parent_->NE_) 
+      else if (ptr_ == ptr_->parent_->NEB_) 
       {
-        ptr_ = ptr_->parent_->SE_;
+        ptr_ = ptr_->parent_->SEB_;
         pos_ = 0;
-        while (ptr_->SW_ != NULL)
-        {
-          ptr_ = ptr_->SW_;
-        }
+        find_deepest_child();
       }
-      if (ptr_ == ptr_->parent_->SE_) 
+      else if (ptr_ == ptr_->parent_->SEB_) 
+      {
+        ptr_ = ptr_->parent_->SWF_;
+        pos_ = 0;
+        find_deepest_child();
+      }
+      else if (ptr_ == ptr_->parent_->SWF_) 
+      {
+        ptr_ = ptr_->parent_->NWF_;
+        pos_ = 0;
+        find_deepest_child();
+      }
+      else if (ptr_ == ptr_->parent_->NWF_) 
+      {
+        ptr_ = ptr_->parent_->NEF_;
+        pos_ = 0;
+        find_deepest_child();
+      }
+      else if (ptr_ == ptr_->parent_->NEF_) 
+      {
+        ptr_ = ptr_->parent_->SEF_;
+        pos_ = 0;
+        find_deepest_child();
+      }
+      else if (ptr_ == ptr_->parent_->SEF_) 
       {
         ptr_ = ptr_->parent_;
         pos_ = 0;
@@ -162,7 +186,7 @@ namespace glibby
 
     // there is a chance that we just moved to a child that doesn't actually
     // contain any data. We need to fix that by iterating again
-    if (pos_ == ptr_->points_.size()) 
+    if (ptr_->points_.size() == 0) 
     {
       ++(*this);
     }
@@ -181,6 +205,66 @@ namespace glibby
   const std::shared_ptr<const Point3> OcTreeIterator::operator*() const
   {
     return this->ptr_->points_[this->pos_];
+  }
+
+  void OcTreeIterator::find_deepest_child()
+  {
+    while (ptr_->SWB_ != NULL)
+    { // since we subdivide everything at once, if one child exists, all do
+      if (ptr_->SWB_->points_.size() != 0)
+      {
+        // there are points here, this child has highest priority so far, go
+        // here
+        ptr_ = ptr_->SWB_;
+      }
+      else if (ptr_->NWB_->points_.size() != 0)
+      {
+        // there are points here, this child has highest priority so far, go
+        // here
+        ptr_ = ptr_->NWB_;
+      }
+      else if (ptr_->NEB_->points_.size() != 0)
+      {
+        // there are points here, this child has highest priority so far, go
+        // here
+        ptr_ = ptr_->NEB_;
+      }
+      else if (ptr_->SEB_->points_.size() != 0)
+      {
+        // there are points here, this child has highest priority so far, go
+        // here
+        ptr_ = ptr_->SEB_;
+      }
+      else if (ptr_->SWF_->points_.size() != 0)
+      {
+        // there are points here, this child has highest priority so far, go
+        // here
+        ptr_ = ptr_->SWF_;
+      }
+      else if (ptr_->NWF_->points_.size() != 0)
+      {
+        // there are points here, this child has highest priority so far, go
+        // here
+        ptr_ = ptr_->NWF_;
+      }
+      else if (ptr_->NEF_->points_.size() != 0)
+      {
+        // there are points here, this child has highest priority so far, go
+        // here
+        ptr_ = ptr_->NEF_;
+      }
+      else if (ptr_->SEF_->points_.size() != 0)
+      {
+        // there are points here, this child has highest priority so far, go
+        // here
+        ptr_ = ptr_->SEF_;
+      }
+      else
+      {
+        // should not be possible, means we subdivided with no actual reason to
+        // do so
+      }
+    }
   }
 
 
