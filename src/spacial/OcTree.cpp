@@ -652,7 +652,7 @@ namespace glibby
     {
       return temp;
     }
-    temp = search(node->NEF_,point);
+    temp = search(node->NEB_,point);
     if (temp.first)
     {
       return temp;
