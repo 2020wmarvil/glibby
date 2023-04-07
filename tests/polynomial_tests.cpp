@@ -41,22 +41,15 @@ TEST_CASE("Polynomial operator*", "[math][polynomial]"){
 }
 
 TEST_CASE("Polynomial operator/", "[math][polynomial]"){
-    vector<int> values1 {4,-1,-1};
+    vector<int> values1 {6,-1,-1,1};
     vector<int> values2 {2,1};
-    vector<int> values3 {0,5,-1};
-    vector<int> values4 {1,2,3,4,5};
-    vector<int> values5 {2,3,4};
-    vector<int> values6 {0,0,0};
+    vector<int> answer{5,-3, 1};
     
     glibby::Quadratic n1(values1);
     glibby::Quadratic n2(values2);
-    glibby::Quadratic n3(values3);
-    glibby::Quadratic n4(values4);
-    glibby::Quadratic n5(values5);
-    glibby::Quadratic n6(values6);
+    glibby::Quadratic n3(answer);
 
     CHECK((n1 / n2) == n3);
-    CHECK((n4 / n5) == n6);
 }
 
 TEST_CASE("Polynomial evaluate", "[math][polynomial]"){
