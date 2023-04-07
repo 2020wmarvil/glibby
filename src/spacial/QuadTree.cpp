@@ -80,22 +80,17 @@ namespace glibby
   }
 
   bool QuadTreeIterator::operator==(const QuadTreeIterator& other) const
-  {
+  { 
+    if (this->ptr_ == NULL && other.ptr_ == NULL) 
+    { // these two will always be equal no matter what
+      return true;
+    }
     return (this->ptr_ == other.ptr_ && this->pos_ == other.pos_);
   }
 
   bool QuadTreeIterator::operator!=(const QuadTreeIterator& other) const
   {
-    if (this->ptr_ == NULL && other.ptr_ == NULL)
-    {
-      // these two are equal no matter the position
-      return false;
-    }
-    if (this->ptr_ != other.ptr_)
-    {
-      return true;
-    }
-    return this->pos_ != other.pos_;
+    return !(*this == other);
   }
 
   QuadTreeIterator& QuadTreeIterator::operator++()
