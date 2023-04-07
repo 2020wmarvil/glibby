@@ -1,99 +1,80 @@
-//#include "glibby/math/polynomial.h"
-#include "/Users/nikul/Desktop/copy_glibby/copy_glibby/include/glibby/math/polynomial.h"
-#include <iostream>
+#include "glibby/math/polynomial.h"
+#include <catch2/benchmark/catch_benchmark.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
 #include <vector>
-#include <cassert>
-using namespace std;
-using namespace glibby;
 
-int main(){
+TEST_CASE("Polynomial operator-", "[math][polynomial]"){
+    vector<int> values1 {3,4,9,1};
+    vector<int> values2 {5,1,2};
+    vector<int> values3 {-2,3,7,1};
     
-    vector<int> values1;
-    values1.push_back(3);
-    values1.push_back(4);
-    values1.push_back(9);
-    values1.push_back(1);
+    glibby::Quadratic n1(values1);
+    glibby::Quadratic n2(values2);
+    glibby::Quadratic n3(values3);
 
-    vector<int> values2;
-    values2.push_back(5);
-    values2.push_back(1);
-    values2.push_back(2); 
+    CHECK((n1 - n2) == n3);
+}
 
-    vector<int> values3;
-    values3.push_back(-1);
-    values3.push_back(2);
-    values3.push_back(-6);
-    values3.push_back(2);
-
-    vector<int> values4;
-    values4.push_back(1);
-    values4.push_back(3);
-    values4.push_back(2);
-
-    vector<int> values5;
-    values5.push_back(2);
-    values5.push_back(9);
-    values5.push_back(4);
-
-    vector<int> values6;
-    values6.push_back(6);
-    values6.push_back(5);
-    values6.push_back(1);
-
-    vector<int> values7;
-    values7.push_back(-3);
-    values7.push_back(-5);
-    values7.push_back(2);
+TEST_CASE("Polynomial operator+", "[math][polynomial]"){
+    vector<int> values1 {3,4,9,1};
+    vector<int> values2 {5,1,2};
+    vector<int> values3 {8,5,11,1};
     
-    Quadratic one(values1);   //  x^3 + 9x^2 + 4x + 3
-    Quadratic two(values2);   // 2x^2 + x + 5
-    Quadratic three(values3); // 2x^3 - 6x^2 + 2x - 1
-    Quadratic four(values4);  // 2x^2 + 3x + 1
-    Quadratic five(values5);  // 4x^2 + 9x^2 + 2
-    Quadratic six(values6);   // x^2 + 5x + 6
-    Quadratic seven(values7); // -3x^2 -5x + 2
+    glibby::Quadratic n1(values1);
+    glibby::Quadratic n2(values2);
+    glibby::Quadratic n3(values3);
 
-    Quadratic sub_result = one.subtract(two);
-    assert(sub_result.get_values()[0] == -2);
-    assert(sub_result.get_values()[1] == 3);
-    assert(sub_result.get_values()[2] == 7);
-    assert(sub_result.get_values()[3] == 1);
+    CHECK((n1 + n2) == n3);
+}
 
-    Quadratic add_result = one.add(two);
-    assert(add_result.get_values()[0] == 8);
-    assert(add_result.get_values()[1] == 5);
-    assert(add_result.get_values()[2] == 11);
-    assert(add_result.get_values()[3] == 1);
+TEST_CASE("Polynomial operator*", "[math][polynomial]"){
+    vector<int> values1 {3,4,9,1};
+    vector<int> values2 {5,1,2};
+    vector<int> values3 {15,23,55,22,19,2};
+    
+    glibby::Quadratic n1(values1);
+    glibby::Quadratic n2(values2);
+    glibby::Quadratic n3(values3);
 
-    Quadratic product = one.multiply(two);
-    assert(product.get_values()[0] == 15);
-    assert(product.get_values()[1] == 23);
-    assert(product.get_values()[2] == 55);
-    assert(product.get_values()[3] == 22);
-    assert(product.get_values()[4] == 19);
-    assert(product.get_values()[5] == 2);
+    CHECK((n1 * n2) == n3);
+}
 
-    // evaluating value at given point check
-    assert(one.evaluate(0) == 3);
-    assert(two.evaluate(4) == 41);
-    assert(three.evaluate(3) == 5);
-    assert(four.evaluate(2) == 15);
-    assert(five.evaluate(-9) == 245); 
+TEST_CASE("Polynomial evaluate", "[math][polynomial]"){
+    vector<int> values1 {3,4,9,1};
+    vector<int> values2 {5,1,2};
+    vector<int> values3 {-1,2,-6,2};
+    vector<int> values4 {1,3,2};
+    vector<int> values5 {2,9,4};
 
-    // evaluating horners method
-    assert(one.horner(2)==55);
-    assert(two.horner(3)==26);
-    assert(three.horner(1)==-3);
+    glibby::Quadratic n1(values1);
+    glibby::Quadratic n2(values2);
+    glibby::Quadratic n3(values3);
+    glibby::Quadratic n4(values4);
+    glibby::Quadratic n5(values5);
 
-    vector<double> six_roots = six.findRoots();
-    assert(six_roots[0] == -2);
-    assert(six_roots[1] == -3);
+    CHECK(n1.evaluate(0) == 3);
+    CHECK(n1.horner(2) == 55);
+    CHECK(n2.evaluate(4) == 41);
+    CHECK(n2.horner(3) == 26);
+    CHECK(n3.evaluate(3) == 5);
+    CHECK(n3.horner(1) == -3);
+    CHECK(n4.evaluate(2) == 15);
+    CHECK(n5.evaluate(-9) == 245);
+}
 
-    vector<double> seven_roots = seven.findRoots();
-    assert(seven_roots[0] == 3);
-    assert(seven_roots[1] == -0.5);
+TEST_CASE("Polynomial root finding", "[math][polynomial]"){
+    vector<int> values6 {6,5,1};
+    vector<int> values7 {-3,-5,2};
 
+    glibby::Quadratic n6(values6);
+    glibby::Quadratic n7(values7);
 
+    vector<double> six_roots = n6.findRoots();
+    CHECK(six_roots[0] == -2);
+    CHECK(six_roots[1] == -3);
 
-    cout << "tests work" << endl;
+    vector<double> seven_roots = n7.findRoots();
+    CHECK(seven_roots[0] == 3);
+    CHECK(seven_roots[1] == -0.5);
 }

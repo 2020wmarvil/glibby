@@ -137,7 +137,7 @@ namespace glibby
             }
 
             // bool == operator
-            bool operator==(const Quadratic& one){
+            bool operator==(const Quadratic& one) const {
                 for (int i = 0; i < one.get_values().size(); i++){
                     if (values[i] != one.get_values()[i]){
                         return false;
@@ -147,7 +147,7 @@ namespace glibby
             }
 
              // bool != operator
-            bool operator!=(const Quadratic& one){
+            bool operator!=(const Quadratic& one) const {
                 for (int i = 0; i < one.get_values().size(); i++){
                     if (values[i] != one.get_values()[i]){
                         return true;
