@@ -90,6 +90,23 @@ namespace glibby
                 return Quadratic(std::move(result));
             }
 
+            // polynomial division
+            Quadratic divide(const Quadratic& divisor) {
+                vector<int> dividend = values;
+                vector<int> quotient(dividend.size() - divisor.get_values().size() + 1);
+                vector<int> remainder(dividend);
+
+                for (int i = quotient.size() - 1; i >= 0; i--) {
+                    quotient[i] = remainder.back() / divisor.get_values().back();
+                    int j = i + divisor.get_values().size() - 1;
+                    for (int k = 0; k < divisor.get_values().size(); k++) {
+                        remainder[j - k] -= quotient[i] * divisor.get_values()[divisor.get_values().size() - k - 1];
+                    }
+                    remainder.pop_back();
+                }
+                return Quadratic(quotient);
+            }
+
             // finds the roots of the given polynomial
             vector<double> findRoots() const {
                 vector<double> roots;
@@ -129,6 +146,13 @@ namespace glibby
                 Quadratic tmp(values);
                 Quadratic answer = tmp.multiply(b);
                 return answer;
+            }
+
+            // overloading / operator
+            Quadratic operator/(const Quadratic &b){
+                Quadratic tmp(values);
+                Quadratic quotient = tmp.divide(b);
+                return quotient;
             }
 
             // overloading = operator
