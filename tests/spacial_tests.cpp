@@ -371,8 +371,13 @@ TEST_CASE("QuadTree iterator testing","[spacial][QuadTree]")
       if (fabs(temp->x - all_points[i].x) < 0.001f &&
           fabs(temp->y - all_points[i].y) < 0.001f)
       {
+        if (found[i])
+        { // this point has already been marked by a different point in tree
+          continue;
+        }
         contains = true;
         found[i] = true;
+        break;
       }
     }
     CHECK(contains);
@@ -416,8 +421,13 @@ TEST_CASE("QuadTree random iterator testing","[spacial][QuadTree]")
       if (fabs(temp->x - all_points[i].x) < 0.001f &&
           fabs(temp->y - all_points[i].y) < 0.001f)
       {
+        if (found[i])
+        { // this point has already been marked by a different point in tree
+          continue;
+        }
         contains = true;
         found[i] = true;
+        break;
       }
     }
     CHECK(contains);
