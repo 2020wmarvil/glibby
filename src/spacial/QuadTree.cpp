@@ -368,12 +368,21 @@ namespace glibby
       return std::pair<bool,iterator>(true,temp);
     }
     
-    bool subdivided_this = false;
     // if we need to subdivide this node, do so
     if (!node->divided_) 
     {
       subdivide(node);
-      subdivided_this = true;
+      // we subdivided this node, meaning it is no longer a leaf, we need to fix
+      // that by pushing whatever point(s) further down the tree to a leaf
+      node->leaf_ = false;
+      // push everything down by just adding the point(s) starting at current 
+      // node will not be re-added to this node because now set as not leaf
+      for (unsigned int i=0; i < node->points_.size(); i++)
+      {
+        add_point(node,&(*node->points_[i]));
+      }
+      // remove all the points from here
+      node->points_.clear();
     }
     // are we to the left (W) of center
     if (point->x < node->center_->x) 
@@ -408,20 +417,7 @@ namespace glibby
 
       }
     }
-    // we subdivided this node, meaning it is no longer a leaf, we need to fix
-    // that by pushing whatever point(s) further down the tree to a leaf
-    if (subdivided_this)
-    {
-      node->leaf_ = false;
-      // push everything down by just add the point(s) starting at current node
-      // will not be re-added to this node because now set as not leaf
-      for (unsigned int i=0; i < node->points_.size(); i++)
-      {
-        add_point(node,&(*node->points_[i]));
-      }
-      // remove all the points from here
-      node->points_.clear();
-    }
+    
   }
 
   bool QuadTree::remove_point(std::shared_ptr<QuadTreeNode> node, 
