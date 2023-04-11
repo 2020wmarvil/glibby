@@ -62,6 +62,8 @@ namespace glibby
       float width_;
       float height_;
       bool divided_;
+      bool leaf_; // this is the exact same as just !divided_, but having a
+                  // separate variable, makes the code more readable
       std::shared_ptr<QuadTreeNode> NW_;
       std::shared_ptr<QuadTreeNode> NE_;
       std::shared_ptr<QuadTreeNode> SW_;

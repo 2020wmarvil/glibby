@@ -21,6 +21,7 @@ namespace glibby
     this->width_ = width;
     this->height_ = height;
     this->divided_ = false;
+    this->leaf_ = true;
     this->capacity_ = cap;
     //this->parent_ = NULL;
   }
@@ -356,8 +357,8 @@ namespace glibby
       QuadTree::iterator temp = this->end();
       return std::pair<bool,iterator>(false,temp);
     }
-    // if we have space at this node, add it here
-    if (node->points_.size() < node->capacity_) 
+    // if node is leaf and we have space at this node, add it here
+    if (node->leaf_ && node->points_.size() < node->capacity_) 
     {
       node->points_.push_back(std::make_shared<Point2D>());
       node->points_[node->points_.size()-1]->x = point->x;
@@ -367,10 +368,12 @@ namespace glibby
       return std::pair<bool,iterator>(true,temp);
     }
     
+    bool subdivided_this = false;
     // if we need to subdivide this node, do so
     if (!node->divided_) 
     {
       subdivide(node);
+      subdivided_this = true;
     }
     // are we to the left (W) of center
     if (point->x < node->center_->x) 
@@ -404,6 +407,20 @@ namespace glibby
         return add_point(node->NE_, point);
 
       }
+    }
+    // we subdivided this node, meaning it is no longer a leaf, we need to fix
+    // that by pushing whatever point(s) further down the tree to a leaf
+    if (subdivided_this)
+    {
+      node->leaf_ = false;
+      // push everything down by just add the point(s) starting at current node
+      // will not be re-added to this node because now set as not leaf
+      for (unsigned int i=0; i < node->points_.size(); i++)
+      {
+        add_point(node,&(*node->points_[i]));
+      }
+      // remove all the points from here
+      node->points_.clear();
     }
   }
 
@@ -466,6 +483,7 @@ namespace glibby
   void QuadTree::subdivide(std::shared_ptr<QuadTreeNode> node) 
   {
     node->divided_ = true;
+    node->leaf_ = false;
 
     float new_width = node->width_ / 2;
     float new_height = node->height_ / 2;
