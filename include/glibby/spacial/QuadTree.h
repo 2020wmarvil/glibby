@@ -124,7 +124,7 @@ namespace glibby
        * higher depth, default is 1
        * */
       QuadTree(std::shared_ptr<Point2D> p, float width, float height, 
-          int capacity = 1);
+          int capacity = 2);
 
       typedef QuadTreeIterator iterator;
       friend class QuadTreeIterator;
@@ -143,6 +143,7 @@ namespace glibby
        * @brief Will insert point into QuadTree at correct subnode if the point
        * is valid. Valid nodes are those within the boundary defined by the
        * information passed to the constructor.
+       * This will completely DESTROY all iterators that exist currently.
        *
        * @param point - point to be inserted
        *
