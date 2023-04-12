@@ -1,12 +1,12 @@
-#include "glibby/primitives/point2D.h"
+#include "glibby/primitives/point.h"
 
 #include <iostream>
 
 int main()
 {
-	glibby::Point2D p1(0.0f, 0.0f);
-	glibby::Point2D p2(3.0f, 2.0f);
+	glibby::Point2 p1({ 0.0f, 0.0f });
+	glibby::Point2 p2({ 3.0f, 2.0f });
 
-	float distance = p1.distance(p2);
+	float distance = glibby::EuclideanDistance(p1, p2);
 	std::cout << distance << std::endl;
 }

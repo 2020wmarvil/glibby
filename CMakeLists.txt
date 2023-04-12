@@ -8,8 +8,9 @@ option(GLIBBY_BUILD_RENDERER "Builds companion renderer library" ON)
 option(GLIBBY_BUILD_TESTS "Builds test suite" ON)
 option(GLIBBY_BUILD_EXAMPLES "Builds example applications" ON)
 option(GLIBBY_BUILD_DOCS "Builds documentation" ON)
+option(GLIBBY_BUILD_LANG_BINDINGS "Builds language bindings" ON)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(LIB_TYPE STATIC)
@@ -36,4 +37,8 @@ endif()
 
 if(DOXYGEN_FOUND AND GLIBBY_BUILD_DOCS)
   add_subdirectory(docs)
+endif()
+
+if(GLIBBY_BUILD_LANG_BINDINGS)
+  add_subdirectory(bindings)
 endif()
