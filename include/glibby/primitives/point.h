@@ -26,6 +26,18 @@ namespace glibby
 			}
 			return true;
 		}
+
+		friend std::ostream& operator<<(std::ostream& out, const Point<T, N>& point) {
+			out << "(";
+			for (int i = 0; i < N; i++) {
+				out << point.coord[i];
+				if (i < N - 1) {
+					out << ", ";
+				}
+			}
+			out << ")";
+			return out;
+		}
 	};
 
 	typedef Point<float, 1> Point1;
@@ -56,5 +68,19 @@ namespace glibby
 			total += ((p1.coord[i] - p2.coord[i]) * (p1.coord[i] - p2.coord[i]));
 		}
 		return std::sqrt(total);
+	}
+
+	template<typename T>
+	int direction(Point<T, 2> p, Point<T, 2> q, Point<T, 2> r)
+	{
+		return (q.coord[1] - p.coord[1]) * (r.coord[0] - q.coord[0]) - (q.coord[0] - p.coord[0]) * (r.coord[1] - q.coord[1]);
+	}
+
+	template<typename T>
+	float distance(const Point<T, 2>& p1, const Point<T, 2>& p2)
+	{
+		float deltaX = p1.coord[0] - p2.coord[0];
+		float deltaY = p1.coord[1] - p2.coord[1];
+		return std::sqrt(deltaX * deltaX + deltaY * deltaY);
 	}
 }

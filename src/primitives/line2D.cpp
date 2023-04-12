@@ -5,24 +5,24 @@
 namespace glibby
 {
     Line2D::Line2D() {
-        p1 = Point2D();
-        p2 = Point2D();
+        p1 = Point2();
+        p2 = Point2();
     }
     Line2D::Line2D(float _x1, float _y1, float _x2, float _y2) {
-        p1 = Point2D(_x1, _y1);
-        p2 = Point2D(_x2, _y2);
+        p1 = Point2({ _x1, _y1 });
+        p2 = Point2({ _x2, _y2 });
     }
 
-    Line2D::Line2D(const Point2D& _p1, const Point2D& _p2) {
-        p1 = Point2D(_p1.get_x(), _p1.get_y());
-        p2 = Point2D(_p2.get_x(), _p2.get_y());
+    Line2D::Line2D(const Point2& _p1, const Point2& _p2) {
+        p1 = Point2({ _p1.coord[0], _p1.coord[1] });
+        p2 = Point2({ _p2.coord[0], _p2.coord[1] });
     }
 
 
     float Line2D::length() const {
         //Get points
-        float x1 = p1.get_x(), y1 = p1.get_y();
-        float x2 = p2.get_x(), y2 = p2.get_y();
+        float x1 = p1.coord[0], y1 = p1.coord[1];
+        float x2 = p2.coord[0], y2 = p2.coord[1];
 
         //Distance in each disrection
         float dx = x2 - x1;
@@ -33,19 +33,19 @@ namespace glibby
         return len;
     }
 
-    Point2D Line2D::get_center() const {
-        float cx = (p1.get_x() + p2.get_x()) / 2;
-        float cy = (p1.get_y() + p2.get_y()) / 2;
+    Point2 Line2D::get_center() const {
+        float cx = (p1.coord[0] + p2.coord[0]) / 2;
+        float cy = (p1.coord[1] + p2.coord[1]) / 2;
 
-        return Point2D(cx, cy);
+        return Point2({ cx, cy });
     }
 
     //https://www.codingninjas.com/codestudio/library/check-if-two-line-segments-intersect#:~:text=If%20the%20orientations%20of%20the,line%20segments%20do%20not%20intersect.
     bool Line2D::intersects(const Line2D& line) {
-        Point2D a1 = p1;
-        Point2D b1 = p2;
-        Point2D a2 = line.get_p1();
-        Point2D b2 = line.get_p2();
+        Point2 a1 = p1;
+        Point2 b1 = p2;
+        Point2 a2 = line.get_p1();
+        Point2 b2 = line.get_p2();
 
         // Compute the directions of the four line segments
         int d1 = direction(a1, b1, a2);
@@ -67,14 +67,14 @@ namespace glibby
     }
 
     // Checks if two line segments are collinear and overlapping
-    bool Line2D::areCollinearAndOverlapping(Point2D a1, Point2D b1, Point2D a2, Point2D b2) {
+    bool Line2D::areCollinearAndOverlapping(Point2 a1, Point2 b1, Point2 a2, Point2 b2) {
         // Check if the line segments are collinear
         if (direction(a1, b1, a2) == 0) {
             // Check if the line segments overlap
-            if (a2.get_x() <= std::max(a1.get_x(), b1.get_x()) && 
-                a2.get_x() >= std::min(a1.get_x(), b1.get_x()) && 
-                a2.get_y() <= std::max(a1.get_y(), b1.get_y()) && 
-                a2.get_y() >= std::min(a1.get_y(), b1.get_y())
+            if (a2.coord[0] <= std::max(a1.coord[0], b1.coord[0]) && 
+                a2.coord[0] >= std::min(a1.coord[0], b1.coord[0]) && 
+                a2.coord[1] <= std::max(a1.coord[1], b1.coord[1]) && 
+                a2.coord[1] >= std::min(a1.coord[1], b1.coord[1])
                 ) {
                 return true;
             }
@@ -85,9 +85,9 @@ namespace glibby
     
 
     float Distance(const Line2D& l1, const Line2D& l2) {
-        Point2D c1 = l1.get_center();
-        Point2D c2 = l2.get_center();
-        return c1.distance(c2);
+        Point2 c1 = l1.get_center();
+        Point2 c2 = l2.get_center();
+        return distance(c1, c2);
     }
     std::ostream& operator<<(std::ostream& out, const Line2D& line) {
         out << "P1: " << line.get_p1()

@@ -1,7 +1,7 @@
 #pragma once
 #pragma once
 #include <iostream>
-#include "glibby/primitives/point2D.h"
+#include "glibby/primitives/point.h"
 
 namespace glibby
 {
@@ -11,21 +11,21 @@ namespace glibby
         //Constructors
         Line2D();
         Line2D(float _x1, float _y1, float _x2, float _y2);
-        Line2D(const Point2D& _p1, const Point2D& _p2);
+        Line2D(const Point2& _p1, const Point2& _p2);
 
         //Getters
-        Point2D get_p1() const { return p1; };
-        Point2D get_p2() const { return p2; };
+        Point2 get_p1() const { return p1; };
+        Point2 get_p2() const { return p2; };
 
         float length() const;
-        Point2D get_center() const;
+        Point2 get_center() const;
 
         bool intersects(const Line2D& other);
     private:
-        Point2D p1, p2;
+        Point2 p1, p2;
 
         //Intersection functions
-        bool Line2D::areCollinearAndOverlapping(Point2D a1, Point2D b1, Point2D a2, Point2D b2);
+        bool areCollinearAndOverlapping(Point2 a1, Point2 b1, Point2 a2, Point2 b2);
     };
 
     float Distance(const Line2D& l1, const Line2D& l2);
