@@ -20,3 +20,7 @@ set(CONSOLE_BINARIES distance jobs)
 target_link_libraries(${GUI_ONLY_BINARIES} ${GLIBBY_RENDERER_NAME})
 set_target_properties(${GUI_ONLY_BINARIES} ${CONSOLE_BINARIES}
                       PROPERTIES FOLDER "glibby/examples")
+
+# SRC is with respect to ${CMAKE_CURRENT_SOURCE_DIR}
+# DEST is with respect to ${CMAKE_BINARY_DIR}
+file(COPY "assets" DESTINATION "./")

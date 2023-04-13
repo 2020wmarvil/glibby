@@ -23,6 +23,7 @@ if(GLIBBY_BUILD_DOCS)
 endif()
 
 add_subdirectory(deps)
+add_subdirectory(shaders)
 add_subdirectory(src)
 
 if(GLIBBY_BUILD_TESTS)

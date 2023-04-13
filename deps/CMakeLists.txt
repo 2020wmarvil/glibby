@@ -1,3 +1,6 @@
 if(GLIBBY_BUILD_RENDERER)
   add_subdirectory(glfw)
+  add_subdirectory(glm)
+  add_subdirectory(VulkanMemoryAllocator)
+  add_subdirectory(vk-bootstrap)
 endif()

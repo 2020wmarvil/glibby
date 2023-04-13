@@ -72,9 +72,18 @@ if(GLIBBY_BUILD_RENDERER)
 
   target_compile_definitions(${GLIBBY_RENDERER_NAME}
                              PRIVATE $<$<CONFIG:Debug>:GLIBBY_DEBUG>)
+
   target_include_directories(
     ${GLIBBY_RENDERER_NAME}
     PRIVATE ${GLIBBY_RENDERER_INCLUDE_DIR} ${Vulkan_INCLUDE_DIRS}
-            ${CMAKE_SOURCE_DIR}/deps/glfw/include)
-  target_link_libraries(${PROJECT_NAME} ${Vulkan_LIBRARY} glfw)
+            ${CMAKE_SOURCE_DIR}/deps/glfw/include
+            ${CMAKE_SOURCE_DIR}/deps/glm
+            ${CMAKE_SOURCE_DIR}/deps/VulkanMemoryAllocator/include
+            ${CMAKE_SOURCE_DIR}/deps/stb_image
+            ${CMAKE_SOURCE_DIR}/deps/tinyobjloader
+            ${CMAKE_SOURCE_DIR}/deps/vk-bootstrap)
+
+  add_dependencies(${GLIBBY_RENDERER_NAME} shaders)
+
+  target_link_libraries(${PROJECT_NAME} ${Vulkan_LIBRARY} glfw glm VulkanMemoryAllocator vkbootstrap)
 endif()

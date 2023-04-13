@@ -1,14 +1,16 @@
-#include "glibby/renderer/renderer.h"
-
-#include <iostream> 
+#include "glibby/renderer/vulkan_engine/VulkanEngine.h"
+#include "glibby/renderer/Window.h"
 
 int main()
 {
-	uint32_t extensionsCount = glibby::GetInstanceExtensionsCount();
-	std::cout << "Available VK Instance Extensions: " << extensionsCount << std::endl;
+	Window::Init();
 
-	glibby::Window::Init();
-	glibby::Window window(800, 600, "Demo Window");
-	window.Run();
-	glibby::Window::Terminate();
+    VulkanEngine engine;
+	engine.init();
+	engine.run();
+	engine.cleanup();
+
+	Window::Terminate();
+
+	return 0;
 }
