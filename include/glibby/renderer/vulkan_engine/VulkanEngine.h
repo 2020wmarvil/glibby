@@ -3,7 +3,7 @@
 #include "VulkanTypes.h"
 #include "VulkanMesh.h"
 #include "../Window.h"
-
+#include "../Camera.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtx/transform.hpp"
@@ -26,6 +26,8 @@ struct VmaAllocator_T;
 VK_DEFINE_HANDLE(VmaAllocator)
 
 enum VmaMemoryUsage : int;
+
+class Camera;
 
 //number of frames to overlap when rendering
 constexpr unsigned int FRAME_OVERLAP = 2;
@@ -131,8 +133,10 @@ public:
 	bool _isInitialized{ false };
 	int _frameNumber {0};
 
-	VkExtent2D _windowExtent{ 1700 , 900 };
+	//VkExtent2D _windowExtent{ 1700 , 900 };
+	VkExtent2D _windowExtent{ 600, 500 };
 	std::unique_ptr<Window> _window{ nullptr };
+	std::unique_ptr<Camera> camera{ nullptr };
 
 	VkInstance _instance;
 	VkDebugUtilsMessengerEXT _debug_messenger;

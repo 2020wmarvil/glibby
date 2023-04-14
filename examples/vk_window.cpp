@@ -24,7 +24,8 @@ void LoadScene(VulkanEngine& engine) {
 	RenderObject monkey;
 	monkey.mesh = engine.get_mesh("monkey");
 	monkey.material = engine.get_material("defaultmesh");
-	monkey.transformMatrix = glm::mat4{ 1.0f };
+	monkey.transformMatrix = glm::translate(glm::vec3(0, 2.0, 0));
+
 	engine._renderables.push_back(monkey);
 
 	for (int x = -20; x <= 20; x++) {

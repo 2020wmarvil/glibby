@@ -3,7 +3,6 @@
 #include "vulkan_engine/VulkanInitializers.h"
 #include "vulkan_engine/VulkanTexture.h"
 #include "vulkan_engine/VulkanTypes.h"
-#include "Window.h"
 
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
@@ -36,6 +35,7 @@ struct MeshPushConstants
 void VulkanEngine::init()
 {
 	_window = std::make_unique<Window>(_windowExtent.width, _windowExtent.height, "Vulkan Engine");
+    camera = std::make_unique<Camera>();
 
 	init_vulkan();
 	init_swapchain();
@@ -591,9 +591,17 @@ void VulkanEngine::draw()
 
 void VulkanEngine::run()
 {
+    float lastFrameTime = _window->GetTime();
+
     while (!_window->ShouldClose())
     {
+		float currentFrameTime = _window->GetTime();
+		float deltaTime = currentFrameTime - lastFrameTime;
+		lastFrameTime = currentFrameTime;
+
         _window->PollEvents();
+		_window->ProcessInput();
+		camera->Update(_window->GetInputState(), deltaTime);
 		draw();
         _window->SwapBuffers();
     }
@@ -707,9 +715,9 @@ void VulkanEngine::draw_objects(VkCommandBuffer cmd, RenderObject* first, int co
 	projection[1][1] *= -1;
 
 	GPUCameraData camData;
-	camData.proj = projection;
-	camData.view = view;
-	camData.viewproj = projection * view;
+	camData.proj = camera->GetPerspective(_windowExtent.width, _windowExtent.height);
+	camData.view = camera->GetView();
+	camData.viewproj = camData.proj * camData.view;
 
 	// Copy camera data
 	void* data;
