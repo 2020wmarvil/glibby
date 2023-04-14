@@ -46,10 +46,6 @@ void VulkanEngine::init()
 	init_descriptors();
 	init_pipelines();
 
-	load_meshes();
-	load_images();
-	init_scene();
-
 	_isInitialized = true;
 }
 
@@ -513,63 +509,6 @@ void VulkanEngine::init_pipelines()
     });
 }
 
-void VulkanEngine::init_scene()
-{
-	//RenderObject monkey;
-	//monkey.mesh = get_mesh("monkey");
-	//monkey.material = get_material("defaultmesh");
-	//monkey.transformMatrix = glm::mat4{ 1.0f };
-	//_renderables.push_back(monkey);
-
-	//for (int x = -20; x <= 20; x++) {
-	//	for (int y = -20; y <= 20; y++) {
-	//		RenderObject tri;
-	//		tri.mesh = get_mesh("triangle");
-	//		tri.material = get_material("defaultmesh");
-	//		glm::mat4 translation = glm::translate(glm::mat4{ 1.0 }, glm::vec3(x, 0, y));
-	//		glm::mat4 scale = glm::scale(glm::mat4{ 1.0 }, glm::vec3(0.2, 0.2, 0.2));
-	//		tri.transformMatrix = translation * scale;
-	//		_renderables.push_back(tri);
-	//	}
-	//}
-
-	// Initialize lost empire minecraft map
-	{
-		RenderObject map;
-		map.mesh = get_mesh("empire");
-		map.material = get_material("texturedmesh");
-		map.transformMatrix = glm::translate(glm::vec3{ 5,-10,0 });
-		_renderables.push_back(map);
-
-		//create a sampler for the texture
-		VkSamplerCreateInfo samplerInfo = vkinit::sampler_create_info(VK_FILTER_NEAREST);
-
-		VkSampler blockySampler;
-		vkCreateSampler(_device, &samplerInfo, nullptr, &blockySampler);
-		_mainDeletionQueue.push_function([=]() {
-			vkDestroySampler(_device, blockySampler, nullptr);
-		});
-
-		Material* texturedMat = get_material("texturedmesh");
-
-		// allocate the descriptor set for single-texture to use on the material
-		VkDescriptorSetAllocateInfo allocInfo = { VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO };
-		allocInfo.descriptorPool = _descriptorPool;
-		allocInfo.descriptorSetCount = 1;
-		allocInfo.pSetLayouts = &_singleTextureSetLayout;
-		vkAllocateDescriptorSets(_device, &allocInfo, &texturedMat->textureSet);
-
-		// write to the descriptor set so that it points to our empire_diffuse texture
-		VkDescriptorImageInfo imageBufferInfo;
-		imageBufferInfo.sampler = blockySampler;
-		imageBufferInfo.imageView = _loadedTextures["empire_diffuse"].imageView;
-		imageBufferInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-		VkWriteDescriptorSet texture1 = vkinit::write_descriptor_image(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, texturedMat->textureSet, &imageBufferInfo, 0);
-		vkUpdateDescriptorSets(_device, 1, &texture1, 0, nullptr);
-	}
-}
-
 void VulkanEngine::cleanup()
 {
 	if (_isInitialized) {
@@ -681,46 +620,6 @@ bool VulkanEngine::load_shader_module(const char* filePath, VkShaderModule* outS
 	*outShaderModule = shaderModule;
 
 	return true;
-}
-
-void VulkanEngine::load_meshes()
-{
-	Mesh triangleMesh;
-	triangleMesh._vertices.resize(3);
-	triangleMesh._vertices[0].position = { 1.f, 1.f, 0.0f };
-	triangleMesh._vertices[1].position = {-1.f, 1.f, 0.0f };
-	triangleMesh._vertices[2].position = { 0.f,-1.f, 0.0f };
-	triangleMesh._vertices[0].color = { 0.f, 1.f, 0.0f }; //pure green
-	triangleMesh._vertices[1].color = { 0.f, 1.f, 0.0f }; //pure green
-	triangleMesh._vertices[2].color = { 0.f, 1.f, 0.0f }; //pure green
-
-	Mesh monkeyMesh;
-	monkeyMesh.load_from_obj("assets/monkey_smooth.obj");
-
-	upload_mesh(triangleMesh);
-	upload_mesh(monkeyMesh);
-
-	_meshes["triangle"] = triangleMesh;
-	_meshes["monkey"] = monkeyMesh;
-
-	Mesh lostEmpire{};
-	lostEmpire.load_from_obj("assets/lost_empire.obj");
-	upload_mesh(lostEmpire);
-	_meshes["empire"] = lostEmpire;
-}
-
-void VulkanEngine::load_images()
-{
-	Texture lostEmpire;
-	vkutil::load_image_from_file(*this, "assets/lost_empire-RGBA.png", lostEmpire.image);
-
-	VkImageViewCreateInfo imageinfo = vkinit::imageview_create_info(VK_FORMAT_R8G8B8A8_SRGB, lostEmpire.image._image, VK_IMAGE_ASPECT_COLOR_BIT);
-	vkCreateImageView(_device, &imageinfo, nullptr, &lostEmpire.imageView);
-	_mainDeletionQueue.push_function([=]() {
-		vkDestroyImageView(_device, lostEmpire.imageView, nullptr);
-    });
-
-	_loadedTextures["empire_diffuse"] = lostEmpire;
 }
 
 void VulkanEngine::upload_mesh(Mesh& mesh)

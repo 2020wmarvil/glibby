@@ -184,15 +184,12 @@ public:
 	void init_sync_structures();
 	void init_descriptors();
 	void init_pipelines();
-	void init_scene();
 
 	void cleanup();
 	void draw();
 	void run();
 
 	bool load_shader_module(const char* filePath, VkShaderModule* outShaderModule);
-	void load_meshes();
-	void load_images();
 	void upload_mesh(Mesh& mesh);
 
 	Material* create_material(VkPipeline pipeline, VkPipelineLayout layout, const std::string& name);
