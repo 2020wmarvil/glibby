@@ -411,10 +411,15 @@ TEST_CASE("QuadTree random iterator testing","[spacial][QuadTree]")
     CHECK(qt1.insert(&temp).first);
     CHECK(qt1.contains(&temp).first);
   }
+  for (int i=0; i < 25; i++) {
+    std::cout << all_points[i].x << " " << all_points[i].y << std::endl;
+  }
+  std::cout << std::endl << std::endl;
 
   glibby::QuadTree::iterator itr = qt1.begin();
   while (itr != qt1.end()) {
     std::shared_ptr<const glibby::Point2D> temp = *itr;
+    std::cout << temp->x << " " << temp->y << std::endl;
     bool contains = false;
     for (int i=0; i < all_points.size(); i++)
     {
