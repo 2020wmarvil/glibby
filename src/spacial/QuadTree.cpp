@@ -6,6 +6,7 @@
 #include <cmath>
 #include <vector>
 
+// TODO: enforce all points are leaves
 
 namespace glibby 
 {
@@ -588,7 +589,7 @@ namespace glibby
         Point2D temp;
         temp.x = node->points_[i]->x;
         temp.y = node->points_[i]->y;
-        points->push_back(temp);        
+        points->push_back(temp);
       }
     }
     if (!node->divided_) 
@@ -614,5 +615,6 @@ namespace glibby
       this->insert(&points[i]);
     }
   }
-  
+  // TODO: add function to trim tree (if node has leaf children, but none of 
+  // them have points, remove the children and make the node a leaf) 
 }
