@@ -66,16 +66,16 @@ namespace glibby
       std::shared_ptr<QuadTreeNode> NE_;
       std::shared_ptr<QuadTreeNode> SW_;
       std::shared_ptr<QuadTreeNode> SE_;
-      std::shared_ptr<QuadTreeNode> parent_;
+      std::weak_ptr<QuadTreeNode> parent_;
       std::vector<std::shared_ptr<Point2D>> points_;
   };
 
   class QuadTreeIterator
   {
     public:
-      QuadTreeIterator() : ptr_(NULL), pos_(0) {};
-      QuadTreeIterator(QuadTreeNode* ptr, unsigned int pos) : ptr_(ptr), pos_(pos) {};
-      QuadTreeIterator(std::shared_ptr<QuadTreeNode> ptr, unsigned int pos) : ptr_(ptr), pos_(pos) {};
+      QuadTreeIterator() : pos_(0) {};
+      //QuadTreeIterator(QuadTreeNode* ptr, unsigned int pos) : ptr_(ptr), pos_(pos) {};
+      QuadTreeIterator(std::weak_ptr<QuadTreeNode> ptr, unsigned int pos) : ptr_(ptr), pos_(pos) {};
       ~QuadTreeIterator() {};
       QuadTreeIterator& operator=(const QuadTreeIterator& other);
 
@@ -90,7 +90,7 @@ namespace glibby
     private:
       void find_deepest_child();
 
-      std::shared_ptr<QuadTreeNode> ptr_;
+      std::weak_ptr<QuadTreeNode> ptr_;
       unsigned int pos_;
   };
 

@@ -22,7 +22,7 @@ namespace glibby
     this->height_ = height;
     this->divided_ = false;
     this->capacity_ = cap;
-    this->parent_ = NULL;
+    //this->parent_ = NULL;
   }
 
   bool QuadTreeNode::inside_boundary(Point2D* ptr) const 
@@ -72,8 +72,8 @@ namespace glibby
     {
       return *this;
     }
-
-    this->ptr_ = other.ptr_;
+    auto other_ptr = other.ptr_.lock();
+    this->ptr_ = other_ptr;
     this->pos_ = other.pos_;
 
     return *this;
@@ -81,11 +81,13 @@ namespace glibby
 
   bool QuadTreeIterator::operator==(const QuadTreeIterator& other) const
   { 
-    if (this->ptr_ == NULL && other.ptr_ == NULL) 
+    auto this_ptr = this->ptr_.lock();
+    auto other_ptr = other.ptr_.lock();
+    if (this_ptr == NULL && other_ptr == NULL) 
     { // these two will always be equal no matter what
       return true;
     }
-    return (this->ptr_ == other.ptr_ && this->pos_ == other.pos_);
+    return (this_ptr == other_ptr && this->pos_ == other.pos_);
   }
 
   bool QuadTreeIterator::operator!=(const QuadTreeIterator& other) const
@@ -99,18 +101,20 @@ namespace glibby
      * Traversing tree through post-order
      * visit all subtree node, then visit root
      * */
-    if (ptr_ == NULL) 
+    auto ptr = ptr_.lock();
+    auto parent = ptr->parent_.lock();
+    if (ptr == NULL) 
     { // end of iteration, nothing left to look at
       return *this;
     }
-    if (pos_ < ptr_->points_.size()-1 && ptr_->points_.size() != 0)
+    if (pos_ < ptr->points_.size()-1 && ptr->points_.size() != 0)
     { // still more to look at in this node, so don't leave yet
       pos_++;
       return *this;
     }
-    if (ptr_->parent_ == NULL)
+    if (parent == NULL)
     { // we have reached the root, nothing more to look at
-      ptr_ = NULL;
+      ptr_ = std::weak_ptr<QuadTreeNode>();
       pos_ = 0;
       return *this;
     }
@@ -126,34 +130,35 @@ namespace glibby
        * because when we subdivide a node, all of the children are created at
        * once
        * */
-      if (ptr_ == ptr_->parent_->SW_) 
+      if (ptr == parent->SW_) 
       {
-        ptr_ = ptr_->parent_->NW_;
+        ptr_ = parent->NW_;
         pos_ = 0;
         find_deepest_child();
       }
-      else if (ptr_ == ptr_->parent_->NW_) 
+      else if (ptr == parent->NW_) 
       {
-        ptr_ = ptr_->parent_->NE_;
+        ptr_ = parent->NE_;
         pos_ = 0;
         find_deepest_child();
       }
-      else if (ptr_ == ptr_->parent_->NE_) 
+      else if (ptr == parent->NE_) 
       {
-        ptr_ = ptr_->parent_->SE_;
+        ptr_ = parent->SE_;
         pos_ = 0;
         find_deepest_child();
       }
        else 
       {
-        ptr_ = ptr_->parent_;
+        ptr_ = ptr->parent_;
         pos_ = 0;
       }
     }
 
     // there is a chance that we just moved to a child that doesn't actually
     // contain any data. We need to fix that by iterating again
-    if (ptr_->points_.size() == 0) 
+    ptr = ptr_.lock();
+    if (ptr->points_.size() == 0) 
     {
       ++(*this);
     }
@@ -171,32 +176,34 @@ namespace glibby
 
   const std::shared_ptr<const Point2D> QuadTreeIterator::operator*() const
   {
-    return this->ptr_->points_[this->pos_];
+    auto ptr = this->ptr_.lock();
+    return ptr->points_[this->pos_];
   }
 
   void QuadTreeIterator::find_deepest_child()
   {
-    while (ptr_->SW_ != NULL)
+    auto ptr = ptr_.lock();
+    while (ptr->SW_ != NULL)
     {
       // there are some children, just have to find which one has actual points
-      if (ptr_->SW_->points_.size() != 0)
+      if (ptr->SW_->points_.size() != 0)
       {
         // there are points at this child
-        ptr_ = ptr_->SW_;
+        ptr_ = ptr->SW_;
       } 
-      else if (ptr_->NW_->points_.size() != 0)
+      else if (ptr->NW_->points_.size() != 0)
       {
         // there are points at this child
-        ptr_ = ptr_->NW_;
+        ptr_ = ptr->NW_;
       } 
-      else if (ptr_->NE_->points_.size() != 0)
+      else if (ptr->NE_->points_.size() != 0)
       {
         // there are points at this child
-        ptr_ = ptr_->NE_;
+        ptr_ = ptr->NE_;
       }
-      else if (ptr_->SE_->points_.size() != 0)
+      else if (ptr->SE_->points_.size() != 0)
       {
-        ptr_ = ptr_->NE_;
+        ptr_ = ptr->NE_;
       }
       else
       {
@@ -206,6 +213,7 @@ namespace glibby
         // If this ever happens something went majorly wrong
         // VERY VERY BAD
       }
+      ptr = ptr_.lock();
     }
   }
 
@@ -233,22 +241,22 @@ namespace glibby
     float width = TopR->x - TopL->x;
     float height = TopR->y - BotR->y;
     
-    std::shared_ptr<Point2D> temp(new glibby::Point2D);
+    std::shared_ptr<Point2D> temp = std::make_shared<Point2D>();
     temp->x = BotR->x + width/2;
     temp->y = BotR->y + height/2;
 
-    this->root_ = std::shared_ptr<QuadTreeNode>(
-        new QuadTreeNode(temp, width, height, capacity));
+    this->root_ = std::make_shared<QuadTreeNode>(
+        temp, width, height, capacity);
   }
    
   QuadTree::QuadTree(std::shared_ptr<Point2D> p, float width, float height, 
       int capacity) 
   {
-    std::shared_ptr<Point2D> temp(new Point2D);
+    std::shared_ptr<Point2D> temp = std::make_shared<Point2D>();
     temp->x = p->x;
     temp->y = p->y;
-    this->root_ = std::shared_ptr<QuadTreeNode>(
-        new QuadTreeNode(temp,width,height,capacity));
+    this->root_ = std::make_shared<QuadTreeNode>(
+        temp,width,height,capacity);
     if (capacity > 0) 
     {
       this->capacity_ = capacity;
@@ -262,10 +270,10 @@ namespace glibby
 
   QuadTree::iterator QuadTree::begin() const
   {
-    QuadTreeNode* p = &(*root_);
+    std::shared_ptr<QuadTreeNode> p = root_;
     while (p->SW_ != NULL)
     {
-      p = &(*(p->SW_));
+      p = p->SW_;
     }
     QuadTree::iterator temp(p,0);
     // just in case the node we just moved to does not contain any data
@@ -329,11 +337,11 @@ namespace glibby
   void QuadTree::clear() {
     this->size_ = 0;
     std::shared_ptr<QuadTreeNode> temp;
-    temp.reset( new QuadTreeNode(
+    temp = std::make_shared<QuadTreeNode>(
         this->root_->center_,
         this->root_->width_,
         this->root_->height_,
-        this->root_->capacity_));
+        this->root_->capacity_);
     this->root_ = temp;
   }
 
@@ -351,7 +359,7 @@ namespace glibby
     // if we have space at this node, add it here
     if (node->points_.size() < node->capacity_) 
     {
-      node->points_.push_back(std::shared_ptr<Point2D>(new Point2D));
+      node->points_.push_back(std::make_shared<Point2D>());
       node->points_[node->points_.size()-1]->x = point->x;
       node->points_[node->points_.size()-1]->y = point->y;
       this->size_++;
@@ -469,30 +477,26 @@ namespace glibby
 
     SW_center->x = node->center_->x - node->width_ / 4;
     SW_center->y = node->center_->y - node->height_ / 4;
-    node->SW_.reset(
-        new QuadTreeNode(SW_center,new_width,new_height,node->capacity_)
-        );
+    node->SW_ = std::make_shared<QuadTreeNode>(
+        SW_center,new_width,new_height,node->capacity_);
     node->SW_->parent_ = node;
 
     SE_center->x = node->center_->x + node->width_ / 4;
     SE_center->y = node->center_->y - node->height_ / 4;
-    node->SE_.reset(
-        new QuadTreeNode(SE_center,new_width,new_height,node->capacity_)
-        );
+    node->SE_ = std::make_shared<QuadTreeNode>(
+        SE_center,new_width,new_height,node->capacity_);
     node->SE_->parent_ = node;
 
     NW_center->x = node->center_->x - node->width_ / 4;
     NW_center->y = node->center_->y + node->height_ / 4;
-    node->NW_.reset(
-        new QuadTreeNode(NW_center,new_width,new_height,node->capacity_)
-        );
+    node->NW_ = std::make_shared<QuadTreeNode>(
+        NW_center,new_width,new_height,node->capacity_);
     node->NW_->parent_ = node;
 
     NE_center->x = node->center_->x + node->width_ / 4;
     NE_center->y = node->center_->y + node->height_ / 4;
-    node->NE_.reset(
-        new QuadTreeNode(NE_center,new_width,new_height,node->capacity_)
-        );
+    node->NE_ = std::make_shared<QuadTreeNode>(
+        NE_center,new_width,new_height,node->capacity_);
     node->NE_->parent_ = node;
   }
 
@@ -585,9 +589,9 @@ namespace glibby
 
   void QuadTree::reformat_tree(std::vector<Point2D> points)
   {
-    std::shared_ptr<QuadTreeNode> temp(new QuadTreeNode(
+    std::shared_ptr<QuadTreeNode> temp = std::make_shared<QuadTreeNode>(
         (*this).root_->center_, (*this).root_->width_, (*this).root_->height_,
-        (*this).root_->capacity_));
+        (*this).root_->capacity_);
 
     this->root_ = temp;
 
