@@ -185,36 +185,13 @@ namespace glibby
   void QuadTreeIterator::find_deepest_child()
   {
     auto ptr = ptr_.lock();
-    while (ptr->SW_ != NULL)
+    while (ptr->divided_)
     {
       // there are some children, just have to find which one has actual points
-      if (ptr->SW_->points_.size() != 0)
-      {
-        // there are points at this child
-        ptr_ = ptr->SW_;
-      } 
-      else if (ptr->NW_->points_.size() != 0)
-      {
-        // there are points at this child
-        ptr_ = ptr->NW_;
-      } 
-      else if (ptr->NE_->points_.size() != 0)
-      {
-        // there are points at this child
-        ptr_ = ptr->NE_;
-      }
-      else if (ptr->SE_->points_.size() != 0)
-      {
-        ptr_ = ptr->NE_;
-      }
-      else
-      {
-        // AAAH, we need to reformat the QuadTree because some point was deleted
-        // and now part of the graph is "disconnected"
-        //
-        // If this ever happens something went majorly wrong
-        // VERY VERY BAD
-      }
+      // when we iterate, we check to make sure the node we moved to has points,
+      // so if we move to an empty node here, it will be taken care of by that
+      // process
+      ptr_ = ptr->SW_;
       ptr = ptr_.lock();
     }
   }
@@ -273,7 +250,7 @@ namespace glibby
   QuadTree::iterator QuadTree::begin() const
   {
     std::shared_ptr<QuadTreeNode> p = root_;
-    while (p->SW_ != NULL)
+    while (p->divided_)
     {
       p = p->SW_;
     }
