@@ -76,15 +76,14 @@ namespace glibby
       std::shared_ptr<OcTreeNode> NEB_;
       std::shared_ptr<OcTreeNode> SWB_;
       std::shared_ptr<OcTreeNode> SEB_;
-      std::shared_ptr<OcTreeNode> parent_;
+      std::weak_ptr<OcTreeNode> parent_;
       std::vector<std::shared_ptr<Point3>> points_;
   };
 
   class OcTreeIterator
   {
     public:
-      OcTreeIterator() : ptr_(NULL), pos_(0) {};
-      OcTreeIterator(OcTreeNode* ptr, unsigned int pos) : ptr_(ptr), pos_(pos) {};
+      OcTreeIterator() : pos_(0) {};
       OcTreeIterator(std::shared_ptr<OcTreeNode> ptr, unsigned int pos) : ptr_(ptr), pos_(pos) {};
       ~OcTreeIterator() {};
       OcTreeIterator& operator=(const OcTreeIterator& other);
@@ -100,7 +99,7 @@ namespace glibby
     private:
       void find_deepest_child();
 
-      std::shared_ptr<OcTreeNode> ptr_;
+      std::weak_ptr<OcTreeNode> ptr_;
       unsigned int pos_;
   };
 
