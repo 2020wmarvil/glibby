@@ -6,7 +6,6 @@
 #include <cmath>
 #include <vector>
 
-// TODO: enforce all points are leaves
 
 namespace glibby 
 {
@@ -288,9 +287,7 @@ namespace glibby
     }
     bool temp = remove_point(this->root_, point);
 
-    /*std::vector<Point2D> points = query(&(*(this->root_->center_)),
-        (*this).root_->width_+1,(*this).root_->height_+1);
-    reformat_tree(points);*/
+    reformat_tree(this->root_);
 
     return temp;
   }
@@ -579,19 +576,28 @@ namespace glibby
     search_tree(points,node->NE_,center,width,height);
   }
 
-  void QuadTree::reformat_tree(std::vector<Point2D> points)
+  bool QuadTree::reformat_tree(std::shared_ptr<QuadTreeNode> node)
   {
-    std::shared_ptr<QuadTreeNode> temp = std::make_shared<QuadTreeNode>(
-        (*this).root_->center_, (*this).root_->width_, (*this).root_->height_,
-        (*this).root_->capacity_);
-
-    this->root_ = temp;
-
-    for (unsigned int i=0; i < points.size(); i++) 
+    // if leaf node, return if empty
+    if (node->leaf_)
     {
-      this->insert(&points[i]);
+      return node->points_.size() == 0;
     }
+
+    // check if children are empty
+    bool sw = reformat_tree(node->SW_);
+    bool nw = reformat_tree(node->NW_);
+    bool ne = reformat_tree(node->NE_);
+    bool se = reformat_tree(node->SE_);
+
+    if (sw && nw && ne && se) {
+      // all children are empty, so are unnecessary
+      node->SW_ = node->NW_ = node->NE_ = node->SE_ = NULL;
+      node->divided_ = false;
+      node->leaf_ = true;
+      // we are now an empty leaf node so say so
+      return true;
+    }
+    return false;
   }
-  // TODO: add function to trim tree (if node has leaf children, but none of 
-  // them have points, remove the children and make the node a leaf) 
 }

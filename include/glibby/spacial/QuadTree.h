@@ -221,10 +221,10 @@ namespace glibby
           std::vector<Point2D>* points, std::shared_ptr<QuadTreeNode> node, 
           Point2D* center, float width, float height) const;
       /*
-       * will take all points in the vector and insert them into the tree.
-       * will start be destroying the current tree completely.
+       * will remove any unnecessary nodes (leaves where none of the pair of 4
+       * have any points)
        * */
-      void reformat_tree(std::vector<Point2D> points);
+      bool reformat_tree(std::shared_ptr<QuadTreeNode> node);
       
       std::shared_ptr<QuadTreeNode> root_;
       int capacity_;
