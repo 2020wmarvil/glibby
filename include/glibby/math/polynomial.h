@@ -126,6 +126,53 @@ namespace glibby
 
                 return roots;
             }
+            
+            // Returns the degree of the polynomial
+            int get_degree() const {
+                return values.size() - 1;
+            }
+
+            // Returns the derivative of the polynomial
+            Quadratic differentiate() const {
+                if (values.size() <= 1) {
+                    return Quadratic({0});
+                }
+                vector<int> derivative;
+                for (int i = 1; i < values.size(); i++) {
+                    derivative.push_back(i * values[i]);
+                }
+                return Quadratic(derivative);
+            }
+
+            // Returns the indefinite integral of the polynomial
+            Quadratic integrate() const {
+                vector<int> integral(values.size() + 1);
+                integral[0] = 0;
+                for (int i = 0; i < values.size(); i++) {
+                    integral[i + 1] = values[i] / (i + 1);
+                }
+                return Quadratic(integral);
+            }
+
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             // overloading - operator 
             Quadratic operator-(const Quadratic& b) {
