@@ -149,7 +149,7 @@ namespace glibby
         pos_ = 0;
         find_deepest_child();
       }
-       else 
+      else 
       {
         ptr_ = ptr->parent_;
         pos_ = 0;
@@ -205,7 +205,7 @@ namespace glibby
       std::shared_ptr<Point2D> TopR, std::shared_ptr<Point2D> BotL, 
       std::shared_ptr<Point2D> BotR, int capacity) 
   {
-    if (capacity > 0) 
+    if (capacity > 1) 
     {
       this->capacity_ = capacity;
     } 

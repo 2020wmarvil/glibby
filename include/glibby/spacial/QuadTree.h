@@ -108,11 +108,11 @@ namespace glibby
        * @param BotL - point denoting bottom left of boundary
        * @param BotR - point denoting bottom right of boundary
        * @param capacity - capacity of each node in tree, lower capacity means
-       * higher depth, default is 1
+       * higher depth, default is 2, capacity cannot be lower than 2
        * */
       QuadTree(std::shared_ptr<Point2D> TopL, std::shared_ptr<Point2D> TopR, 
           std::shared_ptr<Point2D> BotL, std::shared_ptr<Point2D> BotR, 
-          int capacity = 1);
+          int capacity = 2);
       /**
        * @brief Will create QuadTree with boundary defined by parameters. The
        * boundary is rectangular.
@@ -121,7 +121,7 @@ namespace glibby
        * @param width - overall width of boundary
        * @param height - overall height of boundary
        * @param capacity - capacity of each node in tree, lower capacity means
-       * higher depth, default is 1
+       * higher depth, default is 2
        * */
       QuadTree(std::shared_ptr<Point2D> p, float width, float height, 
           int capacity = 2);

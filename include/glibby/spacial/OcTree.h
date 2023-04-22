@@ -68,6 +68,7 @@ namespace glibby
       float height_;
       float depth_;
       bool divided_;
+      bool leaf_;
       std::shared_ptr<OcTreeNode> NWF_;
       std::shared_ptr<OcTreeNode> NEF_;
       std::shared_ptr<OcTreeNode> SWF_;
@@ -115,10 +116,10 @@ namespace glibby
        * @param height - overall height of the boundary
        * @param depth - overall depth of the boundary
        * @param capacity - capacity of each node in tree, lower capacity means
-       * higher depth, default is 1
+       * higher depth, default is 2, capacity cannot be lower than 2
        * */
       OcTree(std::shared_ptr<Point3> p, float width, float height, float depth,
-          int capacity = 1);
+          int capacity = 2);
 
       typedef OcTreeIterator iterator;
       friend class OcTreeIterator;
@@ -193,7 +194,8 @@ namespace glibby
        * recursively finds/creates correct node to insert point and inserts the
        * point there, starts at node passed as argument
        * */
-      std::pair<bool,iterator> add_point(std::shared_ptr<OcTreeNode> node, Point3* point);
+      std::pair<bool,iterator> add_point(std::shared_ptr<OcTreeNode> node, 
+          Point3* point);
       /*
        * recursively finds a point and removes it
        * */
@@ -205,7 +207,8 @@ namespace glibby
       /*
        * recursively search tree for a specific point, starts at given node
        * */
-      std::pair<bool,iterator> search(std::shared_ptr<OcTreeNode> node, Point3* point) const;
+      std::pair<bool,iterator> search(std::shared_ptr<OcTreeNode> node, 
+          Point3* point) const;
       /*
        * recursively finds all points within given boundary and adds copies of
        * those points to the given vector
@@ -217,7 +220,7 @@ namespace glibby
        * will take all points in the vector and insert them into the tree.
        * will start be destroying the current tree completely.
        * */
-      void reformat_tree(std::vector<Point3> points);
+      bool reformat_tree(std::shared_ptr<OcTreeNode> node);
       
       std::shared_ptr<OcTreeNode> root_;
       int capacity_;

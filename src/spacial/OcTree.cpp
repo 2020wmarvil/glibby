@@ -39,6 +39,7 @@ namespace glibby
     this->height_ = height;
     this->depth_ = depth;
     this->divided_ = false;
+    this->leaf_ = true;
     this->capacity_ = cap;
     //this->parent_ = NULL;
   }
@@ -240,61 +241,12 @@ namespace glibby
   void OcTreeIterator::find_deepest_child()
   {
     auto ptr = ptr_.lock();
-    while (ptr->SWB_ != NULL)
-    { // since we subdivide everything at once, if one child exists, all do
-      if (ptr->SWB_->points_.size() != 0)
-      {
-        // there are points here, this child has highest priority so far, go
-        // here
-        ptr_ = ptr->SWB_;
-      }
-      else if (ptr->NWB_->points_.size() != 0)
-      {
-        // there are points here, this child has highest priority so far, go
-        // here
-        ptr_ = ptr->NWB_;
-      }
-      else if (ptr->NEB_->points_.size() != 0)
-      {
-        // there are points here, this child has highest priority so far, go
-        // here
-        ptr_ = ptr->NEB_;
-      }
-      else if (ptr->SEB_->points_.size() != 0)
-      {
-        // there are points here, this child has highest priority so far, go
-        // here
-        ptr_ = ptr->SEB_;
-      }
-      else if (ptr->SWF_->points_.size() != 0)
-      {
-        // there are points here, this child has highest priority so far, go
-        // here
-        ptr_ = ptr->SWF_;
-      }
-      else if (ptr->NWF_->points_.size() != 0)
-      {
-        // there are points here, this child has highest priority so far, go
-        // here
-        ptr_ = ptr->NWF_;
-      }
-      else if (ptr->NEF_->points_.size() != 0)
-      {
-        // there are points here, this child has highest priority so far, go
-        // here
-        ptr_ = ptr->NEF_;
-      }
-      else if (ptr->SEF_->points_.size() != 0)
-      {
-        // there are points here, this child has highest priority so far, go
-        // here
-        ptr_ = ptr->SEF_;
-      }
-      else
-      {
-        // should not be possible, means we subdivided with no actual reason to
-        // do so
-      }
+    while (ptr->divided_)
+    { 
+      // there are some children, so we are going to SWB_ most child, if we move
+      // to an empty node, it will be taken care of by the iterate function (we
+      // always check if we moved to node without points at end)
+      ptr_ = ptr->SWB_;
       ptr = ptr_.lock();
     }
   }
@@ -312,7 +264,7 @@ namespace glibby
     temp->points[0] = p->points[0];
     temp->points[1] = p->points[1];
     temp->points[2] = p->points[2];
-    if (capacity > 0) 
+    if (capacity > 1) 
     {
       this->capacity_ = capacity;
     } 
@@ -328,7 +280,7 @@ namespace glibby
   OcTree::iterator OcTree::begin() const
   {
     std::shared_ptr<OcTreeNode> p = root_;
-    while (p->SWB_ != NULL)
+    while (p->divided_)
     {
       p = p->SWB_;
     }
@@ -365,11 +317,8 @@ namespace glibby
     }
     bool temp = remove_point(this->root_, point);
 
-    std::vector<Point3> points = query(&(*(this->root_->center_)),
-        (*this).root_->width_+1,(*this).root_->height_+1,
-        (*this).root_->depth_+1);
-    reformat_tree(points);
-
+    reformat_tree(this->root_);
+    
     return temp;
   }
 
@@ -428,6 +377,17 @@ namespace glibby
     if (!node->divided_) 
     {
       subdivide(node);
+      // we subdivided this node, meaning it is no longer leaf
+      node->leaf_ = false;
+      // now we need to push every point at this node down
+      // do this by just adding the points starting at current node, it will be
+      // taken care of from there
+      for (unsigned int i=0; i < node->points_.size(); i++)
+      {
+        add_point(node, &(*node->points_[i]));
+      }
+      // remove all points from here
+      node->points_.clear();
     }
 
     // Add to everything, one of them will be right
@@ -538,10 +498,12 @@ namespace glibby
     return false;
   }
 
-
+  
+  // TODO: make look like QuadTree version
   void OcTree::subdivide(std::shared_ptr<OcTreeNode> node) 
   {
     node->divided_ = true;
+    node->leaf_ = false;
 
     float new_width = node->width_ / 2;
     float new_height = node->height_ / 2;
@@ -723,18 +685,35 @@ namespace glibby
     search_tree(points,node->NEB_,center,width,height,depth);
   }
 
-  void OcTree::reformat_tree(std::vector<Point3> points) 
+  bool OcTree::reformat_tree(std::shared_ptr<OcTreeNode> node) 
   {
-    std::shared_ptr<OcTreeNode> temp = std::make_shared<OcTreeNode>(
-          (*this).root_->center_, (*this).root_->width_, (*this).root_->height_,
-          (*this).root_->depth_, (*this).root_->capacity_);
-
-    this->root_ = temp;
-
-    for (unsigned int i=0; i < points.size(); i++)
+    // if leaf node, return true if empty
+    if (node->leaf_) 
     {
-      this->insert(&points[i]);
+      return node->points_.size() == 0;
     }
+    
+    // check if children are empty
+    bool swb = reformat_tree(node->SWB_);
+    bool swf = reformat_tree(node->SWF_);
+    bool seb = reformat_tree(node->SEB_);
+    bool sef = reformat_tree(node->SEF_);
+    bool nwb = reformat_tree(node->NWB_);
+    bool nwf = reformat_tree(node->NWF_);
+    bool neb = reformat_tree(node->NEB_);
+    bool nef = reformat_tree(node->NEF_);
+
+    if (swb && swf && seb && sef && nwb && nwf && neb && nef)
+    {
+      // all children are empty, so are unnecessary
+      node->SWB_ = node->SWF_ = node->SEB_ = node->SEF_ = node->NWB_ = 
+        node->NWF_ = node->NEB_ = node->NEF_ = NULL;
+      node->divided_ = false;
+      node->leaf_ = true;
+      // we are now an empty leaf node, so say so
+      return true;
+    }
+    return false;
   }
   
 }
