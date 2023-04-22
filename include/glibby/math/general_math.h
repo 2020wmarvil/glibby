@@ -826,7 +826,7 @@ namespace glibby
 
 	}
 	// Orthogonal Projection Matrix
-	MAT4x4<float> orthogonalProjection(float left, float right, float bottom, float top, float near, float far)
+	inline MAT4x4<float> orthogonalProjection(float left, float right, float bottom, float top, float near, float far)
 	{
 		MAT4x4<float> projection;
 
@@ -841,7 +841,7 @@ namespace glibby
 	}
 
 	// Perspective Projection Matrix
-	MAT4x4<float> perspectiveProjection(float fovY, float aspectRatio, float near, float far)
+	inline MAT4x4<float> perspectiveProjection(float fovY, float aspectRatio, float near, float far)
 	{
 		MAT4x4<float> projection;
 

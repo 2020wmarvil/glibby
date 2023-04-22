@@ -199,7 +199,7 @@ TEST_CASE("MAT4x4 Operations", "[math][mat4x4]")
     const MAT4x4<float> simpleMat({ {1,2,3,4},{5,6,7,8},{9,10,11,12},{13,14,15,16} });
     const MAT4x4<float> negativeMat({ {-1,-2,-3,-4},{-5,-6,-7,-8},{-9,-10,-11,-12},{-13,-14,-15,-16} });
     const MAT4x4<float> doubleMat({ {2,4,6,8},{10,12,14,16},{18,20,22,24},{26,28,30,32} });
-    const MAT4x4<float> productMat({ {180,200,220,240},{404,456,508,560},{628,712,796,880},852,968,1084,1200});
+    const MAT4x4<float> productMat({ {180,200,220,240},{404,456,508,560},{628,712,796,880},{852,968,1084,1200} });
     const MAT4x4<float> transposedMat({ 1,5,9,13}, { 2,6,10,14 }, { 3,7,11,15 }, {4,8,12,16});
     CHECK(scalar_multiplication(2, simpleMat) == doubleMat);
     CHECK(scalar_division(2, doubleMat) == simpleMat);
@@ -217,7 +217,7 @@ TEST_CASE("MAT4x4 Operations", "[math][mat4x4]")
     CHECK(orthoProj == orthoProj_result);
     float fovY = M_PI / 3.0f, aspectRatio = 16.0f / 9.0f;
     MAT4x4<float> perspProj = perspectiveProjection(fovY, aspectRatio, near, far);
-    MAT4x4<float> perspProj_result({ {0.974279,0,0,0},{0,1.73205,0,0},{0,0,-1,0202,-2.0202},{0,0,-1,0} });
+    MAT4x4<float> perspProj_result({ {0.974279,0,0,0},{0,1.73205,0,0},{0,0,-1.0202,-2.0202},{0,0,-1,0} });
     CHECK(perspProj == perspProj_result);
     Vec<float, 3> v1(1, 0, 1);
     Vec<float, 3> v2(0, 1, 1);
@@ -225,8 +225,3 @@ TEST_CASE("MAT4x4 Operations", "[math][mat4x4]")
     MAT4x4<float> Look_At = LookAt(v1, v2, v3);
     MAT4x4<float> Look_At_result({ {0.707107,0.707107,0,-0.707107},{0,0,-1,1},{0.707107,-0.707107,0,-0.707107},{0,0,0,1} });
 }   
-
-TEST_CASE("MATnxn Operations", "[math][matnxn]")
-{
-
-}
