@@ -14,39 +14,6 @@ int add(int i, int j) {
 }
 
 
-template<typename T>
-T ManhattanDistance1D(const glibby::Point<T, 1>& p1, const glibby::Point<T, 1>& p2)
-{
-    return glibby::ManhattanDistance(p1, p2);
-}
-template<typename T>
-T ManhattanDistance2D(const glibby::Point<T, 2>& p1, const glibby::Point<T, 3>& p2)
-{
-    return glibby::ManhattanDistance(p1, p2);
-}
-template<typename T>
-T ManhattanDistance3D(const glibby::Point<T, 3>& p1, const glibby::Point<T, 3>& p2)
-{
-    return glibby::ManhattanDistance(p1, p2);
-}
-
-template<typename T>
-T EuclideanDistance1D(const glibby::Point<T, 1>& p1, const glibby::Point<T, 1>& p2)
-{
-    return glibby::EuclideanDistance(p1, p2);
-}
-template<typename T>
-T EuclideanDistance2D(const glibby::Point<T, 2>& p1, const glibby::Point<T, 2>& p2)
-{
-    return glibby::EuclideanDistance(p1, p2);
-}
-template<typename T>
-T EuclideanDistance3D(const glibby::Point<T, 3>& p1, const glibby::Point<T, 3>& p2)
-{
-    return glibby::EuclideanDistance(p1, p2);
-}
-
-
 namespace py = pybind11;
 
 PYBIND11_MODULE(glibby, m) {
@@ -77,74 +44,81 @@ PYBIND11_MODULE(glibby, m) {
     )pbdoc");
 
     py::class_<glibby::Point<float, 1>>(m, "Point1")
-        .def(py::init<float&, int&>());
+        .def(py::init<float>());
     py::class_<glibby::Point<float, 2>>(m, "Point2")
-        .def(py::init<float&, int&>());
+        .def(py::init<float>());
     py::class_<glibby::Point<float, 3>>(m, "Point3")
-        .def(py::init<float&, int&>());
+        .def(py::init<float>());
+
+    py::class_<glibby::Point<double, 1>>(m, "Point1D")
+        .def(py::init<double>());
+    py::class_<glibby::Point<double, 2>>(m, "Point2D")
+        .def(py::init<double>());
+    py::class_<glibby::Point<double, 3>>(m, "Point3D")
+        .def(py::init<double>());
     
     // NOT WORKING
     
-    m.def("ManhattanDistance1D", ManhattanDistance1D<float>, R"pbdoc(
+    m.def("ManhattanDistance1D", glibby::ManhattanDistance<float, 1>, R"pbdoc(
         Manhattan distance between 2 1D points
     )pbdoc");
-    m.def("ManhattanDistance1D", ManhattanDistance1D<double>, R"pbdoc(
+    m.def("ManhattanDistance1D", glibby::ManhattanDistance<double, 1>, R"pbdoc(
         Manhattan distance between 2 1D points
     )pbdoc");
-    m.def("ManhattanDistance1D", ManhattanDistance1D<uint32_t>, R"pbdoc(
+    /*m.def("ManhattanDistance1D", glibby::ManhattanDistance<uint32_t, 1>, R"pbdoc(
         Manhattan distance between 2 1D points
-    )pbdoc");
+    )pbdoc"); */
 
-    m.def("ManhattanDistance2D", ManhattanDistance2D<float>, R"pbdoc(
+    m.def("ManhattanDistance2D", glibby::ManhattanDistance<float, 2>, R"pbdoc(
         Manhattan distance between 2 2D points
     )pbdoc");
-    m.def("ManhattanDistance2D", ManhattanDistance2D<double>, R"pbdoc(
+    m.def("ManhattanDistance2D", glibby::ManhattanDistance<double, 2>, R"pbdoc(
         Manhattan distance between 2 2D points
     )pbdoc");
-    m.def("ManhattanDistance2D", ManhattanDistance2D<uint32_t>, R"pbdoc(
+    /*m.def("ManhattanDistance2D", glibby::ManhattanDistance<uint32_t, 2>, R"pbdoc(
         Manhattan distance between 2 2D points
-    )pbdoc");
+    )pbdoc");*/
 
-    m.def("ManhattanDistance3D", ManhattanDistance3D<float>, R"pbdoc(
+    m.def("ManhattanDistance3D", glibby::ManhattanDistance<float, 3>, R"pbdoc(
         Manhattan distance between 2 3D points
     )pbdoc");
-    m.def("ManhattanDistance3D", ManhattanDistance3D<double>, R"pbdoc(
+    m.def("ManhattanDistance3D", glibby::ManhattanDistance<double, 3>, R"pbdoc(
         Manhattan distance between 2 3D points
     )pbdoc");
-    m.def("ManhattanDistance3D", ManhattanDistance3D<uint32_t>, R"pbdoc(
+    /*m.def("ManhattanDistance3D", glibby::ManhattanDistance<uint32_t, 3>, R"pbdoc(
         Manhattan distance between 2 3D points
-    )pbdoc");
+    )pbdoc");*/
 
 
-    m.def("EuclideanDistance1D", EuclideanDistance1D<float>, R"pbdoc(
+    m.def("EuclideanDistance1D", glibby::EuclideanDistance<float, 1>, R"pbdoc(
         Euclidean distance between 2 1D points
     )pbdoc");
-    m.def("EuclideanDistance1D", EuclideanDistance1D<double>, R"pbdoc(
+    m.def("EuclideanDistance1D", glibby::EuclideanDistance<double, 1>, R"pbdoc(
         Euclidean distance between 2 1D points
     )pbdoc");
-    m.def("EuclideanDistance1D", EuclideanDistance1D<uint32_t>, R"pbdoc(
+    /*m.def("EuclideanDistance1D", glibby::EuclideanDistance<uint32_t, 1>, R"pbdoc(
         Euclidean distance between 2 1D points
-    )pbdoc");
+    )pbdoc");*/
 
-    m.def("EuclideanDistance2D", EuclideanDistance2D<float>, R"pbdoc(
+    m.def("EuclideanDistance2D", glibby::EuclideanDistance<float, 2>, R"pbdoc(
         Euclidean distance between 2 2D points
     )pbdoc");
-    m.def("EuclideanDistance2D", EuclideanDistance2D<double>, R"pbdoc(
+    m.def("EuclideanDistance2D", glibby::EuclideanDistance<double, 2>, R"pbdoc(
         Euclidean distance between 2 2D points
     )pbdoc");
-    m.def("EuclideanDistance2D", EuclideanDistance2D<uint32_t>, R"pbdoc(
+    /*m.def("EuclideanDistance2D", glibby::EuclideanDistance<uint32_t, 2>, R"pbdoc(
         Euclidean distance between 2 2D points
-    )pbdoc");
+    )pbdoc");*/
 
-    m.def("EuclideanDistance3D", EuclideanDistance3D<float>, R"pbdoc(
+    m.def("EuclideanDistance3D", glibby::EuclideanDistance<float, 3>, R"pbdoc(
         Euclidean distance between 2 3D points
     )pbdoc");
-    m.def("EuclideanDistance3D", EuclideanDistance3D<double>, R"pbdoc(
+    m.def("EuclideanDistance3D", glibby::EuclideanDistance<double, 3>, R"pbdoc(
         Euclidean distance between 2 3D points
     )pbdoc");
-    m.def("EuclideanDistance3D", EuclideanDistance3D<uint32_t>, R"pbdoc(
+    /*m.def("EuclideanDistance3D", glibby::EuclideanDistance<uint32_t, 3>, R"pbdoc(
         Euclidean distance between 2 3D points
-    )pbdoc");
+    )pbdoc");*/
     
     // NOT WORKING 
     
