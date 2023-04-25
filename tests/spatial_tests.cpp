@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <memory>
+#include <ostream>
 #include <random>
 #include <vector>
 
@@ -318,8 +319,8 @@ TEST_CASE("QuadTree find all randomized points in area",
     CHECK(qt1.contains(&temp).first);
   }
 
-  float width = 2 * fabs(distribution(gen));
-  float height = 2 * fabs(distribution(gen));
+  float width = 2 * fabsf(distribution(gen));
+  float height = 2 * fabsf(distribution(gen));
 
   std::vector<glibby::Point2> in_area = qt1.query(&(*pt1), width, height);
   std::vector<glibby::Point2> should_include;
@@ -384,8 +385,8 @@ TEST_CASE("QuadTree iterator testing", "[spatial][QuadTree]")
     bool contains = false;
     for (int i = 0; i < all_points.size(); i++) 
     {
-      if (fabs(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
-          fabs(temp->coord[1] - all_points[i].coord[1]) < 0.001f) 
+      if (fabsf(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
+          fabsf(temp->coord[1] - all_points[i].coord[1]) < 0.001f) 
       {
         if (found[i]) 
         { // this point has already been marked by a different
@@ -437,12 +438,12 @@ TEST_CASE("QuadTree random iterator testing", "[spatial][QuadTree]")
     bool contains = false;
     for (int i = 0; i < all_points.size(); i++) 
     {
-      if (fabs(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
-          fabs(temp->coord[1] - all_points[i].coord[1]) < 0.001f) 
+      if (fabsf(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
+          fabsf(temp->coord[1] - all_points[i].coord[1]) < 0.001f) 
       {
         if (found[i]) 
         { // this point has already been marked by a different
-                        // point in tree
+          // point in tree
           continue;
         }
         contains = true;
@@ -491,8 +492,8 @@ TEST_CASE("QuadTree iterator testing with insertion and removal",
     bool contains = false;
     for (int i = 0; i < all_points.size(); i++) 
     {
-      if (fabs(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
-          fabs(temp->coord[1] - all_points[i].coord[1]) < 0.001f) 
+      if (fabsf(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
+          fabsf(temp->coord[1] - all_points[i].coord[1]) < 0.001f) 
       {
         if (found[i]) 
         { // this point has already been marked by a different
@@ -530,8 +531,8 @@ TEST_CASE("QuadTree iterator testing with insertion and removal",
     bool contains = false;
     for (int i = 0; i < all_points.size(); i++) 
     {
-      if (fabs(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
-          fabs(temp->coord[1] - all_points[i].coord[1]) < 0.001f) 
+      if (fabsf(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
+          fabsf(temp->coord[1] - all_points[i].coord[1]) < 0.001f) 
       {
         if (found[i]) 
         { // this point has already been marked by a different
@@ -570,8 +571,8 @@ TEST_CASE("QuadTree iterator testing with insertion and removal",
     bool contains = false;
     for (int i = 0; i < all_points.size(); i++) 
     {
-      if (fabs(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
-          fabs(temp->coord[1] - all_points[i].coord[1]) < 0.001f) 
+      if (fabsf(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
+          fabsf(temp->coord[1] - all_points[i].coord[1]) < 0.001f) 
       {
         if (found[i]) 
         { // this point has already been marked by a different
@@ -969,9 +970,9 @@ TEST_CASE("OcTree find all points in randomized area", "[spatial][OcTree]")
     CHECK(ot1.contains(&temp).first);
   }
 
-  float width = 2 * fabs(distribution(gen));
-  float height = 2 * fabs(distribution(gen));
-  float depth = 2 * fabs(distribution(gen));
+  float width = 2 * fabsf(distribution(gen));
+  float height = 2 * fabsf(distribution(gen));
+  float depth = 2 * fabsf(distribution(gen));
 
   std::vector<glibby::Point3> in_area =
       ot1.query(&(*pt1), width, height, depth);
@@ -1048,9 +1049,9 @@ TEST_CASE("OcTree iterator testing", "[spatial][OcTree]")
     bool contains = false;
     for (int i = 0; i < all_points.size(); i++) 
     {
-      if (fabs(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
-          fabs(temp->coord[1] - all_points[i].coord[1]) < 0.001f &&
-          fabs(temp->coord[2] - all_points[i].coord[2]) < 0.001f) 
+      if (fabsf(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
+          fabsf(temp->coord[1] - all_points[i].coord[1]) < 0.001f &&
+          fabsf(temp->coord[2] - all_points[i].coord[2]) < 0.001f) 
       {
         if (found[i])
         { // this point has already been marked by a different
@@ -1104,9 +1105,9 @@ TEST_CASE("OcTree random iterator testing", "[spatial][OcTree]")
     bool contains = false;
     for (int i = 0; i < all_points.size(); i++) 
     {
-      if (fabs(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
-          fabs(temp->coord[1] - all_points[i].coord[1]) < 0.001f &&
-          fabs(temp->coord[2] - all_points[i].coord[2]) < 0.001f) 
+      if (fabsf(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
+          fabsf(temp->coord[1] - all_points[i].coord[1]) < 0.001f &&
+          fabsf(temp->coord[2] - all_points[i].coord[2]) < 0.001f) 
       {
         if (found[i])
         { // this point has already been marked by a different poin in tree
@@ -1160,9 +1161,9 @@ TEST_CASE("OcTree random iterator testing with insertion and removal",
     bool contains = false;
     for (int i = 0; i < all_points.size(); i++) 
     {
-      if (fabs(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
-          fabs(temp->coord[1] - all_points[i].coord[1]) < 0.001f &&
-          fabs(temp->coord[2] - all_points[i].coord[2]) < 0.001f) 
+      if (fabsf(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
+          fabsf(temp->coord[1] - all_points[i].coord[1]) < 0.001f &&
+          fabsf(temp->coord[2] - all_points[i].coord[2]) < 0.001f) 
       {
         if (found[i])
         { // this point has already been marked by a different poin in tree
@@ -1198,9 +1199,9 @@ TEST_CASE("OcTree random iterator testing with insertion and removal",
     bool contains = false;
     for (int i = 0; i < all_points.size(); i++) 
     {
-      if (fabs(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
-          fabs(temp->coord[1] - all_points[i].coord[1]) < 0.001f &&
-          fabs(temp->coord[2] - all_points[i].coord[2]) < 0.001f) 
+      if (fabsf(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
+          fabsf(temp->coord[1] - all_points[i].coord[1]) < 0.001f &&
+          fabsf(temp->coord[2] - all_points[i].coord[2]) < 0.001f) 
       {
         if (found[i])
         { // this point has already been marked by a different poin in tree
@@ -1236,9 +1237,9 @@ TEST_CASE("OcTree random iterator testing with insertion and removal",
     bool contains = false;
     for (int i = 0; i < all_points.size(); i++) 
     {
-      if (fabs(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
-          fabs(temp->coord[1] - all_points[i].coord[1]) < 0.001f &&
-          fabs(temp->coord[2] - all_points[i].coord[2]) < 0.001f) 
+      if (fabsf(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
+          fabsf(temp->coord[1] - all_points[i].coord[1]) < 0.001f &&
+          fabsf(temp->coord[2] - all_points[i].coord[2]) < 0.001f) 
       {
         if (found[i])
         { // this point has already been marked by a different poin in tree

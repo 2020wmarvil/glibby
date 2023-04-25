@@ -338,6 +338,8 @@ namespace glibby
     if (node->leaf_ && node->points_.size() < node->capacity_) 
     {
       node->points_.push_back(std::make_shared<Point2>());
+      node->points_[node->points_.size()-1]->coord[0] = point->coord[0];
+      node->points_[node->points_.size()-1]->coord[1] = point->coord[1];
       this->size_++;
       QuadTree::iterator temp(node,node->points_.size()-1);
       return std::pair<bool,iterator>(true,temp);
@@ -407,7 +409,8 @@ namespace glibby
     for (unsigned long i=0; i < node->points_.size(); i++) 
     {
       // check if points are the same
-      if (node->points_[i]->coord[0] == point->coord[0] && node->points_[i]->coord[1] == point->coord[1])
+      if (fabsf(node->points_[i]->coord[0] - point->coord[0]) < FLT_NEAR_ZERO &&
+          fabsf(node->points_[i]->coord[1] - point->coord[1]) < FLT_NEAR_ZERO)
       {
         node->points_.erase(node->points_.begin() + i);
         return true;
@@ -469,24 +472,28 @@ namespace glibby
     node->SW_.reset(
         new QuadTreeNode(SW_center,new_width,new_height,node->capacity_)
         );
+    node->SW_->parent_ = node;
 
     SE_center->coord[0] = node->center_->coord[0] + node->width_ / 4;
     SE_center->coord[1] = node->center_->coord[1] - node->height_ / 4;
     node->SE_.reset(
         new QuadTreeNode(SE_center,new_width,new_height,node->capacity_)
         );
+    node->SE_->parent_ = node;
 
     NW_center->coord[0] = node->center_->coord[0] - node->width_ / 4;
     NW_center->coord[1] = node->center_->coord[1] + node->height_ / 4;
     node->NW_.reset(
         new QuadTreeNode(NW_center,new_width,new_height,node->capacity_)
         );
+    node->NW_->parent_ = node;
 
     NE_center->coord[0] = node->center_->coord[0] + node->width_ / 4;
     NE_center->coord[1] = node->center_->coord[1] + node->height_ / 4;
     node->NE_.reset(
         new QuadTreeNode(NE_center,new_width,new_height,node->capacity_)
         );
+    node->NE_->parent_ = node;
   }
 
   std::pair<bool,QuadTree::iterator> QuadTree::search(std::shared_ptr<QuadTreeNode> node,

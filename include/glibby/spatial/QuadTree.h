@@ -76,7 +76,6 @@ namespace glibby
   {
     public:
       QuadTreeIterator() : pos_(0) {};
-      //QuadTreeIterator(QuadTreeNode* ptr, unsigned int pos) : ptr_(ptr), pos_(pos) {};
       QuadTreeIterator(std::weak_ptr<QuadTreeNode> ptr, unsigned int pos) : ptr_(ptr), pos_(pos) {};
       ~QuadTreeIterator() {};
       QuadTreeIterator& operator=(const QuadTreeIterator& other);
