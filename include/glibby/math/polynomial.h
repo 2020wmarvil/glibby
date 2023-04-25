@@ -154,26 +154,6 @@ namespace glibby
                 return Quadratic(integral);
             }
 
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             // overloading - operator 
             Quadratic operator-(const Quadratic& b) {
                 Quadratic tmp(values);
@@ -217,7 +197,7 @@ namespace glibby
                 return true;
             }
 
-             // bool != operator
+            // bool != operator
             bool operator!=(const Quadratic& one) const {
                 for (int i = 0; i < one.get_values().size(); i++){
                     if (values[i] != one.get_values()[i]){
@@ -225,6 +205,24 @@ namespace glibby
                     }
                 }
                 return false;
+            }
+
+            // finds the factorial using recursion
+            int factorial(int n) {
+                if (n == 0) {
+                    return 1;
+                } else {
+                    return n * factorial(n - 1);
+                }
+            }
+
+            // adding the derivate function
+            Polynomial derivative() const {
+                Polynomial result(degree - 1);
+                for (int i = 0; i < degree; i++) {
+                    result.coefficients[i] = coefficients[i + 1] * (i + 1);
+                }
+                return result;
             }
 
         private:
