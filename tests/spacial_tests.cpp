@@ -374,7 +374,7 @@ TEST_CASE("QuadTree iterator testing", "[spacial][QuadTree]")
       {
         if (found[i]) 
         { // this point has already been marked by a different
-                        // point in tree
+          // point in tree
           continue;
         }
         contains = true;
@@ -1037,8 +1037,14 @@ TEST_CASE("OcTree iterator testing", "[spacial][OcTree]")
           fabs(temp->points[1] - all_points[i].points[1]) < 0.001f &&
           fabs(temp->points[2] - all_points[i].points[2]) < 0.001f) 
       {
+        if (found[i])
+        { // this point has already been marked by a different
+          // poin in tree
+          continue;
+        }
         contains = true;
         found[i] = true;
+        break;
       }
     }
     CHECK(contains);
@@ -1087,8 +1093,13 @@ TEST_CASE("OcTree random iterator testing", "[spacial][OcTree]")
           fabs(temp->points[1] - all_points[i].points[1]) < 0.001f &&
           fabs(temp->points[2] - all_points[i].points[2]) < 0.001f) 
       {
+        if (found[i])
+        { // this point has already been marked by a different poin in tree
+          continue;
+        }
         contains = true;
         found[i] = true;
+        break;
       }
     }
     CHECK(contains);
@@ -1100,3 +1111,134 @@ TEST_CASE("OcTree random iterator testing", "[spacial][OcTree]")
     CHECK(found[i]);
   }
 }
+
+TEST_CASE("OcTree random iterator testing with insertion and removal", 
+    "[spacial][OcTree]") 
+{
+  std::shared_ptr<glibby::Point3> pt1(new glibby::Point3);
+  pt1->points[0] = 0.00f;
+  pt1->points[1] = 0.00f;
+  pt1->points[2] = 0.00f;
+  glibby::OcTree ot1 = glibby::OcTree(pt1, 5.00f, 5.00f, 5.00f, 3);
+
+  std::default_random_engine gen;
+  std::uniform_real_distribution<float> distribution(-2.5f, 2.5f);
+
+  std::vector<glibby::Point3> all_points;
+  std::vector<bool> found;
+  for (int i = 0; i < 100; i++) 
+  {
+    glibby::Point3 temp;
+    temp.points[0] = distribution(gen);
+    temp.points[1] = distribution(gen);
+    temp.points[2] = distribution(gen);
+    all_points.push_back(temp);
+    found.push_back(false);
+    CHECK(ot1.insert(&temp).first);
+    CHECK(ot1.contains(&temp).first);
+  }
+
+  glibby::OcTree::iterator itr = ot1.begin();
+  while (itr != ot1.end()) 
+  {
+    std::shared_ptr<const glibby::Point3> temp = *itr;
+    bool contains = false;
+    for (int i = 0; i < all_points.size(); i++) 
+    {
+      if (fabs(temp->points[0] - all_points[i].points[0]) < 0.001f &&
+          fabs(temp->points[1] - all_points[i].points[1]) < 0.001f &&
+          fabs(temp->points[2] - all_points[i].points[2]) < 0.001f) 
+      {
+        if (found[i])
+        { // this point has already been marked by a different poin in tree
+          continue;
+        }
+        contains = true;
+        found[i] = true;
+        break;
+      }
+    }
+    CHECK(contains);
+
+    itr++;
+  }
+  for (unsigned int i = 0; i < found.size(); i++) 
+  {
+    CHECK(found[i]);
+  }
+  // remove every other point
+  for (unsigned int i=0; i < all_points.size(); i += 2)
+  {
+    ot1.remove(&all_points[i]);
+  }
+  // reset everything and check again
+  for (unsigned int i=0; i < found.size(); i++)
+  {
+    found[i] = false;
+  }
+  itr = ot1.begin();
+  while (itr != ot1.end()) 
+  {
+    std::shared_ptr<const glibby::Point3> temp = *itr;
+    bool contains = false;
+    for (int i = 0; i < all_points.size(); i++) 
+    {
+      if (fabs(temp->points[0] - all_points[i].points[0]) < 0.001f &&
+          fabs(temp->points[1] - all_points[i].points[1]) < 0.001f &&
+          fabs(temp->points[2] - all_points[i].points[2]) < 0.001f) 
+      {
+        if (found[i])
+        { // this point has already been marked by a different poin in tree
+          continue;
+        }
+        contains = true;
+        found[i] = true;
+        break;
+      }
+    }
+    CHECK(contains);
+
+    itr++;
+  }
+  for (unsigned int i = 1; i < found.size(); i += 2) 
+  {
+    CHECK(found[i]);
+  }
+  // add every removed point back
+  for (unsigned int i=0; i < all_points.size(); i += 2)
+  {
+    ot1.insert(&all_points[i]);
+  }
+  // reset everything and check again
+  for (unsigned int i=0; i < found.size(); i++)
+  {
+    found[i] = false;
+  }
+  itr = ot1.begin();
+  while (itr != ot1.end()) 
+  {
+    std::shared_ptr<const glibby::Point3> temp = *itr;
+    bool contains = false;
+    for (int i = 0; i < all_points.size(); i++) 
+    {
+      if (fabs(temp->points[0] - all_points[i].points[0]) < 0.001f &&
+          fabs(temp->points[1] - all_points[i].points[1]) < 0.001f &&
+          fabs(temp->points[2] - all_points[i].points[2]) < 0.001f) 
+      {
+        if (found[i])
+        { // this point has already been marked by a different poin in tree
+          continue;
+        }
+        contains = true;
+        found[i] = true;
+        break;
+      }
+    }
+    CHECK(contains);
+
+    itr++;
+  }
+  for (unsigned int i = 0; i < found.size(); i++) 
+  {
+    CHECK(found[i]);
+  }}
