@@ -1,2 +1,5 @@
 /ProjectFiles
 /[Bb]uild
+/.vs
+/out
+/.vscode

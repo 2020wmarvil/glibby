@@ -1,7 +1,7 @@
 #ifndef QUAD_TREE_H
 #define QUAD_TREE_H
 
-#include "glibby/primitives/point2D.h"
+#include "glibby/primitives/point.h"
 
 #include <memory>
 #include <vector>
@@ -30,7 +30,7 @@ namespace glibby
        * @param height - overall height of area
        * @param cap - capacity of the QuadTreeNode
        * */
-      QuadTreeNode(std::shared_ptr<Point2D> cen, float width, float height, 
+      QuadTreeNode(std::shared_ptr<Point2> cen, float width, float height, 
           int cap);
 
       /**
@@ -41,7 +41,7 @@ namespace glibby
        *
        * @return true if inside boundary, false otherwise
        * */
-      bool inside_boundary(Point2D* ptr) const;
+      bool inside_boundary(Point2* ptr) const;
       /**
        * @brief Check if boundary defined by the parameters will intersect
        * with the boundary defined by the QuadTreeNode.
@@ -55,9 +55,9 @@ namespace glibby
        *
        * @return true if boundaries intersect, false otherwise
        * */
-      bool intersect_boundary(Point2D* center, float width, float height) const;
+      bool intersect_boundary(Point2* center, float width, float height) const;
 
-      std::shared_ptr<Point2D> center_;
+      std::shared_ptr<Point2> center_;
       long unsigned capacity_;
       float width_;
       float height_;
@@ -69,7 +69,7 @@ namespace glibby
       std::shared_ptr<QuadTreeNode> SW_;
       std::shared_ptr<QuadTreeNode> SE_;
       std::weak_ptr<QuadTreeNode> parent_;
-      std::vector<std::shared_ptr<Point2D>> points_;
+      std::vector<std::shared_ptr<Point2>> points_;
   };
 
   class QuadTreeIterator
@@ -87,7 +87,7 @@ namespace glibby
       QuadTreeIterator& operator++();
       QuadTreeIterator operator++(int);
 
-      const std::shared_ptr<const Point2D> operator*() const;
+      const std::shared_ptr<const Point2> operator*() const;
 
     private:
       void find_deepest_child();
@@ -110,8 +110,8 @@ namespace glibby
        * @param capacity - capacity of each node in tree, lower capacity means
        * higher depth, default is 2, capacity cannot be lower than 2
        * */
-      QuadTree(std::shared_ptr<Point2D> TopL, std::shared_ptr<Point2D> TopR, 
-          std::shared_ptr<Point2D> BotL, std::shared_ptr<Point2D> BotR, 
+      QuadTree(std::shared_ptr<Point2> TopL, std::shared_ptr<Point2> TopR, 
+          std::shared_ptr<Point2> BotL, std::shared_ptr<Point2> BotR, 
           int capacity = 2);
       /**
        * @brief Will create QuadTree with boundary defined by parameters. The
@@ -123,7 +123,7 @@ namespace glibby
        * @param capacity - capacity of each node in tree, lower capacity means
        * higher depth, default is 2
        * */
-      QuadTree(std::shared_ptr<Point2D> p, float width, float height, 
+      QuadTree(std::shared_ptr<Point2> p, float width, float height, 
           int capacity = 2);
 
       typedef QuadTreeIterator iterator;
@@ -151,7 +151,7 @@ namespace glibby
        * false, it is likely that point is not in boundary of QuadTree
        * @return an iterator to where the point has been inserted
        * */
-      std::pair<bool,iterator> insert(Point2D* point);
+      std::pair<bool,iterator> insert(Point2* point);
       /**
        * @brief Will remove point from QuadTree if the point is in the tree.
        * If multiple copies of the same point are in the tree, only the first
@@ -163,7 +163,7 @@ namespace glibby
        * @return true if point was successfully removed, false otherwise, if 
        * false, it is likely that point is not in the QuadTree
        * */
-      bool remove(Point2D* point);
+      bool remove(Point2* point);
       /**
        * @brief Check if point has been added to the QuadTree
        *
@@ -172,7 +172,7 @@ namespace glibby
        * @return true if point is in tree, false otherwise
        * @return iterator to where the point was found
        * */
-      std::pair<bool,iterator> contains(Point2D* point) const;
+      std::pair<bool,iterator> contains(Point2* point) const;
       /**
        * @brief Find all points within a boundary defined by parameters
        *
@@ -183,7 +183,7 @@ namespace glibby
        * @return A vector of Point2D. Each Point2D is a copy of a point within
        * the tree
        * */
-      std::vector<Point2D> query(Point2D* point, float width, 
+      std::vector<Point2> query(Point2* point, float width, 
           float height) const;
 
       unsigned int size() const {return size_;};
@@ -198,11 +198,11 @@ namespace glibby
        * the point there, starts at given node
        * */
       std::pair<bool,iterator> add_point(std::shared_ptr<QuadTreeNode> node, 
-          Point2D* point);
+          Point2* point);
       /*
        * recursively finds point and removes it
        * */
-      bool remove_point(std::shared_ptr<QuadTreeNode> node, Point2D* point);
+      bool remove_point(std::shared_ptr<QuadTreeNode> node, Point2* point);
       /*
        * will subdivide a node, creating the proper children
        * */
@@ -212,14 +212,14 @@ namespace glibby
        * node
        * */
       std::pair<bool,iterator> search(std::shared_ptr<QuadTreeNode> node, 
-          Point2D* point) const;
+          Point2* point) const;
       /*
        * recursively finds all points within given boundary and adds copies of
        * those points to the given vector
        * */
       void search_tree(
-          std::vector<Point2D>* points, std::shared_ptr<QuadTreeNode> node, 
-          Point2D* center, float width, float height) const;
+          std::vector<Point2>* points, std::shared_ptr<QuadTreeNode> node, 
+          Point2* center, float width, float height) const;
       /*
        * will remove any unnecessary nodes (leaves where none of the pair of 4
        * have any points)

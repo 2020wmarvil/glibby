@@ -1,83 +1,98 @@
+#include "glibby/spatial/kdTree.h"
+#include "glibby/spatial/OcTree.h"
+#include "glibby/spatial/QuadTree.h"
 #include "glibby/primitives/point.h"
-#include "glibby/primitives/point2D.h"
-#include "glibby/spacial/OcTree.h"
-#include "glibby/spacial/QuadTree.h"
 
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <catch2/matchers/catch_matchers_floating_point.hpp>
 
 #include <iostream>
 #include <memory>
 #include <random>
 #include <vector>
 
+TEST_CASE("kdTree Printed", "[spatial][kdTree]") {
+        glibby::Point3 p1;
+        glibby::Point3 p2({ 5.0f, 15.0f, 10.0f });
+        glibby::Point3 p3({ 11.0f, 16.0f, 8.0f});
+        glibby::Point3 p4({ 6.0f, 8.0f, 9.0f });
+        glibby::Point3 p5({ 21.0f, 19.0f, 78.0f });
+        glibby::kdTree<float, 3> KT({p1, p2, p3, p4, p5});
+        glibby::Point3 p6({ 21.0f, 18.0f, 78.0f });
+        KT.DFSPrint();
+        KT.Insert(p6);
+        KT.DFSPrint();
+        std::vector<glibby::Point3> test = {p6, p2};
+        KT.Delete(test);
+        KT.DFSPrint();
+}
+
 /*
  * QUADTREE TESTS
  * */
-TEST_CASE("QuadTree insert point", "[spacial][QuadTree]")
+TEST_CASE("QuadTree insert point", "[spatial][QuadTree]")
 {
-  std::shared_ptr<glibby::Point2D> pt1(new glibby::Point2D);
-  pt1->x = 0.00f;
-  pt1->y = 0.00f;
+  std::shared_ptr<glibby::Point2> pt1(new glibby::Point2);
+  pt1->coord[0] = 0.00f;
+  pt1->coord[1] = 0.00f;
   glibby::QuadTree qt1 = glibby::QuadTree(pt1, 3.00f, 3.00f);
 
-  std::shared_ptr<glibby::Point2D> pt2(new glibby::Point2D);
-  pt2->x = 1.00f;
-  pt2->y = 1.00f;
+  std::shared_ptr<glibby::Point2> pt2(new glibby::Point2);
+  pt2->coord[0] = 1.00f;
+  pt2->coord[1] = 1.00f;
   CHECK(qt1.insert(&(*pt2)).first);
 
-  std::shared_ptr<glibby::Point2D> pt3(new glibby::Point2D);
-  pt3->x = -1.00f;
-  pt3->y = -1.00f;
+  std::shared_ptr<glibby::Point2> pt3(new glibby::Point2);
+  pt3->coord[0] = -1.00f;
+  pt3->coord[1] = -1.00f;
   CHECK(qt1.insert(&(*pt3)).first);
 
-  std::shared_ptr<glibby::Point2D> pt4(new glibby::Point2D);
-  pt4->x = 1.49f;
-  pt4->y = -1.49f;
+  std::shared_ptr<glibby::Point2> pt4(new glibby::Point2);
+  pt4->coord[0] = 1.49f;
+  pt4->coord[1] = -1.49f;
   CHECK(qt1.insert(&(*pt4)).first);
 
-  std::shared_ptr<glibby::Point2D> pt5(new glibby::Point2D);
-  pt5->x = 3.00f;
-  pt5->y = -3.00f;
+  std::shared_ptr<glibby::Point2> pt5(new glibby::Point2);
+  pt5->coord[0] = 3.00f;
+  pt5->coord[1] = -3.00f;
   CHECK_FALSE(qt1.insert(&(*pt5)).first);
 
-  std::shared_ptr<glibby::Point2D> pt6(new glibby::Point2D);
-  pt6->x = -10.00f;
-  pt6->y = -10.00f;
+  std::shared_ptr<glibby::Point2> pt6(new glibby::Point2);
+  pt6->coord[0] = -10.00f;
+  pt6->coord[1] = -10.00f;
   CHECK_FALSE(qt1.insert(&(*pt6)).first);
 }
 
-TEST_CASE("QuadTree remove point", "[spacial][QuadTree]") 
+TEST_CASE("QuadTree remove point", "[spatial][QuadTree]") 
 {
-  std::shared_ptr<glibby::Point2D> pt1(new glibby::Point2D);
-  pt1->x = 0.00f;
-  pt1->y = 0.00f;
+  std::shared_ptr<glibby::Point2> pt1(new glibby::Point2);
+  pt1->coord[0] = 0.00f;
+  pt1->coord[1] = 0.00f;
   glibby::QuadTree qt1 = glibby::QuadTree(pt1, 3.00f, 3.00f);
 
-  std::shared_ptr<glibby::Point2D> pt2(new glibby::Point2D);
-  pt2->x = 1.00f;
-  pt2->y = 1.00f;
+  std::shared_ptr<glibby::Point2> pt2(new glibby::Point2);
+  pt2->coord[0] = 1.00f;
+  pt2->coord[1] = 1.00f;
   CHECK(qt1.insert(&(*pt2)).first);
 
-  std::shared_ptr<glibby::Point2D> pt3(new glibby::Point2D);
-  pt3->x = -1.00f;
-  pt3->y = -1.00f;
+  std::shared_ptr<glibby::Point2> pt3(new glibby::Point2);
+  pt3->coord[0] = -1.00f;
+  pt3->coord[1] = -1.00f;
   CHECK(qt1.insert(&(*pt3)).first);
 
-  std::shared_ptr<glibby::Point2D> pt4(new glibby::Point2D);
-  pt4->x = 1.49f;
-  pt4->y = -1.49f;
+  std::shared_ptr<glibby::Point2> pt4(new glibby::Point2);
+  pt4->coord[0] = 1.49f;
+  pt4->coord[1] = -1.49f;
   CHECK(qt1.insert(&(*pt4)).first);
 
-  std::shared_ptr<glibby::Point2D> pt5(new glibby::Point2D);
-  pt5->x = 3.00f;
-  pt5->y = -3.00f;
+  std::shared_ptr<glibby::Point2> pt5(new glibby::Point2);
+  pt5->coord[0] = 3.00f;
+  pt5->coord[1] = -3.00f;
   CHECK_FALSE(qt1.insert(&(*pt5)).first);
 
-  std::shared_ptr<glibby::Point2D> pt6(new glibby::Point2D);
-  pt6->x = -10.00f;
-  pt6->y = -10.00f;
+  std::shared_ptr<glibby::Point2> pt6(new glibby::Point2);
+  pt6->coord[0] = -10.00f;
+  pt6->coord[1] = -10.00f;
   CHECK_FALSE(qt1.insert(&(*pt6)).first);
 
   // remove pt2 and check pt3 and pt4 still exist
@@ -91,36 +106,36 @@ TEST_CASE("QuadTree remove point", "[spacial][QuadTree]")
   CHECK_FALSE(qt1.remove(&(*pt6)));
 }
 
-TEST_CASE("QuadTree contains point", "[spacial][QuadTree]") 
+TEST_CASE("QuadTree contains point", "[spatial][QuadTree]") 
 {
-  std::shared_ptr<glibby::Point2D> pt1(new glibby::Point2D);
-  pt1->x = 0.00f;
-  pt1->y = 0.00f;
+  std::shared_ptr<glibby::Point2> pt1(new glibby::Point2);
+  pt1->coord[0] = 0.00f;
+  pt1->coord[1] = 0.00f;
   glibby::QuadTree qt1 = glibby::QuadTree(pt1, 3.00f, 3.00f);
 
-  std::shared_ptr<glibby::Point2D> pt2(new glibby::Point2D);
-  pt2->x = 1.00f;
-  pt2->y = 1.00f;
+  std::shared_ptr<glibby::Point2> pt2(new glibby::Point2);
+  pt2->coord[0] = 1.00f;
+  pt2->coord[1] = 1.00f;
   CHECK(qt1.insert(&(*pt2)).first);
 
-  std::shared_ptr<glibby::Point2D> pt3(new glibby::Point2D);
-  pt3->x = -1.00f;
-  pt3->y = -1.00f;
+  std::shared_ptr<glibby::Point2> pt3(new glibby::Point2);
+  pt3->coord[0] = -1.00f;
+  pt3->coord[1] = -1.00f;
   CHECK(qt1.insert(&(*pt3)).first);
 
-  std::shared_ptr<glibby::Point2D> pt4(new glibby::Point2D);
-  pt4->x = 1.45f;
-  pt4->y = -1.45f;
+  std::shared_ptr<glibby::Point2> pt4(new glibby::Point2);
+  pt4->coord[0] = 1.45f;
+  pt4->coord[1] = -1.45f;
   CHECK(qt1.insert(&(*pt4)).first);
 
-  std::shared_ptr<glibby::Point2D> pt5(new glibby::Point2D);
-  pt5->x = 3.00f;
-  pt5->y = -3.00f;
+  std::shared_ptr<glibby::Point2> pt5(new glibby::Point2);
+  pt5->coord[0] = 3.00f;
+  pt5->coord[1] = -3.00f;
   CHECK_FALSE(qt1.insert(&(*pt5)).first);
 
-  std::shared_ptr<glibby::Point2D> pt6(new glibby::Point2D);
-  pt6->x = -10.00f;
-  pt6->y = -10.00f;
+  std::shared_ptr<glibby::Point2> pt6(new glibby::Point2);
+  pt6->coord[0] = -10.00f;
+  pt6->coord[1] = -10.00f;
   CHECK_FALSE(qt1.insert(&(*pt6)).first);
 
   CHECK(qt1.contains(&(*pt2)).first);
@@ -130,24 +145,24 @@ TEST_CASE("QuadTree contains point", "[spacial][QuadTree]")
   CHECK_FALSE(qt1.contains(&(*pt6)).first);
 }
 
-TEST_CASE("QuadTree random insertion and check", "[spacial][QuadTree]") 
+TEST_CASE("QuadTree random insertion and check", "[spatial][QuadTree]") 
 {
-  std::shared_ptr<glibby::Point2D> pt1(new glibby::Point2D);
-  pt1->x = 0.00f;
-  pt1->y = 0.00f;
+  std::shared_ptr<glibby::Point2> pt1(new glibby::Point2);
+  pt1->coord[0] = 0.00f;
+  pt1->coord[1] = 0.00f;
   glibby::QuadTree qt1 = glibby::QuadTree(pt1, 3.00f, 3.00f);
 
-  std::vector<std::shared_ptr<glibby::Point2D>> valid;
-  std::vector<std::shared_ptr<glibby::Point2D>> invalid;
+  std::vector<std::shared_ptr<glibby::Point2>> valid;
+  std::vector<std::shared_ptr<glibby::Point2>> invalid;
 
   std::default_random_engine gen;
   std::uniform_real_distribution<float> distribution(-1.5f, 1.5f);
 
   for (int i = 0; i < 100; i++) 
   {
-    std::shared_ptr<glibby::Point2D> temp(new glibby::Point2D);
-    temp->x = distribution(gen);
-    temp->y = distribution(gen);
+    std::shared_ptr<glibby::Point2> temp(new glibby::Point2);
+    temp->coord[0] = distribution(gen);
+    temp->coord[1] = distribution(gen);
     valid.push_back(temp);
   }
   for (int i = 0; i < valid.size(); i++) 
@@ -158,24 +173,24 @@ TEST_CASE("QuadTree random insertion and check", "[spacial][QuadTree]")
 
   for (int i = 0; i < 25; i++) 
   {
-    std::shared_ptr<glibby::Point2D> temp1(new glibby::Point2D);
-    temp1->x = distribution(gen) + 3;
-    temp1->y = distribution(gen) + 3;
+    std::shared_ptr<glibby::Point2> temp1(new glibby::Point2);
+    temp1->coord[0] = distribution(gen) + 3;
+    temp1->coord[1] = distribution(gen) + 3;
     invalid.push_back(temp1);
 
-    std::shared_ptr<glibby::Point2D> temp2(new glibby::Point2D);
-    temp2->x = distribution(gen) - 3;
-    temp2->y = distribution(gen) + 3;
+    std::shared_ptr<glibby::Point2> temp2(new glibby::Point2);
+    temp2->coord[0] = distribution(gen) - 3;
+    temp2->coord[1] = distribution(gen) + 3;
     invalid.push_back(temp2);
 
-    std::shared_ptr<glibby::Point2D> temp3(new glibby::Point2D);
-    temp3->x = distribution(gen) + 3;
-    temp3->y = distribution(gen) - 3;
+    std::shared_ptr<glibby::Point2> temp3(new glibby::Point2);
+    temp3->coord[0] = distribution(gen) + 3;
+    temp3->coord[1] = distribution(gen) - 3;
     invalid.push_back(temp3);
 
-    std::shared_ptr<glibby::Point2D> temp4(new glibby::Point2D);
-    temp4->x = distribution(gen) - 3;
-    temp4->y = distribution(gen) - 3;
+    std::shared_ptr<glibby::Point2> temp4(new glibby::Point2);
+    temp4->coord[0] = distribution(gen) - 3;
+    temp4->coord[1] = distribution(gen) - 3;
     invalid.push_back(temp4);
   }
   for (int i = 0; i < invalid.size(); i++) 
@@ -185,24 +200,24 @@ TEST_CASE("QuadTree random insertion and check", "[spacial][QuadTree]")
   }
 }
 
-TEST_CASE("QuadTree larger capacity per node", "[spacial][QuadTree]") 
+TEST_CASE("QuadTree larger capacity per node", "[spatial][QuadTree]") 
 {
-  std::shared_ptr<glibby::Point2D> pt1(new glibby::Point2D);
-  pt1->x = 0.00f;
-  pt1->y = 0.00f;
+  std::shared_ptr<glibby::Point2> pt1(new glibby::Point2);
+  pt1->coord[0] = 0.00f;
+  pt1->coord[1] = 0.00f;
   glibby::QuadTree qt1 = glibby::QuadTree(pt1, 3.00f, 3.00f, 5);
 
-  std::vector<std::shared_ptr<glibby::Point2D>> valid;
-  std::vector<std::shared_ptr<glibby::Point2D>> invalid;
+  std::vector<std::shared_ptr<glibby::Point2>> valid;
+  std::vector<std::shared_ptr<glibby::Point2>> invalid;
 
   std::default_random_engine gen;
   std::uniform_real_distribution<float> distribution(-1.5f, 1.5f);
 
   for (int i = 0; i < 100; i++) 
   {
-    std::shared_ptr<glibby::Point2D> temp(new glibby::Point2D);
-    temp->x = distribution(gen);
-    temp->y = distribution(gen);
+    std::shared_ptr<glibby::Point2> temp(new glibby::Point2);
+    temp->coord[0] = distribution(gen);
+    temp->coord[1] = distribution(gen);
     valid.push_back(temp);
   }
   for (int i = 0; i < valid.size(); i++) 
@@ -213,24 +228,24 @@ TEST_CASE("QuadTree larger capacity per node", "[spacial][QuadTree]")
 
   for (int i = 0; i < 25; i++) 
   {
-    std::shared_ptr<glibby::Point2D> temp1(new glibby::Point2D);
-    temp1->x = distribution(gen) + 3;
-    temp1->y = distribution(gen) + 3;
+    std::shared_ptr<glibby::Point2> temp1(new glibby::Point2);
+    temp1->coord[0] = distribution(gen) + 3;
+    temp1->coord[1] = distribution(gen) + 3;
     invalid.push_back(temp1);
 
-    std::shared_ptr<glibby::Point2D> temp2(new glibby::Point2D);
-    temp2->x = distribution(gen) - 3;
-    temp2->y = distribution(gen) + 3;
+    std::shared_ptr<glibby::Point2> temp2(new glibby::Point2);
+    temp2->coord[0] = distribution(gen) - 3;
+    temp2->coord[1] = distribution(gen) + 3;
     invalid.push_back(temp2);
 
-    std::shared_ptr<glibby::Point2D> temp3(new glibby::Point2D);
-    temp3->x = distribution(gen) + 3;
-    temp3->y = distribution(gen) - 3;
+    std::shared_ptr<glibby::Point2> temp3(new glibby::Point2);
+    temp3->coord[0] = distribution(gen) + 3;
+    temp3->coord[1] = distribution(gen) - 3;
     invalid.push_back(temp3);
 
-    std::shared_ptr<glibby::Point2D> temp4(new glibby::Point2D);
-    temp4->x = distribution(gen) - 3;
-    temp4->y = distribution(gen) - 3;
+    std::shared_ptr<glibby::Point2> temp4(new glibby::Point2);
+    temp4->coord[0] = distribution(gen) - 3;
+    temp4->coord[1] = distribution(gen) - 3;
     invalid.push_back(temp4);
   }
   for (int i = 0; i < invalid.size(); i++) 
@@ -240,28 +255,28 @@ TEST_CASE("QuadTree larger capacity per node", "[spacial][QuadTree]")
   }
 }
 
-TEST_CASE("QuadTree find all points in area", "[spacial][QuadTree]") 
+TEST_CASE("QuadTree find all points in area", "[spatial][QuadTree]") 
 {
-  std::shared_ptr<glibby::Point2D> pt1(new glibby::Point2D);
-  pt1->x = 0.00f;
-  pt1->y = 0.00f;
+  std::shared_ptr<glibby::Point2> pt1(new glibby::Point2);
+  pt1->coord[0] = 0.00f;
+  pt1->coord[1] = 0.00f;
   glibby::QuadTree qt1 = glibby::QuadTree(pt1, 3.00f, 3.00f);
 
-  std::vector<glibby::Point2D> should_include;
+  std::vector<glibby::Point2> should_include;
   for (int i = -1; i <= 1; i++) 
   {
     for (int j = -1; j <= 1; j++) 
     {
-      glibby::Point2D temp;
-      temp.x = i;
-      temp.y = j;
+      glibby::Point2 temp;
+      temp.coord[0] = i;
+      temp.coord[1] = j;
       should_include.push_back(temp);
       CHECK(qt1.insert(&temp).first);
       CHECK(qt1.contains(&temp).first);
     }
   }
 
-  std::vector<glibby::Point2D> in_area = qt1.query(&(*pt1), 3.00f, 3.00f);
+  std::vector<glibby::Point2> in_area = qt1.query(&(*pt1), 3.00f, 3.00f);
 
   CHECK(in_area.size() == should_include.size());
 
@@ -270,8 +285,8 @@ TEST_CASE("QuadTree find all points in area", "[spacial][QuadTree]")
     bool in = false;
     for (int j = 0; j < in_area.size(); j++) 
     {
-      if (should_include[i].x == in_area[j].x &&
-          should_include[i].y == in_area[j].y) 
+      if (should_include[i].coord[0] == in_area[j].coord[0] &&
+          should_include[i].coord[1] == in_area[j].coord[1])
       {
         in = true;
         break;
@@ -282,22 +297,22 @@ TEST_CASE("QuadTree find all points in area", "[spacial][QuadTree]")
 }
 
 TEST_CASE("QuadTree find all randomized points in area",
-          "[spacial][QuadTree]") 
+          "[spatial][QuadTree]") 
 {
-  std::shared_ptr<glibby::Point2D> pt1(new glibby::Point2D);
-  pt1->x = 0.00f;
-  pt1->y = 0.00f;
+  std::shared_ptr<glibby::Point2> pt1(new glibby::Point2);
+  pt1->coord[0] = 0.00f;
+  pt1->coord[1] = 0.00f;
   glibby::QuadTree qt1 = glibby::QuadTree(pt1, 5.00f, 5.00f);
 
   std::default_random_engine gen;
   std::uniform_real_distribution<float> distribution(-2.5f, 2.5f);
 
-  std::vector<glibby::Point2D> all_points;
+  std::vector<glibby::Point2> all_points;
   for (int i = 0; i < 100; i++) 
   {
-    glibby::Point2D temp;
-    temp.x = distribution(gen);
-    temp.y = distribution(gen);
+    glibby::Point2 temp;
+    temp.coord[0] = distribution(gen);
+    temp.coord[1] = distribution(gen);
     all_points.push_back(temp);
     CHECK(qt1.insert(&temp).first);
     CHECK(qt1.contains(&temp).first);
@@ -306,13 +321,13 @@ TEST_CASE("QuadTree find all randomized points in area",
   float width = 2 * fabs(distribution(gen));
   float height = 2 * fabs(distribution(gen));
 
-  std::vector<glibby::Point2D> in_area = qt1.query(&(*pt1), width, height);
-  std::vector<glibby::Point2D> should_include;
+  std::vector<glibby::Point2> in_area = qt1.query(&(*pt1), width, height);
+  std::vector<glibby::Point2> should_include;
 
   for (int i = 0; i < all_points.size(); i++) 
   {
-    if (all_points[i].x < width / 2 && all_points[i].x > -1 * width / 2 &&
-        all_points[i].y < height / 2 && all_points[i].y > -1 * height / 2) 
+    if (all_points[i].coord[0] < width / 2 && all_points[i].coord[0] > -1 * width / 2 &&
+        all_points[i].coord[1] < height / 2 && all_points[i].coord[1] > -1 * height / 2) 
     {
       should_include.push_back(all_points[i]);
     }
@@ -325,8 +340,8 @@ TEST_CASE("QuadTree find all randomized points in area",
     bool in = false;
     for (int j = 0; j < in_area.size(); j++) 
     {
-      if (should_include[i].x == in_area[j].x &&
-          should_include[i].y == in_area[j].y) 
+      if (should_include[i].coord[0] == in_area[j].coord[0] &&
+          should_include[i].coord[1] == in_area[j].coord[1])
       {
         in = true;
         break;
@@ -336,14 +351,14 @@ TEST_CASE("QuadTree find all randomized points in area",
   }
 }
 
-TEST_CASE("QuadTree iterator testing", "[spacial][QuadTree]") 
+TEST_CASE("QuadTree iterator testing", "[spatial][QuadTree]") 
 {
-  std::shared_ptr<glibby::Point2D> pt1(new glibby::Point2D);
-  pt1->x = 0.00f;
-  pt1->y = 0.00f;
+  std::shared_ptr<glibby::Point2> pt1(new glibby::Point2);
+  pt1->coord[0] = 0.00f;
+  pt1->coord[1] = 0.00f;
   glibby::QuadTree qt1 = glibby::QuadTree(pt1, 8.00f, 8.00f);
 
-  std::vector<glibby::Point2D> all_points;
+  std::vector<glibby::Point2> all_points;
   std::vector<bool> found;
 
   float points_x[21] = {0,  -2, -2, 2, 2, -3, -3, -1, -1, -3, -3,
@@ -351,11 +366,11 @@ TEST_CASE("QuadTree iterator testing", "[spacial][QuadTree]")
   float points_y[21] = {0, -2, 2, 2, -2, -3, -1, -1, -3, 1, 3,
                         3, 1,  1, 3, 3,  1,  -3, -1, -1, -3};
 
-  glibby::Point2D temp;
+  glibby::Point2 temp;
   for (int i = 0; i < 21; i++) 
   {
-    temp.x = points_x[i];
-    temp.y = points_y[i];
+    temp.coord[0] = points_x[i];
+    temp.coord[1] = points_y[i];
     all_points.push_back(temp);
     found.push_back(false);
     CHECK(qt1.insert(&temp).first);
@@ -365,12 +380,12 @@ TEST_CASE("QuadTree iterator testing", "[spacial][QuadTree]")
   glibby::QuadTree::iterator itr = qt1.begin();
   while (itr != qt1.end()) 
   {
-    std::shared_ptr<const glibby::Point2D> temp = *itr;
+    std::shared_ptr<const glibby::Point2> temp = *itr;
     bool contains = false;
     for (int i = 0; i < all_points.size(); i++) 
     {
-      if (fabs(temp->x - all_points[i].x) < 0.001f &&
-          fabs(temp->y - all_points[i].y) < 0.001f) 
+      if (fabs(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
+          fabs(temp->coord[1] - all_points[i].coord[1]) < 0.001f) 
       {
         if (found[i]) 
         { // this point has already been marked by a different
@@ -392,23 +407,23 @@ TEST_CASE("QuadTree iterator testing", "[spacial][QuadTree]")
   }
 }
 
-TEST_CASE("QuadTree random iterator testing", "[spacial][QuadTree]") 
+TEST_CASE("QuadTree random iterator testing", "[spatial][QuadTree]") 
 {
-  std::shared_ptr<glibby::Point2D> pt1(new glibby::Point2D);
-  pt1->x = 0.00f;
-  pt1->y = 0.00f;
+  std::shared_ptr<glibby::Point2> pt1(new glibby::Point2);
+  pt1->coord[0] = 0.00f;
+  pt1->coord[1] = 0.00f;
   glibby::QuadTree qt1 = glibby::QuadTree(pt1, 5.00f, 5.00f, 3);
 
   std::default_random_engine gen;
   std::uniform_real_distribution<float> distribution(-2.5f, 2.5f);
 
-  std::vector<glibby::Point2D> all_points;
+  std::vector<glibby::Point2> all_points;
   std::vector<bool> found;
   for (int i = 0; i < 25; i++) 
   {
-    glibby::Point2D temp;
-    temp.x = distribution(gen);
-    temp.y = distribution(gen);
+    glibby::Point2 temp;
+    temp.coord[0] = distribution(gen);
+    temp.coord[1] = distribution(gen);
     all_points.push_back(temp);
     found.push_back(false);
     CHECK(qt1.insert(&temp).first);
@@ -418,12 +433,12 @@ TEST_CASE("QuadTree random iterator testing", "[spacial][QuadTree]")
   glibby::QuadTree::iterator itr = qt1.begin();
   while (itr != qt1.end()) 
   {
-    std::shared_ptr<const glibby::Point2D> temp = *itr;
+    std::shared_ptr<const glibby::Point2> temp = *itr;
     bool contains = false;
     for (int i = 0; i < all_points.size(); i++) 
     {
-      if (fabs(temp->x - all_points[i].x) < 0.001f &&
-          fabs(temp->y - all_points[i].y) < 0.001f) 
+      if (fabs(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
+          fabs(temp->coord[1] - all_points[i].coord[1]) < 0.001f) 
       {
         if (found[i]) 
         { // this point has already been marked by a different
@@ -446,23 +461,23 @@ TEST_CASE("QuadTree random iterator testing", "[spacial][QuadTree]")
 }
 
 TEST_CASE("QuadTree iterator testing with insertion and removal",
-          "[spacial][QuadTree]") 
+          "[spatial][QuadTree]") 
 {
-  std::shared_ptr<glibby::Point2D> pt1(new glibby::Point2D);
-  pt1->x = 0.00f;
-  pt1->y = 0.00f;
+  std::shared_ptr<glibby::Point2> pt1(new glibby::Point2);
+  pt1->coord[0] = 0.00f;
+  pt1->coord[1] = 0.00f;
   glibby::QuadTree qt1 = glibby::QuadTree(pt1, 5.00f, 5.00f, 3);
 
   std::default_random_engine gen;
   std::uniform_real_distribution<float> distribution(-2.5f, 2.5f);
 
-  std::vector<glibby::Point2D> all_points;
+  std::vector<glibby::Point2> all_points;
   std::vector<bool> found;
   for (int i = 0; i < 25; i++) 
   {
-    glibby::Point2D temp;
-    temp.x = distribution(gen);
-    temp.y = distribution(gen);
+    glibby::Point2 temp;
+    temp.coord[0] = distribution(gen);
+    temp.coord[1] = distribution(gen);
     all_points.push_back(temp);
     found.push_back(false);
     CHECK(qt1.insert(&temp).first);
@@ -472,12 +487,12 @@ TEST_CASE("QuadTree iterator testing with insertion and removal",
   glibby::QuadTree::iterator itr = qt1.begin();
   while (itr != qt1.end()) 
   {
-    std::shared_ptr<const glibby::Point2D> temp = *itr;
+    std::shared_ptr<const glibby::Point2> temp = *itr;
     bool contains = false;
     for (int i = 0; i < all_points.size(); i++) 
     {
-      if (fabs(temp->x - all_points[i].x) < 0.001f &&
-          fabs(temp->y - all_points[i].y) < 0.001f) 
+      if (fabs(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
+          fabs(temp->coord[1] - all_points[i].coord[1]) < 0.001f) 
       {
         if (found[i]) 
         { // this point has already been marked by a different
@@ -511,12 +526,12 @@ TEST_CASE("QuadTree iterator testing with insertion and removal",
   itr = qt1.begin();
   while (itr != qt1.end()) 
   {
-    std::shared_ptr<const glibby::Point2D> temp = *itr;
+    std::shared_ptr<const glibby::Point2> temp = *itr;
     bool contains = false;
     for (int i = 0; i < all_points.size(); i++) 
     {
-      if (fabs(temp->x - all_points[i].x) < 0.001f &&
-          fabs(temp->y - all_points[i].y) < 0.001f) 
+      if (fabs(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
+          fabs(temp->coord[1] - all_points[i].coord[1]) < 0.001f) 
       {
         if (found[i]) 
         { // this point has already been marked by a different
@@ -551,12 +566,12 @@ TEST_CASE("QuadTree iterator testing with insertion and removal",
   itr = qt1.begin();
   while (itr != qt1.end()) 
   {
-    std::shared_ptr<const glibby::Point2D> temp = *itr;
+    std::shared_ptr<const glibby::Point2> temp = *itr;
     bool contains = false;
     for (int i = 0; i < all_points.size(); i++) 
     {
-      if (fabs(temp->x - all_points[i].x) < 0.001f &&
-          fabs(temp->y - all_points[i].y) < 0.001f) 
+      if (fabs(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
+          fabs(temp->coord[1] - all_points[i].coord[1]) < 0.001f) 
       {
         if (found[i]) 
         { // this point has already been marked by a different
@@ -581,81 +596,81 @@ TEST_CASE("QuadTree iterator testing with insertion and removal",
 /*
  * OCTREE TESTS
  * */
-TEST_CASE("OcTree insert point", "[spacial][OcTree]") 
+TEST_CASE("OcTree insert point", "[spatial][OcTree]") 
 {
   std::shared_ptr<glibby::Point3> pt1(new glibby::Point3);
-  pt1->points[0] = 0.00f;
-  pt1->points[1] = 0.00f;
-  pt1->points[2] = 0.00f;
+  pt1->coord[0] = 0.00f;
+  pt1->coord[1] = 0.00f;
+  pt1->coord[2] = 0.00f;
   glibby::OcTree ot1 = glibby::OcTree(pt1, 3.00f, 3.00f, 3.00f);
 
   std::shared_ptr<glibby::Point3> pt2(new glibby::Point3);
-  pt2->points[0] = 1.00f;
-  pt2->points[1] = 1.00f;
-  pt2->points[2] = 1.00f;
+  pt2->coord[0] = 1.00f;
+  pt2->coord[1] = 1.00f;
+  pt2->coord[2] = 1.00f;
   CHECK(ot1.insert(&(*pt2)).first);
 
   std::shared_ptr<glibby::Point3> pt3(new glibby::Point3);
-  pt3->points[0] = 1.00f;
-  pt3->points[1] = 1.00f;
-  pt3->points[2] = 1.00f;
+  pt3->coord[0] = 1.00f;
+  pt3->coord[1] = 1.00f;
+  pt3->coord[2] = 1.00f;
   CHECK(ot1.insert(&(*pt3)).first);
 
   std::shared_ptr<glibby::Point3> pt4(new glibby::Point3);
-  pt4->points[0] = 1.49f;
-  pt4->points[1] = -1.49f;
-  pt4->points[2] = 1.49f;
+  pt4->coord[0] = 1.49f;
+  pt4->coord[1] = -1.49f;
+  pt4->coord[2] = 1.49f;
   CHECK(ot1.insert(&(*pt4)).first);
 
   std::shared_ptr<glibby::Point3> pt5(new glibby::Point3);
-  pt5->points[0] = 3.00f;
-  pt5->points[1] = -3.00f;
-  pt5->points[2] = 3.00f;
+  pt5->coord[0] = 3.00f;
+  pt5->coord[1] = -3.00f;
+  pt5->coord[2] = 3.00f;
   CHECK_FALSE(ot1.insert(&(*pt5)).first);
 
   std::shared_ptr<glibby::Point3> pt6(new glibby::Point3);
-  pt6->points[0] = -10.00f;
-  pt6->points[1] = 10.00f;
-  pt6->points[2] = -10.00f;
+  pt6->coord[0] = -10.00f;
+  pt6->coord[1] = 10.00f;
+  pt6->coord[2] = -10.00f;
   CHECK_FALSE(ot1.insert(&(*pt6)).first);
 }
 
-TEST_CASE("OcTree remove point", "[spacial][OcTree]") 
+TEST_CASE("OcTree remove point", "[spatial][OcTree]") 
 {
   std::shared_ptr<glibby::Point3> pt1(new glibby::Point3);
-  pt1->points[0] = 0.00f;
-  pt1->points[1] = 0.00f;
-  pt1->points[2] = 0.00f;
+  pt1->coord[0] = 0.00f;
+  pt1->coord[1] = 0.00f;
+  pt1->coord[2] = 0.00f;
   glibby::OcTree ot1 = glibby::OcTree(pt1, 3.00f, 3.00f, 3.00f);
 
   std::shared_ptr<glibby::Point3> pt2(new glibby::Point3);
-  pt2->points[0] = 1.00f;
-  pt2->points[1] = 1.00f;
-  pt2->points[2] = 1.00f;
+  pt2->coord[0] = 1.00f;
+  pt2->coord[1] = 1.00f;
+  pt2->coord[2] = 1.00f;
   CHECK(ot1.insert(&(*pt2)).first);
 
   std::shared_ptr<glibby::Point3> pt3(new glibby::Point3);
-  pt3->points[0] = 1.00f;
-  pt3->points[1] = 1.00f;
-  pt3->points[2] = 1.00f;
+  pt3->coord[0] = 1.00f;
+  pt3->coord[1] = 1.00f;
+  pt3->coord[2] = 1.00f;
   CHECK(ot1.insert(&(*pt3)).first);
 
   std::shared_ptr<glibby::Point3> pt4(new glibby::Point3);
-  pt4->points[0] = 1.49f;
-  pt4->points[1] = -1.49f;
-  pt4->points[2] = 1.49f;
+  pt4->coord[0] = 1.49f;
+  pt4->coord[1] = -1.49f;
+  pt4->coord[2] = 1.49f;
   CHECK(ot1.insert(&(*pt4)).first);
 
   std::shared_ptr<glibby::Point3> pt5(new glibby::Point3);
-  pt5->points[0] = 3.00f;
-  pt5->points[1] = -3.00f;
-  pt5->points[2] = 3.00f;
+  pt5->coord[0] = 3.00f;
+  pt5->coord[1] = -3.00f;
+  pt5->coord[2] = 3.00f;
   CHECK_FALSE(ot1.insert(&(*pt5)).first);
 
   std::shared_ptr<glibby::Point3> pt6(new glibby::Point3);
-  pt6->points[0] = -10.00f;
-  pt6->points[1] = 10.00f;
-  pt6->points[2] = -10.00f;
+  pt6->coord[0] = -10.00f;
+  pt6->coord[1] = 10.00f;
+  pt6->coord[2] = -10.00f;
   CHECK_FALSE(ot1.insert(&(*pt6)).first);
 
   // remove pt2 and check pt3 and pt4 still exist
@@ -669,42 +684,42 @@ TEST_CASE("OcTree remove point", "[spacial][OcTree]")
   CHECK_FALSE(ot1.remove(&(*pt6)));
 }
 
-TEST_CASE("OcTree contains point", "[spacial][OcTree]") 
+TEST_CASE("OcTree contains point", "[spatial][OcTree]") 
 {
   std::shared_ptr<glibby::Point3> pt1(new glibby::Point3);
-  pt1->points[0] = 0.00f;
-  pt1->points[1] = 0.00f;
-  pt1->points[2] = 0.00f;
+  pt1->coord[0] = 0.00f;
+  pt1->coord[1] = 0.00f;
+  pt1->coord[2] = 0.00f;
   glibby::OcTree ot1 = glibby::OcTree(pt1, 3.00f, 3.00f, 3.00f);
 
   std::shared_ptr<glibby::Point3> pt2(new glibby::Point3);
-  pt2->points[0] = 1.00f;
-  pt2->points[1] = 1.00f;
-  pt2->points[2] = 1.00f;
+  pt2->coord[0] = 1.00f;
+  pt2->coord[1] = 1.00f;
+  pt2->coord[2] = 1.00f;
   CHECK(ot1.insert(&(*pt2)).first);
 
   std::shared_ptr<glibby::Point3> pt3(new glibby::Point3);
-  pt3->points[0] = 1.00f;
-  pt3->points[1] = 1.00f;
-  pt3->points[2] = 1.00f;
+  pt3->coord[0] = 1.00f;
+  pt3->coord[1] = 1.00f;
+  pt3->coord[2] = 1.00f;
   CHECK(ot1.insert(&(*pt3)).first);
 
   std::shared_ptr<glibby::Point3> pt4(new glibby::Point3);
-  pt4->points[0] = 1.49f;
-  pt4->points[1] = -1.49f;
-  pt4->points[2] = 1.49f;
+  pt4->coord[0] = 1.49f;
+  pt4->coord[1] = -1.49f;
+  pt4->coord[2] = 1.49f;
   CHECK(ot1.insert(&(*pt4)).first);
 
   std::shared_ptr<glibby::Point3> pt5(new glibby::Point3);
-  pt5->points[0] = 3.00f;
-  pt5->points[1] = -3.00f;
-  pt5->points[2] = 3.00f;
+  pt5->coord[0] = 3.00f;
+  pt5->coord[1] = -3.00f;
+  pt5->coord[2] = 3.00f;
   CHECK_FALSE(ot1.insert(&(*pt5)).first);
 
   std::shared_ptr<glibby::Point3> pt6(new glibby::Point3);
-  pt6->points[0] = -10.00f;
-  pt6->points[1] = 10.00f;
-  pt6->points[2] = -10.00f;
+  pt6->coord[0] = -10.00f;
+  pt6->coord[1] = 10.00f;
+  pt6->coord[2] = -10.00f;
   CHECK_FALSE(ot1.insert(&(*pt6)).first);
 
   CHECK(ot1.contains(&(*pt2)).first);
@@ -714,12 +729,12 @@ TEST_CASE("OcTree contains point", "[spacial][OcTree]")
   CHECK_FALSE(ot1.contains(&(*pt6)).first);
 }
 
-TEST_CASE("OcTree random insertion and check", "[spacial][OcTree]") 
+TEST_CASE("OcTree random insertion and check", "[spatial][OcTree]") 
 {
   std::shared_ptr<glibby::Point3> pt1(new glibby::Point3);
-  pt1->points[0] = 0.00f;
-  pt1->points[1] = 0.00f;
-  pt1->points[2] = 0.00f;
+  pt1->coord[0] = 0.00f;
+  pt1->coord[1] = 0.00f;
+  pt1->coord[2] = 0.00f;
   glibby::OcTree ot1 = glibby::OcTree(pt1, 3.00f, 3.00f, 3.00f);
 
   std::vector<std::shared_ptr<glibby::Point3>> valid;
@@ -731,9 +746,9 @@ TEST_CASE("OcTree random insertion and check", "[spacial][OcTree]")
   for (int i = 0; i < 100; i++) 
   {
     std::shared_ptr<glibby::Point3> temp(new glibby::Point3);
-    temp->points[0] = distribution(gen);
-    temp->points[1] = distribution(gen);
-    temp->points[2] = distribution(gen);
+    temp->coord[0] = distribution(gen);
+    temp->coord[1] = distribution(gen);
+    temp->coord[2] = distribution(gen);
     valid.push_back(temp);
   }
   for (int i = 0; i < valid.size(); i++) 
@@ -745,51 +760,51 @@ TEST_CASE("OcTree random insertion and check", "[spacial][OcTree]")
   for (int i = 0; i < 25; i++) 
   {
     std::shared_ptr<glibby::Point3> temp1(new glibby::Point3);
-    temp1->points[0] = distribution(gen) + 3;
-    temp1->points[1] = distribution(gen) + 3;
-    temp1->points[2] = distribution(gen) + 3;
+    temp1->coord[0] = distribution(gen) + 3;
+    temp1->coord[1] = distribution(gen) + 3;
+    temp1->coord[2] = distribution(gen) + 3;
     invalid.push_back(temp1);
 
     std::shared_ptr<glibby::Point3> temp2(new glibby::Point3);
-    temp1->points[0] = distribution(gen) + 3;
-    temp1->points[1] = distribution(gen) + 3;
-    temp1->points[2] = distribution(gen) - 3;
+    temp1->coord[0] = distribution(gen) + 3;
+    temp1->coord[1] = distribution(gen) + 3;
+    temp1->coord[2] = distribution(gen) - 3;
     invalid.push_back(temp1);
 
     std::shared_ptr<glibby::Point3> temp3(new glibby::Point3);
-    temp1->points[0] = distribution(gen) + 3;
-    temp1->points[1] = distribution(gen) - 3;
-    temp1->points[2] = distribution(gen) + 3;
+    temp1->coord[0] = distribution(gen) + 3;
+    temp1->coord[1] = distribution(gen) - 3;
+    temp1->coord[2] = distribution(gen) + 3;
     invalid.push_back(temp1);
 
     std::shared_ptr<glibby::Point3> temp4(new glibby::Point3);
-    temp1->points[0] = distribution(gen) + 3;
-    temp1->points[1] = distribution(gen) - 3;
-    temp1->points[2] = distribution(gen) - 3;
+    temp1->coord[0] = distribution(gen) + 3;
+    temp1->coord[1] = distribution(gen) - 3;
+    temp1->coord[2] = distribution(gen) - 3;
     invalid.push_back(temp1);
 
     std::shared_ptr<glibby::Point3> temp5(new glibby::Point3);
-    temp1->points[0] = distribution(gen) - 3;
-    temp1->points[1] = distribution(gen) + 3;
-    temp1->points[2] = distribution(gen) + 3;
+    temp1->coord[0] = distribution(gen) - 3;
+    temp1->coord[1] = distribution(gen) + 3;
+    temp1->coord[2] = distribution(gen) + 3;
     invalid.push_back(temp1);
 
     std::shared_ptr<glibby::Point3> temp6(new glibby::Point3);
-    temp1->points[0] = distribution(gen) - 3;
-    temp1->points[1] = distribution(gen) + 3;
-    temp1->points[2] = distribution(gen) - 3;
+    temp1->coord[0] = distribution(gen) - 3;
+    temp1->coord[1] = distribution(gen) + 3;
+    temp1->coord[2] = distribution(gen) - 3;
     invalid.push_back(temp1);
 
     std::shared_ptr<glibby::Point3> temp7(new glibby::Point3);
-    temp1->points[0] = distribution(gen) - 3;
-    temp1->points[1] = distribution(gen) - 3;
-    temp1->points[2] = distribution(gen) + 3;
+    temp1->coord[0] = distribution(gen) - 3;
+    temp1->coord[1] = distribution(gen) - 3;
+    temp1->coord[2] = distribution(gen) + 3;
     invalid.push_back(temp1);
 
     std::shared_ptr<glibby::Point3> temp8(new glibby::Point3);
-    temp1->points[0] = distribution(gen) - 3;
-    temp1->points[1] = distribution(gen) - 3;
-    temp1->points[2] = distribution(gen) - 3;
+    temp1->coord[0] = distribution(gen) - 3;
+    temp1->coord[1] = distribution(gen) - 3;
+    temp1->coord[2] = distribution(gen) - 3;
     invalid.push_back(temp1);
   }
   for (int i = 0; i < invalid.size(); i++) 
@@ -799,12 +814,12 @@ TEST_CASE("OcTree random insertion and check", "[spacial][OcTree]")
   }
 }
 
-TEST_CASE("OcTree random insertion with larger capacity", "[spacial][OcTree]") 
+TEST_CASE("OcTree random insertion with larger capacity", "[spatial][OcTree]") 
 {
   std::shared_ptr<glibby::Point3> pt1(new glibby::Point3);
-  pt1->points[0] = 0.00f;
-  pt1->points[1] = 0.00f;
-  pt1->points[2] = 0.00f;
+  pt1->coord[0] = 0.00f;
+  pt1->coord[1] = 0.00f;
+  pt1->coord[2] = 0.00f;
   glibby::OcTree ot1 = glibby::OcTree(pt1, 3.00f, 3.00f, 3.00f, 5);
 
   std::vector<std::shared_ptr<glibby::Point3>> valid;
@@ -816,9 +831,9 @@ TEST_CASE("OcTree random insertion with larger capacity", "[spacial][OcTree]")
   for (int i = 0; i < 100; i++) 
   {
     std::shared_ptr<glibby::Point3> temp(new glibby::Point3);
-    temp->points[0] = distribution(gen);
-    temp->points[1] = distribution(gen);
-    temp->points[2] = distribution(gen);
+    temp->coord[0] = distribution(gen);
+    temp->coord[1] = distribution(gen);
+    temp->coord[2] = distribution(gen);
     valid.push_back(temp);
   }
   for (int i = 0; i < valid.size(); i++) 
@@ -830,51 +845,51 @@ TEST_CASE("OcTree random insertion with larger capacity", "[spacial][OcTree]")
   for (int i = 0; i < 25; i++) 
   {
     std::shared_ptr<glibby::Point3> temp1(new glibby::Point3);
-    temp1->points[0] = distribution(gen) + 3;
-    temp1->points[1] = distribution(gen) + 3;
-    temp1->points[2] = distribution(gen) + 3;
+    temp1->coord[0] = distribution(gen) + 3;
+    temp1->coord[1] = distribution(gen) + 3;
+    temp1->coord[2] = distribution(gen) + 3;
     invalid.push_back(temp1);
 
     std::shared_ptr<glibby::Point3> temp2(new glibby::Point3);
-    temp1->points[0] = distribution(gen) + 3;
-    temp1->points[1] = distribution(gen) + 3;
-    temp1->points[2] = distribution(gen) - 3;
+    temp1->coord[0] = distribution(gen) + 3;
+    temp1->coord[1] = distribution(gen) + 3;
+    temp1->coord[2] = distribution(gen) - 3;
     invalid.push_back(temp1);
 
     std::shared_ptr<glibby::Point3> temp3(new glibby::Point3);
-    temp1->points[0] = distribution(gen) + 3;
-    temp1->points[1] = distribution(gen) - 3;
-    temp1->points[2] = distribution(gen) + 3;
+    temp1->coord[0] = distribution(gen) + 3;
+    temp1->coord[1] = distribution(gen) - 3;
+    temp1->coord[2] = distribution(gen) + 3;
     invalid.push_back(temp1);
 
     std::shared_ptr<glibby::Point3> temp4(new glibby::Point3);
-    temp1->points[0] = distribution(gen) + 3;
-    temp1->points[1] = distribution(gen) - 3;
-    temp1->points[2] = distribution(gen) - 3;
+    temp1->coord[0] = distribution(gen) + 3;
+    temp1->coord[1] = distribution(gen) - 3;
+    temp1->coord[2] = distribution(gen) - 3;
     invalid.push_back(temp1);
 
     std::shared_ptr<glibby::Point3> temp5(new glibby::Point3);
-    temp1->points[0] = distribution(gen) - 3;
-    temp1->points[1] = distribution(gen) + 3;
-    temp1->points[2] = distribution(gen) + 3;
+    temp1->coord[0] = distribution(gen) - 3;
+    temp1->coord[1] = distribution(gen) + 3;
+    temp1->coord[2] = distribution(gen) + 3;
     invalid.push_back(temp1);
 
     std::shared_ptr<glibby::Point3> temp6(new glibby::Point3);
-    temp1->points[0] = distribution(gen) - 3;
-    temp1->points[1] = distribution(gen) + 3;
-    temp1->points[2] = distribution(gen) - 3;
+    temp1->coord[0] = distribution(gen) - 3;
+    temp1->coord[1] = distribution(gen) + 3;
+    temp1->coord[2] = distribution(gen) - 3;
     invalid.push_back(temp1);
 
     std::shared_ptr<glibby::Point3> temp7(new glibby::Point3);
-    temp1->points[0] = distribution(gen) - 3;
-    temp1->points[1] = distribution(gen) - 3;
-    temp1->points[2] = distribution(gen) + 3;
+    temp1->coord[0] = distribution(gen) - 3;
+    temp1->coord[1] = distribution(gen) - 3;
+    temp1->coord[2] = distribution(gen) + 3;
     invalid.push_back(temp1);
 
     std::shared_ptr<glibby::Point3> temp8(new glibby::Point3);
-    temp1->points[0] = distribution(gen) - 3;
-    temp1->points[1] = distribution(gen) - 3;
-    temp1->points[2] = distribution(gen) - 3;
+    temp1->coord[0] = distribution(gen) - 3;
+    temp1->coord[1] = distribution(gen) - 3;
+    temp1->coord[2] = distribution(gen) - 3;
     invalid.push_back(temp1);
   }
   for (int i = 0; i < invalid.size(); i++) 
@@ -884,12 +899,12 @@ TEST_CASE("OcTree random insertion with larger capacity", "[spacial][OcTree]")
   }
 }
 
-TEST_CASE("OcTree find all points in area", "[spacial][OcTree]") 
+TEST_CASE("OcTree find all points in area", "[spatial][OcTree]") 
 {
   std::shared_ptr<glibby::Point3> pt1(new glibby::Point3);
-  pt1->points[0] = 0.00f;
-  pt1->points[1] = 0.00f;
-  pt1->points[2] = 0.00f;
+  pt1->coord[0] = 0.00f;
+  pt1->coord[1] = 0.00f;
+  pt1->coord[2] = 0.00f;
   glibby::OcTree ot1 = glibby::OcTree(pt1, 3.00f, 3.00f, 3.00f);
 
   std::vector<glibby::Point3> should_include;
@@ -900,9 +915,9 @@ TEST_CASE("OcTree find all points in area", "[spacial][OcTree]")
       for (int k = -1; k <= 1; k++) 
       {
         glibby::Point3 temp;
-        temp.points[0] = i;
-        temp.points[1] = j;
-        temp.points[2] = k;
+        temp.coord[0] = i;
+        temp.coord[1] = j;
+        temp.coord[2] = k;
         should_include.push_back(temp);
         CHECK(ot1.insert(&temp).first);
         CHECK(ot1.contains(&temp).first);
@@ -919,9 +934,9 @@ TEST_CASE("OcTree find all points in area", "[spacial][OcTree]")
     bool in = false;
     for (int j = 0; j < in_area.size(); j++) 
     {
-      if (should_include[i].points[0] == in_area[j].points[0] &&
-          should_include[i].points[1] == in_area[j].points[1] &&
-          should_include[i].points[2] == in_area[j].points[2]) 
+      if (should_include[i].coord[0] == in_area[j].coord[0] &&
+          should_include[i].coord[1] == in_area[j].coord[1] &&
+          should_include[i].coord[2] == in_area[j].coord[2]) 
       {
         in = true;
         break;
@@ -931,12 +946,12 @@ TEST_CASE("OcTree find all points in area", "[spacial][OcTree]")
   }
 }
 
-TEST_CASE("OcTree find all points in randomized area", "[spacial][OcTree]") 
+TEST_CASE("OcTree find all points in randomized area", "[spatial][OcTree]") 
 {
   std::shared_ptr<glibby::Point3> pt1(new glibby::Point3);
-  pt1->points[0] = 0.00f;
-  pt1->points[1] = 0.00f;
-  pt1->points[2] = 0.00f;
+  pt1->coord[0] = 0.00f;
+  pt1->coord[1] = 0.00f;
+  pt1->coord[2] = 0.00f;
   glibby::OcTree ot1 = glibby::OcTree(pt1, 5.00f, 5.00f, 5.00f);
 
   std::default_random_engine gen;
@@ -946,9 +961,9 @@ TEST_CASE("OcTree find all points in randomized area", "[spacial][OcTree]")
   for (int i = 0; i < 1000; i++) 
   {
     glibby::Point3 temp;
-    temp.points[0] = distribution(gen);
-    temp.points[1] = distribution(gen);
-    temp.points[2] = distribution(gen);
+    temp.coord[0] = distribution(gen);
+    temp.coord[1] = distribution(gen);
+    temp.coord[2] = distribution(gen);
     all_points.push_back(temp);
     CHECK(ot1.insert(&temp).first);
     CHECK(ot1.contains(&temp).first);
@@ -964,12 +979,12 @@ TEST_CASE("OcTree find all points in randomized area", "[spacial][OcTree]")
 
   for (int i = 0; i < all_points.size(); i++) 
   {
-    if (all_points[i].points[0] < width / 2 &&
-        all_points[i].points[0] > -1 * width / 2 &&
-        all_points[i].points[1] < height / 2 &&
-        all_points[i].points[1] > -1 * height / 2 &&
-        all_points[i].points[2] < depth / 2 &&
-        all_points[i].points[2] > -1 * depth / 2) 
+    if (all_points[i].coord[0] < width / 2 &&
+        all_points[i].coord[0] > -1 * width / 2 &&
+        all_points[i].coord[1] < height / 2 &&
+        all_points[i].coord[1] > -1 * height / 2 &&
+        all_points[i].coord[2] < depth / 2 &&
+        all_points[i].coord[2] > -1 * depth / 2) 
     {
       should_include.push_back(all_points[i]);
     }
@@ -982,9 +997,9 @@ TEST_CASE("OcTree find all points in randomized area", "[spacial][OcTree]")
     bool in = false;
     for (int j = 0; j < in_area.size(); j++) 
     {
-      if (should_include[i].points[0] == in_area[j].points[0] &&
-          should_include[i].points[1] == in_area[j].points[1] &&
-          should_include[i].points[2] == in_area[j].points[2]) 
+      if (should_include[i].coord[0] == in_area[j].coord[0] &&
+          should_include[i].coord[1] == in_area[j].coord[1] &&
+          should_include[i].coord[2] == in_area[j].coord[2]) 
       {
         in = true;
         break;
@@ -994,12 +1009,12 @@ TEST_CASE("OcTree find all points in randomized area", "[spacial][OcTree]")
   }
 }
 
-TEST_CASE("OcTree iterator testing", "[spacial][OcTree]") 
+TEST_CASE("OcTree iterator testing", "[spatial][OcTree]") 
 {
   std::shared_ptr<glibby::Point3> pt1(new glibby::Point3);
-  pt1->points[0] = 0.00f;
-  pt1->points[1] = 0.00f;
-  pt1->points[2] = 0.00f;
+  pt1->coord[0] = 0.00f;
+  pt1->coord[1] = 0.00f;
+  pt1->coord[2] = 0.00f;
   glibby::OcTree ot1 = glibby::OcTree(pt1, 8.00f, 8.00f, 8.00f);
 
   // START HERE
@@ -1017,9 +1032,9 @@ TEST_CASE("OcTree iterator testing", "[spacial][OcTree]")
   glibby::Point3 temp;
   for (int i = 0; i < 25; i++) 
   {
-    temp.points[0] = points_x[i];
-    temp.points[1] = points_y[i];
-    temp.points[2] = points_z[i];
+    temp.coord[0] = points_x[i];
+    temp.coord[1] = points_y[i];
+    temp.coord[2] = points_z[i];
     all_points.push_back(temp);
     found.push_back(false);
     CHECK(ot1.insert(&temp).first);
@@ -1033,9 +1048,9 @@ TEST_CASE("OcTree iterator testing", "[spacial][OcTree]")
     bool contains = false;
     for (int i = 0; i < all_points.size(); i++) 
     {
-      if (fabs(temp->points[0] - all_points[i].points[0]) < 0.001f &&
-          fabs(temp->points[1] - all_points[i].points[1]) < 0.001f &&
-          fabs(temp->points[2] - all_points[i].points[2]) < 0.001f) 
+      if (fabs(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
+          fabs(temp->coord[1] - all_points[i].coord[1]) < 0.001f &&
+          fabs(temp->coord[2] - all_points[i].coord[2]) < 0.001f) 
       {
         if (found[i])
         { // this point has already been marked by a different
@@ -1057,12 +1072,12 @@ TEST_CASE("OcTree iterator testing", "[spacial][OcTree]")
   }
 }
 
-TEST_CASE("OcTree random iterator testing", "[spacial][OcTree]") 
+TEST_CASE("OcTree random iterator testing", "[spatial][OcTree]") 
 {
   std::shared_ptr<glibby::Point3> pt1(new glibby::Point3);
-  pt1->points[0] = 0.00f;
-  pt1->points[1] = 0.00f;
-  pt1->points[2] = 0.00f;
+  pt1->coord[0] = 0.00f;
+  pt1->coord[1] = 0.00f;
+  pt1->coord[2] = 0.00f;
   glibby::OcTree ot1 = glibby::OcTree(pt1, 5.00f, 5.00f, 5.00f, 3);
 
   std::default_random_engine gen;
@@ -1073,9 +1088,9 @@ TEST_CASE("OcTree random iterator testing", "[spacial][OcTree]")
   for (int i = 0; i < 100; i++) 
   {
     glibby::Point3 temp;
-    temp.points[0] = distribution(gen);
-    temp.points[1] = distribution(gen);
-    temp.points[2] = distribution(gen);
+    temp.coord[0] = distribution(gen);
+    temp.coord[1] = distribution(gen);
+    temp.coord[2] = distribution(gen);
     all_points.push_back(temp);
     found.push_back(false);
     CHECK(ot1.insert(&temp).first);
@@ -1089,9 +1104,9 @@ TEST_CASE("OcTree random iterator testing", "[spacial][OcTree]")
     bool contains = false;
     for (int i = 0; i < all_points.size(); i++) 
     {
-      if (fabs(temp->points[0] - all_points[i].points[0]) < 0.001f &&
-          fabs(temp->points[1] - all_points[i].points[1]) < 0.001f &&
-          fabs(temp->points[2] - all_points[i].points[2]) < 0.001f) 
+      if (fabs(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
+          fabs(temp->coord[1] - all_points[i].coord[1]) < 0.001f &&
+          fabs(temp->coord[2] - all_points[i].coord[2]) < 0.001f) 
       {
         if (found[i])
         { // this point has already been marked by a different poin in tree
@@ -1113,12 +1128,12 @@ TEST_CASE("OcTree random iterator testing", "[spacial][OcTree]")
 }
 
 TEST_CASE("OcTree random iterator testing with insertion and removal", 
-    "[spacial][OcTree]") 
+    "[spatial][OcTree]") 
 {
   std::shared_ptr<glibby::Point3> pt1(new glibby::Point3);
-  pt1->points[0] = 0.00f;
-  pt1->points[1] = 0.00f;
-  pt1->points[2] = 0.00f;
+  pt1->coord[0] = 0.00f;
+  pt1->coord[1] = 0.00f;
+  pt1->coord[2] = 0.00f;
   glibby::OcTree ot1 = glibby::OcTree(pt1, 5.00f, 5.00f, 5.00f, 3);
 
   std::default_random_engine gen;
@@ -1129,9 +1144,9 @@ TEST_CASE("OcTree random iterator testing with insertion and removal",
   for (int i = 0; i < 100; i++) 
   {
     glibby::Point3 temp;
-    temp.points[0] = distribution(gen);
-    temp.points[1] = distribution(gen);
-    temp.points[2] = distribution(gen);
+    temp.coord[0] = distribution(gen);
+    temp.coord[1] = distribution(gen);
+    temp.coord[2] = distribution(gen);
     all_points.push_back(temp);
     found.push_back(false);
     CHECK(ot1.insert(&temp).first);
@@ -1145,9 +1160,9 @@ TEST_CASE("OcTree random iterator testing with insertion and removal",
     bool contains = false;
     for (int i = 0; i < all_points.size(); i++) 
     {
-      if (fabs(temp->points[0] - all_points[i].points[0]) < 0.001f &&
-          fabs(temp->points[1] - all_points[i].points[1]) < 0.001f &&
-          fabs(temp->points[2] - all_points[i].points[2]) < 0.001f) 
+      if (fabs(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
+          fabs(temp->coord[1] - all_points[i].coord[1]) < 0.001f &&
+          fabs(temp->coord[2] - all_points[i].coord[2]) < 0.001f) 
       {
         if (found[i])
         { // this point has already been marked by a different poin in tree
@@ -1183,9 +1198,9 @@ TEST_CASE("OcTree random iterator testing with insertion and removal",
     bool contains = false;
     for (int i = 0; i < all_points.size(); i++) 
     {
-      if (fabs(temp->points[0] - all_points[i].points[0]) < 0.001f &&
-          fabs(temp->points[1] - all_points[i].points[1]) < 0.001f &&
-          fabs(temp->points[2] - all_points[i].points[2]) < 0.001f) 
+      if (fabs(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
+          fabs(temp->coord[1] - all_points[i].coord[1]) < 0.001f &&
+          fabs(temp->coord[2] - all_points[i].coord[2]) < 0.001f) 
       {
         if (found[i])
         { // this point has already been marked by a different poin in tree
@@ -1221,9 +1236,9 @@ TEST_CASE("OcTree random iterator testing with insertion and removal",
     bool contains = false;
     for (int i = 0; i < all_points.size(); i++) 
     {
-      if (fabs(temp->points[0] - all_points[i].points[0]) < 0.001f &&
-          fabs(temp->points[1] - all_points[i].points[1]) < 0.001f &&
-          fabs(temp->points[2] - all_points[i].points[2]) < 0.001f) 
+      if (fabs(temp->coord[0] - all_points[i].coord[0]) < 0.001f &&
+          fabs(temp->coord[1] - all_points[i].coord[1]) < 0.001f &&
+          fabs(temp->coord[2] - all_points[i].coord[2]) < 0.001f) 
       {
         if (found[i])
         { // this point has already been marked by a different poin in tree
@@ -1241,4 +1256,5 @@ TEST_CASE("OcTree random iterator testing with insertion and removal",
   for (unsigned int i = 0; i < found.size(); i++) 
   {
     CHECK(found[i]);
-  }}
+  }
+}

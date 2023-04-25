@@ -1,5 +1,5 @@
-#include "glibby/spacial/OcTree.h"
-#include "glibby/primitives/point2D.h"
+#include "glibby/spatial/OcTree.h"
+#include "glibby/primitives/point.h"
 #include "glibby/math/general_math.h"
 
 #include <memory>
@@ -46,12 +46,12 @@ namespace glibby
 
   bool OcTreeNode::inside_boundary(Point3* ptr) const 
   {
-    if (ptr->points[0] <= this->center_->points[0] + this->width_ / 2 &&
-        ptr->points[0] >= this->center_->points[0] - this->width_ / 2 &&
-        ptr->points[1] <= this->center_->points[1] + this->height_ / 2 &&
-        ptr->points[1] >= this->center_->points[1] - this->height_ / 2 && 
-        ptr->points[2] <= this->center_->points[2] + this->depth_ / 2 &&
-        ptr->points[2] >= this->center_->points[2] - this->depth_ / 2) 
+    if (ptr->coord[0] <= this->center_->coord[0] + this->width_ / 2 &&
+        ptr->coord[0] >= this->center_->coord[0] - this->width_ / 2 &&
+        ptr->coord[1] <= this->center_->coord[1] + this->height_ / 2 &&
+        ptr->coord[1] >= this->center_->coord[1] - this->height_ / 2 && 
+        ptr->coord[2] <= this->center_->coord[2] + this->depth_ / 2 &&
+        ptr->coord[2] >= this->center_->coord[2] - this->depth_ / 2) 
     {
       return true;
     }
@@ -64,21 +64,21 @@ namespace glibby
     
     // Left, Right, Top, Bottom, Front, Back of boundary    
     float thisLeft, thisRight, thisTop, thisBottom, thisFront, thisBack; 
-    thisLeft = this->center_->points[0] - this->width_ / 2;
-    thisRight = this->center_->points[0] + this->width_ / 2;
-    thisTop = this->center_->points[1] + this->height_ / 2;
-    thisBottom = this->center_->points[1] - this->height_ / 2;
-    thisFront = this->center_->points[2] + this->depth_ / 2;
-    thisBack = this->center_->points[2] - this->depth_ / 2;
+    thisLeft = this->center_->coord[0] - this->width_ / 2;
+    thisRight = this->center_->coord[0] + this->width_ / 2;
+    thisTop = this->center_->coord[1] + this->height_ / 2;
+    thisBottom = this->center_->coord[1] - this->height_ / 2;
+    thisFront = this->center_->coord[2] + this->depth_ / 2;
+    thisBack = this->center_->coord[2] - this->depth_ / 2;
 
     // for other point
     float otherLeft, otherRight, otherTop, otherBottom, otherFront, otherBack; 
-    otherLeft = center->points[0] - width / 2;
-    otherRight = center->points[0] + width / 2;
-    otherTop = center->points[1] + height / 2;
-    otherBottom = center->points[1] - height / 2;
-    otherFront = center->points[1] + depth / 2;
-    otherBack = center->points[1] - depth / 2;
+    otherLeft = center->coord[0] - width / 2;
+    otherRight = center->coord[0] + width / 2;
+    otherTop = center->coord[1] + height / 2;
+    otherBottom = center->coord[1] - height / 2;
+    otherFront = center->coord[1] + depth / 2;
+    otherBack = center->coord[1] - depth / 2;
 
     if (thisLeft > otherRight || otherLeft > thisRight ||
         thisBottom > otherTop || otherBottom > thisTop ||
@@ -261,9 +261,9 @@ namespace glibby
       float depth, int capacity) 
   {
     std::shared_ptr<Point3> temp = std::make_shared<Point3>();
-    temp->points[0] = p->points[0];
-    temp->points[1] = p->points[1];
-    temp->points[2] = p->points[2];
+    temp->coord[0] = p->coord[0];
+    temp->coord[1] = p->coord[1];
+    temp->coord[2] = p->coord[2];
     if (capacity > 1) 
     {
       this->capacity_ = capacity;
@@ -365,9 +365,9 @@ namespace glibby
     if (node->points_.size() < node->capacity_) 
     {
       node->points_.push_back(std::make_shared<Point3>());
-      node->points_[node->points_.size()-1]->points[0] = point->points[0];
-      node->points_[node->points_.size()-1]->points[1] = point->points[1];
-      node->points_[node->points_.size()-1]->points[2] = point->points[2];
+      node->points_[node->points_.size()-1]->coord[0] = point->coord[0];
+      node->points_[node->points_.size()-1]->coord[1] = point->coord[1];
+      node->points_[node->points_.size()-1]->coord[2] = point->coord[2];
       this->size_++;
       OcTree::iterator temp(node,node->points_.size()-1);
       return std::pair<bool,OcTree::iterator>(true,temp);
@@ -447,9 +447,9 @@ namespace glibby
     for (unsigned long i=0; i < node->points_.size(); i++) 
     {
       // check if points are the same
-      if (node->points_[i]->points[0] == point->points[0] && 
-          node->points_[i]->points[1] == point->points[1] &&
-          node->points_[i]->points[2] == point->points[2]) 
+      if (node->points_[i]->coord[0] == point->coord[0] && 
+          node->points_[i]->coord[1] == point->coord[1] &&
+          node->points_[i]->coord[2] == point->coord[2]) 
       {
         node->points_.erase(node->points_.begin() + i);
         return true;
@@ -499,7 +499,6 @@ namespace glibby
   }
 
   
-  // TODO: make look like QuadTree version
   void OcTree::subdivide(std::shared_ptr<OcTreeNode> node) 
   {
     node->divided_ = true;
@@ -518,58 +517,58 @@ namespace glibby
     std::shared_ptr<Point3> NWB_center = std::make_shared<Point3>();
     std::shared_ptr<Point3> NEB_center = std::make_shared<Point3>();
 
-    SWF_center->points[0] = node->center_->points[0] - node->width_ / 4;
-    SWF_center->points[1] = node->center_->points[1] - node->height_ / 4;
-    SWF_center->points[2] = node->center_->points[2] - node->depth_ / 4;
+    SWF_center->coord[0] = node->center_->coord[0] - node->width_ / 4;
+    SWF_center->coord[1] = node->center_->coord[1] - node->height_ / 4;
+    SWF_center->coord[2] = node->center_->coord[2] - node->depth_ / 4;
     node->SWF_ = std::make_shared<OcTreeNode>(
       SWF_center,new_width,new_height,new_depth,node->capacity_);
     node->SWF_->parent_ = node;
 
-    SWB_center->points[0] = node->center_->points[0] - node->width_ / 4;
-    SWB_center->points[1] = node->center_->points[1] - node->height_ / 4;
-    SWB_center->points[2] = node->center_->points[2] + node->depth_ / 4;
+    SWB_center->coord[0] = node->center_->coord[0] - node->width_ / 4;
+    SWB_center->coord[1] = node->center_->coord[1] - node->height_ / 4;
+    SWB_center->coord[2] = node->center_->coord[2] + node->depth_ / 4;
     node->SWB_ = std::make_shared<OcTreeNode>(
       SWB_center,new_width,new_height,new_depth,node->capacity_);
     node->SWB_->parent_ = node;
 
-    SEF_center->points[0] = node->center_->points[0] - node->width_ / 4;
-    SEF_center->points[1] = node->center_->points[1] + node->height_ / 4;
-    SEF_center->points[2] = node->center_->points[2] - node->depth_ / 4;
+    SEF_center->coord[0] = node->center_->coord[0] - node->width_ / 4;
+    SEF_center->coord[1] = node->center_->coord[1] + node->height_ / 4;
+    SEF_center->coord[2] = node->center_->coord[2] - node->depth_ / 4;
     node->SEF_ = std::make_shared<OcTreeNode>(
       SEF_center,new_width,new_height,new_depth,node->capacity_);
     node->SEF_->parent_ = node;
 
-    SEB_center->points[0] = node->center_->points[0] - node->width_ / 4;
-    SEB_center->points[1] = node->center_->points[1] + node->height_ / 4;
-    SEB_center->points[2] = node->center_->points[2] + node->depth_ / 4;
+    SEB_center->coord[0] = node->center_->coord[0] - node->width_ / 4;
+    SEB_center->coord[1] = node->center_->coord[1] + node->height_ / 4;
+    SEB_center->coord[2] = node->center_->coord[2] + node->depth_ / 4;
     node->SEB_ = std::make_shared<OcTreeNode>(
       SEB_center,new_width,new_height,new_depth,node->capacity_);
     node->SEB_->parent_ = node;
 
-    NWF_center->points[0] = node->center_->points[0] + node->width_ / 4;
-    NWF_center->points[1] = node->center_->points[1] - node->height_ / 4;
-    NWF_center->points[2] = node->center_->points[2] - node->depth_ / 4;
+    NWF_center->coord[0] = node->center_->coord[0] + node->width_ / 4;
+    NWF_center->coord[1] = node->center_->coord[1] - node->height_ / 4;
+    NWF_center->coord[2] = node->center_->coord[2] - node->depth_ / 4;
     node->NWF_ = std::make_shared<OcTreeNode>(
       NWF_center,new_width,new_height,new_depth,node->capacity_);
     node->NWF_->parent_ = node;
 
-    NWB_center->points[0] = node->center_->points[0] + node->width_ / 4;
-    NWB_center->points[1] = node->center_->points[1] - node->height_ / 4;
-    NWB_center->points[2] = node->center_->points[2] + node->depth_ / 4;
+    NWB_center->coord[0] = node->center_->coord[0] + node->width_ / 4;
+    NWB_center->coord[1] = node->center_->coord[1] - node->height_ / 4;
+    NWB_center->coord[2] = node->center_->coord[2] + node->depth_ / 4;
     node->NWB_ = std::make_shared<OcTreeNode>(
       NWB_center,new_width,new_height,new_depth,node->capacity_);
     node->NWB_->parent_ = node;
 
-    NEF_center->points[0] = node->center_->points[0] + node->width_ / 4;
-    NEF_center->points[1] = node->center_->points[1] + node->height_ / 4;
-    NEF_center->points[2] = node->center_->points[2] - node->depth_ / 4;
+    NEF_center->coord[0] = node->center_->coord[0] + node->width_ / 4;
+    NEF_center->coord[1] = node->center_->coord[1] + node->height_ / 4;
+    NEF_center->coord[2] = node->center_->coord[2] - node->depth_ / 4;
     node->NEF_ = std::make_shared<OcTreeNode>(
       NEF_center,new_width,new_height,new_depth,node->capacity_);
     node->NEF_->parent_ = node;
 
-    NEB_center->points[0] = node->center_->points[0] + node->width_ / 4;
-    NEB_center->points[1] = node->center_->points[1] + node->height_ / 4;
-    NEB_center->points[2] = node->center_->points[2] + node->depth_ / 4;
+    NEB_center->coord[0] = node->center_->coord[0] + node->width_ / 4;
+    NEB_center->coord[1] = node->center_->coord[1] + node->height_ / 4;
+    NEB_center->coord[2] = node->center_->coord[2] + node->depth_ / 4;
     node->NEB_ = std::make_shared<OcTreeNode>(
       NEB_center,new_width,new_height,new_depth,node->capacity_);
     node->NEB_->parent_ = node;
@@ -586,9 +585,9 @@ namespace glibby
     // check all points at this node
     for (long unsigned i=0; i < node->points_.size(); i++) 
     {
-      if (fabsf(node->points_[i]->points[0]-point->points[0]) < FLT_NEAR_ZERO &&
-          fabsf(node->points_[i]->points[1]-point->points[1]) < FLT_NEAR_ZERO &&
-          fabsf(node->points_[i]->points[2]-point->points[2]) < FLT_NEAR_ZERO) 
+      if (fabsf(node->points_[i]->coord[0]-point->coord[0]) < FLT_NEAR_ZERO &&
+          fabsf(node->points_[i]->coord[1]-point->coord[1]) < FLT_NEAR_ZERO &&
+          fabsf(node->points_[i]->coord[2]-point->coord[2]) < FLT_NEAR_ZERO) 
       {
         OcTree::iterator temp(node,i);
         return std::pair<bool,OcTree::iterator>(true,temp);
@@ -657,17 +656,17 @@ namespace glibby
     }
     for (long unsigned i=0; i < node->points_.size(); i++) 
     {
-      if (node->points_[i]->points[0] < center->points[0] + width/2 &&
-          node->points_[i]->points[0] > center->points[0] - width/2 &&
-          node->points_[i]->points[1] < center->points[1] + height/2 &&
-          node->points_[i]->points[1] > center->points[1] - height/2 && 
-          node->points_[i]->points[2] < center->points[2] + depth/2 &&
-          node->points_[i]->points[2] > center->points[2] - depth/2) 
+      if (node->points_[i]->coord[0] < center->coord[0] + width/2 &&
+          node->points_[i]->coord[0] > center->coord[0] - width/2 &&
+          node->points_[i]->coord[1] < center->coord[1] + height/2 &&
+          node->points_[i]->coord[1] > center->coord[1] - height/2 && 
+          node->points_[i]->coord[2] < center->coord[2] + depth/2 &&
+          node->points_[i]->coord[2] > center->coord[2] - depth/2) 
       {
         Point3 temp;
-        temp.points[0] = node->points_[i]->points[0];
-        temp.points[1] = node->points_[i]->points[1];
-        temp.points[2] = node->points_[i]->points[2];
+        temp.coord[0] = node->points_[i]->coord[0];
+        temp.coord[1] = node->points_[i]->coord[1];
+        temp.coord[2] = node->points_[i]->coord[2];
         points->push_back(temp);        
       }
     }

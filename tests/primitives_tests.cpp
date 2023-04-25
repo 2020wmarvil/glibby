@@ -1,5 +1,6 @@
 #include "glibby/math/general_math.h"
 #include "glibby/primitives/point.h"
+#include "glibby/primitives/circle2D.h"
 
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -67,7 +68,8 @@ TEST_CASE("PointND distance", "[primitive][point]") {
 
 /*TEST_CASE("Point2D distance", "[!benchmark][primitive][point2D]") {
     BENCHMARK("Point2D distance") {
-        return glibby::Distance({ 0.0f, 0.0f }, { 5.0f, 8.0f });
+        glibby::Point2D p1 = { 0.0f, 0.0f };
+        glibby::Point2D p2 = { 5.0f, 15.0f };
+        return glibby::Distance(p1, p2);
     };
-<<<<<<< HEAD
 }*/
