@@ -722,8 +722,8 @@ namespace glibby
 						temp2x2_2.data[i][count2] = mat.data[i + 1][j];
 					}
 				}
-				if (j == 0)count2++; count3++;
-				if (j == 1)count1++;
+				if (j == 0){count2++; count3++;}
+				if (j == 1) { count1++; }
 			}
 			result = mat.data[0][0] * matrix_determinant(temp2x2_1)
 				- mat.data[0][1] * matrix_determinant(temp2x2_2)
@@ -765,9 +765,9 @@ namespace glibby
 						temp3x3_3.data[i][count3] = mat.data[i + 1][j];
 					}
 				}
-				if (j == 0)count2++; count3++; count4++;
-				if (j == 1)count1++; count3++; count4++;
-				if (j == 2)count1++; count2++; count4++;
+				if (j == 0) { count2++; count3++; count4++; }
+				if (j == 1) { count1++; count3++; count4++; }
+				if (j == 2) { count1++; count2++; count4++; }
 			}
 			result = mat.data[0][0] * matrix_determinant(temp3x3_1)
 				- mat.data[0][1] * matrix_determinant(temp3x3_2)
