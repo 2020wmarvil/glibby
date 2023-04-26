@@ -68,6 +68,7 @@ namespace glibby
       float height_;
       float depth_;
       bool divided_;
+      bool leaf_;
       std::shared_ptr<OcTreeNode> NWF_;
       std::shared_ptr<OcTreeNode> NEF_;
       std::shared_ptr<OcTreeNode> SWF_;
@@ -76,7 +77,31 @@ namespace glibby
       std::shared_ptr<OcTreeNode> NEB_;
       std::shared_ptr<OcTreeNode> SWB_;
       std::shared_ptr<OcTreeNode> SEB_;
+      std::weak_ptr<OcTreeNode> parent_;
       std::vector<std::shared_ptr<Point3>> points_;
+  };
+
+  class OcTreeIterator
+  {
+    public:
+      OcTreeIterator() : pos_(0) {};
+      OcTreeIterator(std::shared_ptr<OcTreeNode> ptr, unsigned int pos) : ptr_(ptr), pos_(pos) {};
+      ~OcTreeIterator() {};
+      OcTreeIterator& operator=(const OcTreeIterator& other);
+
+      bool operator==(const OcTreeIterator& other) const;
+      bool operator!=(const OcTreeIterator& other) const;
+
+      OcTreeIterator& operator++();
+      OcTreeIterator operator++(int);
+
+      const std::shared_ptr<const Point3> operator*() const;
+
+    private:
+      void find_deepest_child();
+
+      std::weak_ptr<OcTreeNode> ptr_;
+      unsigned int pos_;
   };
 
   class OcTree 
@@ -91,10 +116,24 @@ namespace glibby
        * @param height - overall height of the boundary
        * @param depth - overall depth of the boundary
        * @param capacity - capacity of each node in tree, lower capacity means
-       * higher depth, default is 1
+       * higher depth, default is 2, capacity cannot be lower than 2
        * */
       OcTree(std::shared_ptr<Point3> p, float width, float height, float depth,
-          int capacity = 1);
+          int capacity = 2);
+
+      typedef OcTreeIterator iterator;
+      friend class OcTreeIterator;
+      /**
+       * @brief returns an iterator to the beginning of the OcTree which can
+       * be used to move through the tree
+       * */
+      iterator begin() const;
+      /**
+       * @brief returns iterator to the end of the OcTree. This iterator is
+       * basically just a NULL iterator. Reverse iteration is not supported
+       * */
+      iterator end() const;
+
 
       /**
        * @brief Will insert point into OcTree at correct subnode if the point is
@@ -106,11 +145,12 @@ namespace glibby
        * @return true if point was successfully added, false otherwise. if
        * false, if is likely the point is not in the boundary of the OcTree
        * */
-      bool insert(Point3* point);
+      std::pair<bool,iterator> insert(Point3* point);
       /**
        * @brief Will remove point from OcTree if the point is in the tree,
        * If multiple copies of the same point are in the tree, only the first
        * point found will be removed.
+       * This will completely DESTROY all iterators that exist currently.
        *
        * @param point - point to be removed
        *
@@ -125,7 +165,7 @@ namespace glibby
        *
        * @return true if point is found in tree, false otherwise
        * */
-      bool contains(Point3* point) const;
+      std::pair<bool,iterator> contains(Point3* point) const;
       /**
        * @brief Find all points within boundary defined by parameters
        *
@@ -143,7 +183,7 @@ namespace glibby
       /**
        * @brief Returns number of nodes in OcTree
        * */
-      int size() const {return size_;};
+      unsigned int size() const {return size_;};
       /**
        * @brief Removes all point from tree
        * */
@@ -154,7 +194,8 @@ namespace glibby
        * recursively finds/creates correct node to insert point and inserts the
        * point there, starts at node passed as argument
        * */
-      bool add_point(std::shared_ptr<OcTreeNode> node, Point3* point);
+      std::pair<bool,iterator> add_point(std::shared_ptr<OcTreeNode> node, 
+          Point3* point);
       /*
        * recursively finds a point and removes it
        * */
@@ -166,7 +207,8 @@ namespace glibby
       /*
        * recursively search tree for a specific point, starts at given node
        * */
-      bool search(std::shared_ptr<OcTreeNode> node, Point3* point) const;
+      std::pair<bool,iterator> search(std::shared_ptr<OcTreeNode> node, 
+          Point3* point) const;
       /*
        * recursively finds all points within given boundary and adds copies of
        * those points to the given vector
@@ -174,10 +216,15 @@ namespace glibby
       void search_tree(
           std::vector<Point3>* points, std::shared_ptr<OcTreeNode> node, 
           Point3* center, float width, float height, float depth) const;
+      /*
+       * will take all points in the vector and insert them into the tree.
+       * will start be destroying the current tree completely.
+       * */
+      bool reformat_tree(std::shared_ptr<OcTreeNode> node);
       
-      std::shared_ptr<OcTreeNode> node_;
+      std::shared_ptr<OcTreeNode> root_;
       int capacity_;
-      int size_;
+      unsigned int size_;
   };
 }
 
