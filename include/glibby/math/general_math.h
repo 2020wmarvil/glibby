@@ -8,7 +8,7 @@
 
 namespace glibby
 {
-	#define FLT_NEAR_ZERO 0.0001f
+#define FLT_NEAR_ZERO 0.0001f
 
 	template <typename T, size_t n>
 	struct Vec
@@ -260,7 +260,7 @@ namespace glibby
 		os << ")";
 		return os;
 	}
-	
+
 	template<typename T, size_t n>
 	std::istream& operator>>(std::istream& is, Vec<T, n>& vec)
 	{
@@ -291,9 +291,569 @@ namespace glibby
 		return Vec<T, 3>(x, -y, z);
 	}
 
-	template<size_t rows, size_t cols>
-	struct Mat 
+
+	template<typename T, size_t n>
+	struct MAT
 	{
-		float data[rows][cols];
+		T data[n][n];
+		size_t size = n;
+		MAT()
+		{
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n; j++)
+				{
+					data[i][j] = 0;
+				}
+			}
+		}
+		MAT(T all)
+		{
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n; j++)
+				{
+					data[i][j] = all;
+				}
+			}
+		}
+		MAT(T mat[n][n])
+		{
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n; j++)
+				{
+					data[i][j] = mat[i][j];
+				}
+			}
+		}
+		MAT(const MAT<T, n>& copy)
+		{
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n; j++)
+				{
+					data[i][j] = copy.data[i][j];
+				}
+			}
+		}
+		MAT<T, n>& operator =(const MAT<T, n>& rhs)
+		{
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n; j++)
+				{
+					data[i][j] = rhs.data[i][j];
+				}
+			}
+			return *this;
+		}
 	};
+
+	template <typename T>
+	using MAT2x2 = MAT<T, 2>;
+	template <typename T>
+	using MAT3x3 = MAT<T, 3>;
+	template <typename T>
+	using MAT4x4 = MAT<T, 4>;
+
+	template<typename T>
+	struct MAT<T, 4>
+	{
+		T data[4][4];
+		size_t size = 4;
+		MAT<T, 4>(Vec<T, 4> v1, Vec<T, 4> v2, Vec<T, 4> v3, Vec<T, 4> v4)
+		{
+			Vec<T, 4> vall[4];
+			vall[0] = v1;
+			vall[1] = v2;
+			vall[2] = v3;
+			vall[3] = v4;
+			for (int i = 0; i < 4; i++)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+					data[i][j] = vall[i].data[j];
+				}
+			}
+		}
+		MAT()
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+					data[i][j] = 0;
+				}
+			}
+		}
+		MAT(T all)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+					data[i][j] = all;
+				}
+			}
+		}
+		MAT(T mat[4][4])
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+					data[i][j] = mat[i][j];
+				}
+			}
+		}
+		MAT(const MAT4x4<T>& copy)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+					data[i][j] = copy.data[i][j];
+				}
+			}
+		}
+		MAT4x4<T>& operator =(const MAT4x4<T>& rhs)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+					data[i][j] = rhs.data[i][j];
+				}
+			}
+			return *this;
+		}
+	};
+	template<typename T>
+	struct MAT<T, 3>
+	{
+		T data[3][3];
+		size_t size = 3;
+		MAT<T, 3>(Vec<T, 3> v1, Vec<T, 3> v2, Vec<T, 3> v3)
+		{
+			Vec<T, 3> vall[3];
+			vall[0] = v1;
+			vall[1] = v2;
+			vall[2] = v3;
+			for (int i = 0; i < 3; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					data[i][j] = vall[i].data[j];
+				}
+			}
+		}
+		MAT()
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					data[i][j] = 0;
+				}
+			}
+		}
+		MAT(T all)
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					data[i][j] = all;
+				}
+			}
+		}
+		MAT(T mat[3][3])
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					data[i][j] = mat[i][j];
+				}
+			}
+		}
+		MAT(const MAT3x3<T>& copy)
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					data[i][j] = copy.data[i][j];
+				}
+			}
+		}
+		MAT3x3<T>& operator =(const MAT3x3<T>& rhs)
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					data[i][j] = rhs.data[i][j];
+				}
+			}
+			return *this;
+		}
+	};
+	template<typename T>
+	struct MAT<T, 2>
+	{
+		T data[2][2];
+		size_t size = 2;
+		MAT<T, 2>(Vec<T, 2> v1, Vec<T, 2> v2)
+		{
+			Vec<T, 2> vall[2];
+			vall[0] = v1;
+			vall[1] = v2;
+			for (int i = 0; i < 2; i++)
+			{
+				for (int j = 0; j < 2; j++)
+				{
+					data[i][j] = vall[i].data[j];
+				}
+			}
+		}
+		MAT()
+		{
+			for (int i = 0; i < 2; i++)
+			{
+				for (int j = 0; j < 2; j++)
+				{
+					data[i][j] = 0;
+				}
+			}
+		}
+		MAT(T all)
+		{
+			for (int i = 0; i < 2; i++)
+			{
+				for (int j = 0; j < 2; j++)
+				{
+					data[i][j] = all;
+				}
+			}
+		}
+		MAT(T mat[2][2])
+		{
+			for (int i = 0; i < 2; i++)
+			{
+				for (int j = 0; j < 2; j++)
+				{
+					data[i][j] = mat[i][j];
+				}
+			}
+		}
+		MAT(const MAT2x2<T>& copy)
+		{
+			for (int i = 0; i < 2; i++)
+			{
+				for (int j = 0; j < 2; j++)
+				{
+					data[i][j] = copy.data[i][j];
+				}
+			}
+		}
+		MAT2x2<T>& operator =(const MAT2x2<T>& rhs)
+		{
+			for (int i = 0; i < 2; i++)
+			{
+				for (int j = 0; j < 2; j++)
+				{
+					data[i][j] = rhs.data[i][j];
+				}
+			}
+			return *this;
+		}
+	};
+
+	template<typename T,size_t n>
+	bool operator==(const MAT<T, n>& mat1, const MAT<T, n>& mat2)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				if (mat1.data[i][j] != mat2.data[i][j]) return false;
+			}
+		}
+		return true;
+	}
+	template<typename T, size_t n>
+	void print_matrix(const MAT<T, n>& mat)
+	{
+
+		for (int i = 0; i < n; i++)
+		{
+			if (i == 0)std::cout << "[";
+			else std::cout << " ";
+			for (int j = 0; j < n; j++)
+			{
+				std::cout << mat.data[i][j];
+				if (j != n - 1)std::cout << " ";
+			}
+			if (i == n - 1)std::cout << "]";
+			else std::cout << " ";
+			std::cout << std::endl;
+		}
+
+	}
+	template<typename T, size_t n>
+	MAT<T, n> scalar_multiplication(float coefficient, const MAT<T, n>& mat)
+	{
+		MAT<T, n> result(mat);
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				result.data[i][j] *= coefficient;
+			}
+		}
+		return result;
+	}
+	template<typename T, size_t n>
+	MAT<T, n> scalar_division(float divisor, const MAT<T, n>& mat)
+	{
+		MAT<T, n> result(mat);
+		if (divisor == 0)
+		{
+			std::cout << "Cannot divide by 0." << std::endl;
+			exit(1);
+		}
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				result.data[i][j] /= divisor;
+			}
+		}
+		return result;
+	}
+	template <typename T, size_t n>
+	MAT<T, n> matrix_addition(const MAT<T, n>& mat1, const MAT<T, n>& mat2)
+	{
+		MAT<T, n> result;
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				result.data[i][j] = mat1.data[i][j] + mat2.data[i][j];
+			}
+		}
+		return result;
+	}
+	template <typename T, size_t n>
+	MAT<T, n> matrix_subtraction(const MAT<T, n>& mat1, const MAT<T, n>& mat2)
+	{
+		MAT<T, n> result;
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				result.data[i][j] = mat1.data[i][j] - mat2.data[i][j];
+			}
+		}
+		return result;
+	}
+	template <typename T, size_t n>
+	MAT<T, n> matrix_multiplication(const MAT<T, n>& mat1, const MAT<T, n>& mat2)
+	{
+		MAT<T, n> result;
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				for (int k = 0; k < n; k++)
+				{
+					result.data[i][j] += mat1.data[i][k] * mat2.data[k][j];
+				}
+			}
+		}
+		return result;
+	}
+	template <typename T, size_t n>
+	MAT<T, n> matrix_transposition(const MAT<T, n>& mat1)
+	{
+		MAT<T, n> result;
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				result.data[i][j] = mat1.data[j][i];
+			}
+		}
+		return result;
+	}
+	template <typename T, size_t n>
+	float matrix_determinant(const MAT<T, n>& mat)
+	{
+		float result;
+		if (n == 2)
+		{
+			result = (mat.data[0][0] * mat.data[1][1] - mat.data[0][1] * mat.data[1][0]);
+		}
+		if (n == 3)
+		{
+			MAT<T, 2> temp2x2_1;
+			MAT<T, 2> temp2x2_2;
+			MAT<T, 2> temp2x2_3;
+			int count1 = 0, count2 = 0, count3 = 0;
+			for (int j = 0; j < 3; j++)
+			{
+				for (int i = 0; i < 2; i++)
+				{
+					if (j == 0)
+					{
+						temp2x2_2.data[i][count2] = mat.data[i + 1][j];
+						temp2x2_3.data[i][count3] = mat.data[i + 1][j];
+					}
+					if (j == 1)
+					{
+						temp2x2_1.data[i][count1] = mat.data[i + 1][j];
+						temp2x2_3.data[i][count3] = mat.data[i + 1][j];
+					}
+					if (j == 2)
+					{
+						temp2x2_1.data[i][count1] = mat.data[i + 1][j];
+						temp2x2_2.data[i][count2] = mat.data[i + 1][j];
+					}
+				}
+				if (j == 0){count2++; count3++;}
+				if (j == 1) { count1++; }
+			}
+			result = mat.data[0][0] * matrix_determinant(temp2x2_1)
+				- mat.data[0][1] * matrix_determinant(temp2x2_2)
+				+ mat.data[0][2] * matrix_determinant(temp2x2_3);
+		}
+		if (n == 4)
+		{
+			MAT<T, 3> temp3x3_1;
+			MAT<T, 3> temp3x3_2;
+			MAT<T, 3> temp3x3_3;
+			MAT<T, 3> temp3x3_4;
+			int count1 = 0, count2 = 0, count3 = 0, count4 = 0;
+			for (int j = 0; j < 4; j++)
+			{
+				for (int i = 0; i < 3; i++)
+				{
+					if (j == 0)
+					{
+						temp3x3_2.data[i][count2] = mat.data[i + 1][j];
+						temp3x3_3.data[i][count3] = mat.data[i + 1][j];
+						temp3x3_4.data[i][count4] = mat.data[i + 1][j];
+					}
+					if (j == 1)
+					{
+						temp3x3_1.data[i][count1] = mat.data[i + 1][j];
+						temp3x3_3.data[i][count3] = mat.data[i + 1][j];
+						temp3x3_4.data[i][count4] = mat.data[i + 1][j];
+					}
+					if (j == 2)
+					{
+						temp3x3_1.data[i][count1] = mat.data[i + 1][j];
+						temp3x3_2.data[i][count2] = mat.data[i + 1][j];
+						temp3x3_4.data[i][count4] = mat.data[i + 1][j];
+					}
+					if (j == 3)
+					{
+						temp3x3_1.data[i][count1] = mat.data[i + 1][j];
+						temp3x3_2.data[i][count2] = mat.data[i + 1][j];
+						temp3x3_3.data[i][count3] = mat.data[i + 1][j];
+					}
+				}
+				if (j == 0) { count2++; count3++; count4++; }
+				if (j == 1) { count1++; count3++; count4++; }
+				if (j == 2) { count1++; count2++; count4++; }
+			}
+			result = mat.data[0][0] * matrix_determinant(temp3x3_1)
+				- mat.data[0][1] * matrix_determinant(temp3x3_2)
+				+ mat.data[0][2] * matrix_determinant(temp3x3_3)
+				- mat.data[0][3] * matrix_determinant(temp3x3_4);
+		}
+		return result;
+	}
+	template<typename T, size_t n>
+	std::ostream& operator <<(std::ostream& out, const MAT<T, n>& mat)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			if (i == 0)
+				out << "[";
+			else
+				out << " ";
+			for (int j = 0; j < n; j++)
+			{
+				out << mat.data[i][j];
+				if (j != n - 1)
+					out << " ";
+			}
+			if (i == n - 1)
+				out << "]";
+			else
+				out << " ";
+			out << std::endl;
+		}
+		return out;
+	}
+	template<typename T, size_t n>
+	std::istream& operator >>(std::istream& in, MAT<T, n>& mat)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				in >> mat.data[i][j];
+			}
+		}
+		return in;
+	}
+	template<typename T>
+	MAT4x4<T> LookAt(const Vec<T, 3>& eye, const Vec<T, 3>& at, const Vec<T, 3>& up)
+	{
+		Vec<T, 3> zaxis = Normalize(at - eye);
+		Vec<T, 3> xaxis = Normalize(Cross(zaxis, up));
+		Vec<T, 3> yaxis = Cross(zaxis, xaxis);
+		zaxis = -zaxis;
+		MAT4x4<T> m(Vec4(xaxis.x, xaxis.y, xaxis.z, -Dot(xaxis, eye)),
+			Vec4(yaxis.x, yaxis.y, yaxis.z, -Dot(yaxis, eye)),
+			Vec4(zaxis.x, zaxis.y, zaxis.z, -Dot(zaxis, eye)),
+			Vec4(0, 0, 0, 1));
+		return m;
+
+	}
+	// Orthogonal Projection Matrix
+	inline MAT4x4<float> orthogonalProjection(float left, float right, float bottom, float top, float near, float far)
+	{
+		MAT4x4<float> projection;
+
+		projection.data[0][0] = 2.0f / (right - left);
+		projection.data[1][1] = 2.0f / (top - bottom);
+		projection.data[2][2] = -2.0f / (far - near);
+		projection.data[0][3] = -(right + left) / (right - left);
+		projection.data[1][3] = -(top + bottom) / (top - bottom);
+		projection.data[2][3] = -(far + near) / (far - near);
+
+		return projection;
+	}
+
+	// Perspective Projection Matrix
+	inline MAT4x4<float> perspectiveProjection(float fovY, float aspectRatio, float near, float far)
+	{
+		MAT4x4<float> projection;
+
+		float f = 1.0f / tan(fovY * 0.5f);
+		projection.data[0][0] = f / aspectRatio;
+		projection.data[1][1] = f;
+		projection.data[2][2] = (near + far) / (near - far);
+		projection.data[2][3] = (2.0f * near * far) / (near - far);
+		projection.data[3][2] = -1.0f;
+
+		return projection;
+	}
 }
+
+
